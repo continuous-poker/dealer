@@ -1,39 +1,29 @@
 on: [push]
 
 jobs:
-  native_build:
+  build:
     runs-on: ubuntu-latest
     name: Build native Quarkus app
     steps:
       - name: Checkout the code
         uses: actions/checkout@master
-      - name: Build native executable
-        uses: maxday/quarkus-native-build-docker-action@13bf5c4ae6942143cf43a5663a6c7f847ac3163c
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          outputName: app-runner
-      - name: Upload native executable
-        uses: actions/upload-artifact@v1
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache maven packages
+        uses: actions/cache@v3
         with:
-          name: native-executable
-          path: app-runner
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        run: |
+          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true
 
-  dockerize:
-    runs-on: ubuntu-latest
-    name: Embed the native executable in a Docker container
-    needs: native_build
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@master
-      - name: Download the binary
-        uses: actions/download-artifact@v1
-        with:
-          name: native-executable
-      - name: Dockerize
-        id: dockerize
-        uses: maxday/quarkus-dockerize-action@master
-        with:
-          tag: gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }}
-          executablePath: native-executable/app-runner
       - name: Login to GCP
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -47,10 +37,8 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }}
       - name: Deploy
         run: |
-          gcloud components install beta --quiet
-          gcloud beta run deploy ${{ secrets.GCP_APP_NAME }} \
+          gcloud run deploy ${{ secrets.GCP_APP_NAME }} \
           --image gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }} \
           --platform managed \
           --allow-unauthenticated --service-account ${{ secrets.GCP_EMAIL }} \
-          --region ${{ secrets.GCP_REGION }} \
           --set-env-vars DISABLE_SIGNAL_HANDLERS=1
