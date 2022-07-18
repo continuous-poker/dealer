@@ -25,7 +25,7 @@ jobs:
           mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true
 
       - name: Login to GCP
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@v0.6.0
         with:
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_ACCOUNT_KEY }}
