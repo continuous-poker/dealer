@@ -1,5 +1,11 @@
 on: [push]
 
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  GKE_CLUSTER: ${{ secrets.GCP_CLUSTER }}    # Add your cluster name here.
+  GKE_ZONE: us-central1-c   # Add your cluster zone here.
+  DEPLOYMENT_NAME: gke-test # Add your deployment name here.
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,10 +41,9 @@ jobs:
         run: |
           gcloud auth configure-docker --quiet
           docker push gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }}
+
       - name: Deploy
-        run: |
-          gcloud run deploy ${{ secrets.GCP_APP_NAME }} \
-          --image gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }} \
-          --platform managed \
-          --allow-unauthenticated --service-account ${{ secrets.GCP_EMAIL }} \
-          --set-env-vars DISABLE_SIGNAL_HANDLERS=1
+        run: |-
+          kubectl apply -f target/kubernetes/kubernetes.yml
+          kubectl rollout status deployment/${{ secrets.GCP_APP_NAME }}
+          kubectl get services -o wide
