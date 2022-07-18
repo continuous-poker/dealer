@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true
+          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=gcr.io/${{ secrets.GCP_PROJECT }} -Dquarkus.container-image.name=${{ secrets.GCP_APP_NAME }}
 
       - name: Login to GCP
         uses: google-github-actions/setup-gcloud@v0.6.0
