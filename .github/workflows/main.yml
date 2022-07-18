@@ -28,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=gcr.io/${{ secrets.GCP_PROJECT }} -Dquarkus.container-image.name=${{ secrets.GCP_APP_NAME }} -Dquarkus.container-image.tag=latest -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.ingress.host=${{ secrets.GCP_APP_NAME }} -Dquarkus.kubernetes.service-type=LoadBalancer
+          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=gcr.io/${{ secrets.GCP_PROJECT }} -Dquarkus.container-image.name=${{ secrets.GCP_APP_NAME }} -Dquarkus.container-image.tag=latest -Dquarkus.kubernetes.service-type=LoadBalancer
 
       - name: Login to GCP
         uses: google-github-actions/setup-gcloud@v0.6.0
