@@ -41,7 +41,12 @@ jobs:
         run: |
           gcloud auth configure-docker --quiet
           docker push gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APP_NAME }}
-
+      # Get the GKE credentials so we can deploy to the cluster
+      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GCP_ACCOUNT_KEY }}
       - name: Deploy
         run: |-
           kubectl apply -f target/kubernetes/kubernetes.yml
