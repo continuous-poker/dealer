@@ -3,7 +3,7 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build native Quarkus app
+    name: Build Quarkus app
     steps:
       - name: Checkout the code
         uses: actions/checkout@master
@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=gcr.io/${{ secrets.GCP_PROJECT }} -Dquarkus.container-image.name=${{ secrets.GCP_APP_NAME }}
+          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=gcr.io/${{ secrets.GCP_PROJECT }} -Dquarkus.container-image.name=${{ secrets.GCP_APP_NAME }} -Dquarkus.container-image.tag=latest
 
       - name: Login to GCP
         uses: google-github-actions/setup-gcloud@v0.6.0
