@@ -1,6 +1,7 @@
 package de.doubleslash.poker.dealer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -90,7 +91,7 @@ public class GameManager {
    }
 
    public Collection<Game> getGames() {
-      return games.keySet();
+      return Collections.unmodifiableSet(games.keySet());
    }
 
    public Optional<Game> getGame(final long gameId) {

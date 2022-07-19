@@ -92,6 +92,9 @@ public class Game implements Runnable {
    public void addPlayer(final Team team) {
       teams.add(team);
    }
+   public void removePlayer(final Team team) {
+      teams.remove(team);
+   }
 
    public String getName() {
       return name;

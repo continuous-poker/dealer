@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,116 +30,128 @@ import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
 import de.doubleslash.poker.dealer.game.Game;
 
+@Path("/games")
 public class ManagementController {
 
-   private final GameManager gameState;
-   private final GameLogger log;
+    private final GameManager gameState;
+    private final GameLogger log;
 
-   public ManagementController(final GameManager gameState, final GameLogger log) {
-      this.gameState = gameState;
-      this.log = log;
-   }
+    public ManagementController(final GameManager gameState, final GameLogger log) {
+        this.gameState = gameState;
+        this.log = log;
+    }
 
-   @POST
-   @Path("/games/{gameId}/players")
-   public void registerPlayer(@PathParam("gameId") final long gameId,
-         @QueryParam("playerUrl") final String playerUrl, @QueryParam("teamName") final String teamName) {
-      final Optional<Game> game = gameState.getGame(gameId);
-      game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
-   }
+    @POST
+    @Path("/{gameId}/players")
+    public void registerPlayer(@PathParam("gameId") final long gameId, @QueryParam("playerUrl") final String playerUrl,
+            @QueryParam("teamName") final String teamName) {
+        final Optional<Game> game = gameState.getGame(gameId);
+        game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
+    }
 
-   @GET
-   @Path("/games/{gameId}/players")
-   public Collection<String> getPlayers(@PathParam("gameId") final long gameId) {
-      final Optional<Game> game = gameState.getGame(gameId);
-      if (game.isPresent()) {
-         final List<Team> teams = game.get().getTeams();
-         return teams.stream().map(Team::getName).collect(Collectors.toList());
-      }
-      return Collections.emptyList();
-   }
+    @DELETE
+    @Path("/{gameId}/players")
+    public void removePlayer(@PathParam("gameId") final long gameId, @QueryParam("teamName") final String teamName) {
+        final Optional<Game> game = gameState.getGame(gameId);
+        game.ifPresent(g -> g.getTeams()
+                             .stream()
+                             .filter(team -> team.getName().equals(teamName))
+                             .findFirst()
+                             .ifPresent(g::removePlayer));
+    }
 
-   @GET
-   @Path("/testrun")
-   public long testRun() {
-      final Collection<Team> players = new ArrayList<>();
-      for (int i = 0; i < 4; i++) {
-         players.add(new Team("Team" + i, new DummyPlayer()));
-      }
-      return gameState.runSingleGame("Testrun Game " + new Random().nextInt(), players).getGameId();
-   }
+    @GET
+    @Path("/{gameId}/players")
+    public Collection<String> getPlayers(@PathParam("gameId") final long gameId) {
+        final Optional<Game> game = gameState.getGame(gameId);
+        if (game.isPresent()) {
+            final List<Team> teams = game.get().getTeams();
+            return teams.stream().map(Team::getName).toList();
+        }
+        return Collections.emptyList();
+    }
 
-   //@PreAuthorize("hasRole('ADMIN')")
-   @POST
-   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-   @Path("/games")
-   public long start(@FormParam("name") final String name) {
-      return gameState.createNewGame(name);
-   }
+    @GET
+    @Path("/testrun")
+    public long testRun() {
+        final Collection<Team> players = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            players.add(new Team("Team" + i, new DummyPlayer()));
+        }
+        return gameState.runSingleGame("Testrun Game " + new Random().nextInt(), players).getGameId();
+    }
 
-   @GET
-   @Path("/games/{gameId}")
-   public String getStatus(@PathParam("gameId") final long gameId) {
-      return gameState.isRunning(gameId) ? "running" : "stopped";
-   }
+    //@PreAuthorize("hasRole('ADMIN')")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/")
+    public long start(@FormParam("name") final String name) {
+        return gameState.createNewGame(name);
+    }
 
-   @GET
-   @Path("/games/{gameId}/score")
-   public Map<String, Long> getScore(@PathParam("gameId") final long gameId) {
-      final Map<String, Long> map = new HashMap<>();
+    @GET
+    @Path("/{gameId}")
+    public String getStatus(@PathParam("gameId") final long gameId) {
+        return gameState.isRunning(gameId) ? "running" : "stopped";
+    }
 
-      gameState.getGame(gameId)
-               .ifPresent(game -> game.getTeams().forEach(team -> map.put(team.getName(), team.getScore())));
+    @GET
+    @Path("/{gameId}/score")
+    public Map<String, Long> getScore(@PathParam("gameId") final long gameId) {
+        final Map<String, Long> map = new HashMap<>();
 
-      return map;
-   }
+        gameState.getGame(gameId)
+                 .ifPresent(game -> game.getTeams().forEach(team -> map.put(team.getName(), team.getScore())));
 
-   @GET
-   @Path("/games")
-   public Collection<Game> listGames() {
-      return gameState.getGames();
-   }
+        return map;
+    }
 
-   //@PreAuthorize("hasRole('ADMIN')")
-   @DELETE
-   @Path("/games/{gameId}")
-   public void delete(@PathParam("gameId") final long gameId) {
-      gameState.delete(gameId);
-      log.delete(gameId);
-   }
+    @GET
+    @Path("/")
+    public Collection<Game> listGames() {
+        return gameState.getGames();
+    }
 
-   //@PreAuthorize("hasRole('ADMIN')")
-   @PUT
-   @Path("/games/{gameId}")
-   public void toggleRun(@PathParam("gameId") final long gameId) {
-      if (gameState.isRunning(gameId)) {
-         gameState.pause(gameId);
-      } else {
-         gameState.resume(gameId);
-      }
-   }
+    //@PreAuthorize("hasRole('ADMIN')")
+    @DELETE
+    @Path("/{gameId}")
+    public void delete(@PathParam("gameId") final long gameId) {
+        gameState.delete(gameId);
+        log.delete(gameId);
+    }
 
-   @GET
-   @Path("/games/{gameId}/log/{timestamp}")
-   public List<LogEntry> getLogSince(@PathParam("gameId") final long gameId,
-         @PathParam("timestamp") final LocalDateTime timestamp) {
-      final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PUT
+    @Path("/{gameId}")
+    public void toggleRun(@PathParam("gameId") final long gameId) {
+        if (gameState.isRunning(gameId)) {
+            gameState.pause(gameId);
+        } else {
+            gameState.resume(gameId);
+        }
+    }
 
-      return list.stream().filter(entry -> entry.getTimestamp().isAfter(timestamp)).collect(Collectors.toList());
-   }
+    @GET
+    @Path("/{gameId}/log/{timestamp}")
+    public List<LogEntry> getLogSince(@PathParam("gameId") final long gameId,
+            @PathParam("timestamp") final String timestamp) {
+        final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
 
-   @GET
-   @Path("/games/{gameId}/log")
-   public List<LogEntry> filterLog(@PathParam("gameId") final long gameId,
-         @QueryParam("from") final LocalDateTime from,
-         @QueryParam("to") final LocalDateTime to,
-         @QueryParam("table_id") final Long tableId) {
-      final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
+        return list.stream().filter(entry -> entry.getTimestamp().isAfter(LocalDateTime.parse(timestamp))).toList();
+    }
 
-      final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp().isAfter(from);
-      final Predicate<LogEntry> isBefore = entry -> to == null || entry.getTimestamp().isBefore(to);
-      final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
+    @GET
+    @Path("/{gameId}/log")
+    public List<LogEntry> filterLog(@PathParam("gameId") final long gameId, @QueryParam("from") final String from,
+            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId) {
+        final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
 
-      return list.stream().filter(isAfter.and(isBefore).and(isTable)).collect(Collectors.toList());
-   }
+        final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp()
+                                                                          .isAfter(LocalDateTime.parse(from));
+        final Predicate<LogEntry> isBefore = entry -> to == null || entry.getTimestamp()
+                                                                         .isBefore(LocalDateTime.parse(to));
+        final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
+
+        return list.stream().filter(isAfter.and(isBefore).and(isTable)).toList();
+    }
 }
