@@ -3,6 +3,8 @@ package de.doubleslash.poker.dealer;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.doubleslash.poker.dealer.data.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -12,9 +14,11 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 @Slf4j
 public class RemotePlayer implements ActionProvider {
 
+   @JsonProperty
    private final String url;
    private final RemotePlayerClient client;
 
+   @JsonProperty
    private int strike;
 
    private long blockedTable;
