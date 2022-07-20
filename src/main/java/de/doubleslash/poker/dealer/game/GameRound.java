@@ -43,7 +43,7 @@ public class GameRound {
             return;
          }
 
-         sleep(1, TimeUnit.SECONDS);
+         sleep(500, TimeUnit.MILLISECONDS);
 
          deal(table, deck, 3);
          logFlop(table);
@@ -52,7 +52,7 @@ public class GameRound {
             return;
          }
 
-         sleep(1, TimeUnit.SECONDS);
+         sleep(500, TimeUnit.MILLISECONDS);
 
          deal(table, deck, 1);
          logTurn(table);
@@ -61,7 +61,7 @@ public class GameRound {
             return;
          }
 
-         sleep(1, TimeUnit.SECONDS);
+         sleep(500, TimeUnit.MILLISECONDS);
 
          deal(table, deck, 1);
          logRiver(table);
@@ -70,7 +70,7 @@ public class GameRound {
             return;
          }
 
-         sleep(1, TimeUnit.SECONDS);
+         sleep(500, TimeUnit.MILLISECONDS);
 
          showdown(table, playersInPlayOrder);
 

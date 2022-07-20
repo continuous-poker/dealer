@@ -1,6 +1,6 @@
 package de.doubleslash.poker.dealer.api;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -137,7 +137,7 @@ public class ManagementController {
             @PathParam("timestamp") final String timestamp) {
         final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
 
-        return list.stream().filter(entry -> entry.getTimestamp().isAfter(LocalDateTime.parse(timestamp))).toList();
+        return list.stream().filter(entry -> entry.getTimestamp().isAfter(ZonedDateTime.parse(timestamp))).toList();
     }
 
     @GET
@@ -147,9 +147,9 @@ public class ManagementController {
         final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
 
         final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp()
-                                                                          .isAfter(LocalDateTime.parse(from));
+                                                                          .isAfter(ZonedDateTime.parse(from));
         final Predicate<LogEntry> isBefore = entry -> to == null || entry.getTimestamp()
-                                                                         .isBefore(LocalDateTime.parse(to));
+                                                                         .isBefore(ZonedDateTime.parse(to));
         final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
 
         return list.stream().filter(isAfter.and(isBefore).and(isTable)).toList();

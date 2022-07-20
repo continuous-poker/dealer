@@ -1,6 +1,6 @@
 package de.doubleslash.poker.dealer;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ public class GameLogger {
    private final Map<Long, List<LogEntry>> logs = new HashMap<>();
 
    public void log(final long gameId, final long tableId, final String msg, final Object... args) {
-      final LogEntry logEntry = new LogEntry(LocalDateTime.now(), gameId, tableId, String.format(msg, args));
+      final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args));
       add(logEntry);
 
       log.info(logEntry.toString());
