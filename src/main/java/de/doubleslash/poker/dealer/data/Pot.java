@@ -1,8 +1,10 @@
 package de.doubleslash.poker.dealer.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Pot implements Serializable {
 
-   private class PotPart implements Serializable {
-
-      private static final long serialVersionUID = -7736630987434387843L;
+   private static class PotPart implements Serializable {
 
       private int size;
       private final Set<Player> payees = new HashSet<>();
@@ -60,8 +60,6 @@ public class Pot implements Serializable {
       }
    }
 
-   private static final long serialVersionUID = 4087249610338385716L;
-
    private final List<PotPart> pots = new ArrayList<>();
 
    public Pot() {
@@ -87,7 +85,7 @@ public class Pot implements Serializable {
          final Iterator<PotPart> i = pots.iterator();
          while (i.hasNext()) {
             final PotPart pot = i.next();
-            final Integer potSize = pot.getSize();
+            final int potSize = pot.getSize();
             final Collection<Player> payees = pot.getPayees();
 
             final HashSet<Player> winners = new HashSet<>(players);
@@ -111,7 +109,7 @@ public class Pot implements Serializable {
 
    public void collect(final List<Player> playersInPlayOrder) {
       final List<Player> players = new ArrayList<>(playersInPlayOrder);
-      players.sort((p1, p2) -> Integer.compare(p1.getBet(), p2.getBet()));
+      players.sort(Comparator.comparingInt(Player::getBet));
 
       final PotPart startPot = pots.get(pots.size() - 1);
 

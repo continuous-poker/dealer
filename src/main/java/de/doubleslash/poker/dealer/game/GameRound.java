@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,7 +16,9 @@ import de.doubleslash.poker.dealer.data.Player;
 import de.doubleslash.poker.dealer.data.Status;
 import de.doubleslash.poker.dealer.data.Table;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class GameRound {
 
@@ -40,12 +43,16 @@ public class GameRound {
             return;
          }
 
+         sleep(1, TimeUnit.SECONDS);
+
          deal(table, deck, 3);
          logFlop(table);
 
          if (determineWinner(table, playersInPlayOrder, false)) {
             return;
          }
+
+         sleep(1, TimeUnit.SECONDS);
 
          deal(table, deck, 1);
          logTurn(table);
@@ -54,12 +61,16 @@ public class GameRound {
             return;
          }
 
+         sleep(1, TimeUnit.SECONDS);
+
          deal(table, deck, 1);
          logRiver(table);
 
          if (determineWinner(table, playersInPlayOrder, false)) {
             return;
          }
+
+         sleep(1, TimeUnit.SECONDS);
 
          showdown(table, playersInPlayOrder);
 
@@ -70,6 +81,15 @@ public class GameRound {
          logger.log(gameId, table.getId(), "Ending round %s.", table.getRound());
          table.resetForNextRound();
 
+      }
+   }
+
+   private void sleep(final int sleeptime, final TimeUnit unit) {
+      try {
+         Thread.sleep(unit.toMillis(sleeptime));
+      } catch (InterruptedException e) {
+         log.error("Got interrupted in sleep", e);
+         Thread.currentThread().interrupt();
       }
    }
 
@@ -126,7 +146,7 @@ public class GameRound {
    private void showdown(final Table table, final List<Player> players) {
       final List<Player> playersStillActive = players.stream()
                                                      .filter(p -> p.getStatus() == Status.ACTIVE)
-                                                     .collect(Collectors.toList());
+              .toList();
 
       final Map<int[], List<Player>> rankedPlayers = new HandCalculator().determineWinningHand(playersStillActive,
             Collections.unmodifiableList(table.getCommunityCards()));
@@ -155,8 +175,7 @@ public class GameRound {
    }
 
    private void clearCards(final List<Player> players) {
-      players.stream()
-             .forEach(p -> p.getCards()
+      players.forEach(p -> p.getCards()
                             .clear());
    }
 }

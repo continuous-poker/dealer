@@ -2,6 +2,7 @@ package de.doubleslash.poker.dealer.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import de.doubleslash.poker.dealer.GameLogger;
 import de.doubleslash.poker.dealer.Team;
@@ -39,12 +40,22 @@ public class Game implements Runnable {
 
          while (isMoreThanOnePlayerLeft(players)) {
             new GameRound(players, table, logger, gameId).run();
+            sleep(3, TimeUnit.SECONDS);
          }
 
          addWinnerPoints(players);
 
       } catch (final Exception e) {
          log.error("Unexpected error in game", e);
+      }
+   }
+
+   private void sleep(final int sleeptime, final TimeUnit unit) {
+      try {
+         Thread.sleep(unit.toMillis(sleeptime));
+      } catch (InterruptedException e) {
+         log.error("Got interrupted in sleep", e);
+         Thread.currentThread().interrupt();
       }
    }
 
