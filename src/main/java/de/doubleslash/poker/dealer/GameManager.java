@@ -56,11 +56,14 @@ public class GameManager {
 
    public synchronized void pause(final long gameId) {
       getGame(gameId).ifPresent(game -> games.get(game)
-                                             .cancel(true));
+                                             .cancel(false));
    }
 
    public void delete(final long gameId) {
-      getGame(gameId).ifPresent(games::remove);
+      getGame(gameId).ifPresent(game -> {
+         games.get(game).cancel(true);
+         games.remove(game);
+      });
    }
 
    public Game runSingleGame(final String name, final Collection<Team> players) {

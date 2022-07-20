@@ -42,8 +42,7 @@ public class Game implements Runnable {
             new GameRound(players, table, logger, gameId).run();
             sleep(3, TimeUnit.SECONDS);
          }
-
-         addWinnerPoints(players);
+         addWinnerPoints(players, id);
 
       } catch (final Exception e) {
          log.error("Unexpected error in game", e);
@@ -59,12 +58,15 @@ public class Game implements Runnable {
       }
    }
 
-   private void addWinnerPoints(final List<Player> players) {
+   private void addWinnerPoints(final List<Player> players, final long tableId) {
       players.stream()
              .filter(s -> !s.getStatus()
                             .equals(Status.OUT))
              .map(this::getTeam)
-             .forEach(team -> team.addToScore(POINTS));
+             .forEach(team -> {
+                team.addToScore(POINTS);
+                logger.log(gameId, tableId, "Player %s won the table!", team.getName());
+             });
    }
 
    private Team getTeam(final Player player) {

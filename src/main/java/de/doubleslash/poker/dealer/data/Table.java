@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -24,13 +25,21 @@ public class Table implements CardReceiver, Serializable {
    private int round;
    private int smallBlind;
    private int minimumBet;
+   @JsonIgnore
    private final Pot pot;
    private int activePlayer;
    private int currentDealer;
+
+   @JsonIgnore
    private final long id;
 
    public Table(final long id, final List<Player> players, final int smallBlind) {
       this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(), 0, 0, id);
+   }
+
+   @JsonProperty("pot")
+   public int getPotSize() {
+      return pot.getTotalSize();
    }
 
    @JsonProperty
@@ -67,6 +76,7 @@ public class Table implements CardReceiver, Serializable {
       }
    }
 
+   @JsonIgnore
    public List<Player> getPlayersInPlayOrder() {
       final List<Player> playersInOrder = new ArrayList<>();
       Player p = players.get(getCurrentDealer());

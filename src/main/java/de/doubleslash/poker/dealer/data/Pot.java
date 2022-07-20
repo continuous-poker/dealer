@@ -17,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Pot implements Serializable {
 
+   public int getTotalSize() {
+      return pots.stream().mapToInt(PotPart::getSize).sum();
+   }
+
    private static class PotPart implements Serializable {
 
       private int size;
