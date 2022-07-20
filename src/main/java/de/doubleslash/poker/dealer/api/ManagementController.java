@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -143,8 +144,9 @@ public class ManagementController {
     @GET
     @Path("/{gameId}/log")
     public List<LogEntry> filterLog(@PathParam("gameId") final long gameId, @QueryParam("from") final String from,
-            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId) {
-        final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
+            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId, @QueryParam("limit") final Integer limit,
+            @QueryParam("order") final String order) {
+        final List<LogEntry> list = new ArrayList<>(log.getLog(gameId).orElse(Collections.emptyList()));
 
         final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp()
                                                                           .isAfter(ZonedDateTime.parse(from));
@@ -152,6 +154,16 @@ public class ManagementController {
                                                                          .isBefore(ZonedDateTime.parse(to));
         final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
 
-        return list.stream().filter(isAfter.and(isBefore).and(isTable)).toList();
+        if ("desc".equals(order)) {
+            Collections.reverse(list);
+        }
+
+        Stream<LogEntry> logEntryStream = list.stream().filter(isAfter.and(isBefore).and(isTable));
+
+        if (limit != null && limit > 0) {
+            logEntryStream = logEntryStream.limit(limit);
+        }
+
+        return logEntryStream.toList();
     }
 }

@@ -1,0 +1,80 @@
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<style>
+    .logitem {
+        list-style-type: none;
+        padding-left: 23px;
+    }
+</style>
+<div id="app">
+    <h1>Table Info (ID: {{ id }})</h1>
+    <p>
+        Game is {{ gamestate }}<br/>
+    </p>
+    <h2>Leaderboard</h2>
+    <ol>
+        <li v-for="value in score">
+        {{ value[0] }}: {{ value[1] }} Points
+        </li>
+    </ol>
+    <h2>Game Log</h2>
+    <li class="logitem" v-for="log in logs">
+    [T{{ log.tableId }}] {{ log.message }}
+    </li>
+</div>
+
+<script>
+
+    const { createApp } = Vue
+
+    createApp({
+        data () {
+            return {
+                logs: null,
+                gamestate : null,
+                score: null,
+                id: null
+            }
+        },
+        created() {
+            this.update();
+            this.timer = setInterval(this.update, 1000);
+        },
+        beforeDestroy () {
+            this.cancelAutoUpdate();
+        },
+        methods: {
+            update() {
+                // Simple GET request using fetch
+                this.id = new URL(location.href).searchParams.get('gameId')
+                axios
+                    .get("/games/" + this.id + "/log?order=desc&limit=50")
+                    .then(response => {
+                        this.logs = response.data;
+                    });
+                axios
+                    .get("/games/" + this.id + "/score")
+                    .then(response => {
+                        let sortable = [];
+                        for (var team in response.data) {
+                            sortable.push([team, response.data[team]]);
+                        }
+
+                        sortable.sort(function(a, b) {
+                            return b[1] - a[1];
+                        });
+                        this.score = sortable;
+                    });
+                axios
+                    .get("/games/" + this.id)
+                    .then(response => {
+                        this.gamestate = response.data;
+                    });
+            },
+            cancelAutoUpdate () {
+                clearInterval(this.timer);
+            }
+        }
+    }).mount('#app')
+</script>

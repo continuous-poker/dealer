@@ -34,8 +34,6 @@ public class BetRound {
       Player lastBettingPlayer = seats.getCurrentPlayer();
       int lastBet = 0;
 
-      playersInPlayOrder.forEach(System.out::println);
-
       if (isPreFlop) {
          lastBettingPlayer = collectBlinds(table, seats);
          lastBet = lastBettingPlayer.getBet();
@@ -102,6 +100,8 @@ public class BetRound {
          logger.log(gameId, table.getId(), "Player %s goes all in for small blind with %s.", small.getName(),
                small.getBet());
       } else {
+         logger.log(gameId, table.getId(), "Player %s pays small blind of %s.", small.getName(),
+                 small.getBet());
          log.info("{} pays small blind of {}", small.getName(), small.getBet());
       }
 
@@ -111,6 +111,8 @@ public class BetRound {
       if (big.isAllIn()) {
          logger.log(gameId, table.getId(), "Player %s goes all in for big blind with %s.", big.getName(), big.getBet());
       } else {
+         logger.log(gameId, table.getId(), "Player %s pays big blind of %s.", big.getName(),
+                 big.getBet());
          log.info("{} pays big blind of {}", big.getName(), big.getBet());
       }
 
