@@ -19,9 +19,11 @@
         </li>
     </ol>
     <h2>Game Log</h2>
-    <li class="logitem" v-for="log in logs">
-    [T{{ log.tableId }}] {{ log.message }}
-    </li>
+    <ul>
+        <li class="logitem" v-for="log in logs">
+        [T{{ log.tableId }}] {{ log.message }}
+        </li>
+    </ul>
 </div>
 
 <script>
