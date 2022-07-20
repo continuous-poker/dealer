@@ -2,6 +2,7 @@ package de.doubleslash.poker.dealer.data;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.text.WordUtils;
 
 import lombok.Data;
@@ -24,6 +25,7 @@ public class Card implements Comparable<Card>, Serializable {
       return rank.compareTo(o.getRank());
    }
 
+   @JsonIgnore
    public int getValue() {
       return rank.getValue();
    }
