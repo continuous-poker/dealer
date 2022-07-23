@@ -21,7 +21,7 @@ public class RemotePlayer implements ActionProvider {
    @JsonProperty
    private int strike;
 
-   private long blockedTable;
+   private long blockedTable = -1;
 
    public RemotePlayer(final String playerUrl) {
       this.url = toAbsolute(playerUrl);

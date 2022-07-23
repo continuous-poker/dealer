@@ -37,8 +37,8 @@ public class BetRound {
       if (isPreFlop) {
          lastBettingPlayer = collectBlinds(table, seats);
          lastBet = lastBettingPlayer.getBet();
-         table.setMinimumBet(table.getSmallBlind() * 2);
       }
+      table.setMinimumBet(table.getSmallBlind() * 2);
 
       Player currentPlayer;
       while ((currentPlayer = seats.getNextActivePlayer()) != null) {
@@ -60,18 +60,17 @@ public class BetRound {
          }
 
          if (currentPlayer.equals(lastBettingPlayer)) {
-            if (lastBet == 0 || (isPreFlop && lastBet <= table.getSmallBlind() * 2)) {
+            if (lastBet == 0 || (isPreFlop && lastBet == table.getSmallBlind() * 2)) {
                // nobody bet / raised and we are at the starting player again
                // let him bet / raise or check
                callPlayer(table, currentPlayer);
-               if (currentPlayer.getBet() < table.getMinimumRaise()) {
+               if (currentPlayer.getBet() <= table.getMinimumBet()) {
                   // he checked
                   break;
                } else {
                   // he bet / raised
                   lastBet = currentPlayer.getBet();
                   table.setMinimumBet(lastBet);
-                  lastBettingPlayer = currentPlayer;
                }
             } else {
                break;
@@ -121,29 +120,49 @@ public class BetRound {
    }
 
    private void callPlayer(final Table table, final Player player) {
+      log.debug("Calling player {} with table {}", player.getName(), table);
       int result = player.getActionProvider()
                          .requestBet(table.copyForActivePlayer());
+      log.debug("Player {} returned bet of {}", player.getName(), result);
 
       if (result < player.getBet()) {
+         log.debug("Result {} is lower than current bet of {} for player {}, setting it to the current bet.",
+                 result, player.getBet(), player.getName());
          result = player.getBet();
       }
 
       if (result < table.getMinimumBet()) {
-         player.fold();
-         logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
-
+         if (noPlayerHasBetYet(table)) {
+            player.bet(0);
+            logger.log(gameId, table.getId(), "Player %s checks.", player.getName());
+         } else {
+            player.fold();
+            logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
+         }
       } else if (result >= table.getMinimumBet() && result < table.getMinimumRaise()) {
-         // not enough for a raise, just a call
-         player.bet(table.getMinimumBet());
-         logger.log(gameId, table.getId(), "Player %s calls.", player.getName());
+         if (noPlayerHasBetYet(table)) {
+            logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), result);
+         } else {
+            // not enough for a raise, just a call
+            logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", player.getName(), table.getMinimumBet());
+            player.bet(table.getMinimumBet());
+         }
       } else {
          player.bet(result);
          if (player.isAllIn()) {
             logger.log(gameId, table.getId(), ALL_IN_TEXT, player.getName(), player.getBet());
          } else {
-            logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), result);
+            if (noPlayerHasBetYet(table)) {
+               logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), result);
+            } else {
+               logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), result);
+            }
          }
       }
+   }
+
+   private boolean noPlayerHasBetYet(final Table table) {
+      return table.getPlayers().stream().mapToInt(Player::getBet).sum() == 0;
    }
 
 }

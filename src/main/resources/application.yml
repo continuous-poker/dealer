@@ -10,3 +10,8 @@ quarkus:
       limits:
         cpu: 1000m
         memory: 1Gi
+  log:
+    level: INFO
+    category:
+      "de.doubleslash":
+        level: DEBUG
