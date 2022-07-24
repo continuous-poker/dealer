@@ -32,7 +32,9 @@ public class StraightFlushTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 8, 6 }, score);
+        assertArrayEquals(new int[] { 8,
+                                      6
+        }, score);
     }
 
     @Test
@@ -43,7 +45,9 @@ public class StraightFlushTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 8, 7 }, score);
+        assertArrayEquals(new int[] { 8,
+                                      7
+        }, score);
     }
 
     @Test
@@ -54,6 +58,8 @@ public class StraightFlushTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 8, 5 }, score);
+        assertArrayEquals(new int[] { 8,
+                                      5
+        }, score);
     }
 }

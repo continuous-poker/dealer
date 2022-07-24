@@ -6,7 +6,7 @@ import de.doubleslash.poker.dealer.data.Card;
 
 public interface PokerHand {
 
-   int[] calculateScore(List<Card> cards);
+    int[] calculateScore(List<Card> cards);
 
-   boolean matches(List<Card> cards);
+    boolean matches(List<Card> cards);
 }

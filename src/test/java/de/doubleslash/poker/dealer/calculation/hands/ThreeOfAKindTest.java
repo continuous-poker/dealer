@@ -29,6 +29,10 @@ public class ThreeOfAKindTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 3, 15, 14, 9 }, score);
+        assertArrayEquals(new int[] { 3,
+                                      15,
+                                      14,
+                                      9
+        }, score);
     }
 }

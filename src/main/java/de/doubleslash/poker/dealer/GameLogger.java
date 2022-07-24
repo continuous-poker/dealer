@@ -9,36 +9,35 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-
 import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
 @Slf4j
 public class GameLogger {
 
-   private static final int LOG_MAX_LENGTH = 10000;
-   private final Map<Long, List<LogEntry>> logs = new HashMap<>();
+    private static final int LOG_MAX_LENGTH = 10000;
+    private final Map<Long, List<LogEntry>> logs = new HashMap<>();
 
-   public void log(final long gameId, final long tableId, final String msg, final Object... args) {
-      final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args));
-      add(logEntry);
+    public void log(final long gameId, final long tableId, final String msg, final Object... args) {
+        final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args));
+        add(logEntry);
 
-      log.info(logEntry.toString());
-   }
+        log.info(logEntry.toString());
+    }
 
-   private void add(final LogEntry logEntry) {
-      final List<LogEntry> gameLog = logs.computeIfAbsent(logEntry.getGameId(), k -> new ArrayList<>());
-      gameLog.add(logEntry);
-      if (gameLog.size() > LOG_MAX_LENGTH) {
-         gameLog.remove(0);
-      }
-   }
+    private void add(final LogEntry logEntry) {
+        final List<LogEntry> gameLog = logs.computeIfAbsent(logEntry.getGameId(), k -> new ArrayList<>());
+        gameLog.add(logEntry);
+        if (gameLog.size() > LOG_MAX_LENGTH) {
+            gameLog.remove(0);
+        }
+    }
 
-   public Optional<List<LogEntry>> getLog(final long gameId) {
-      return Optional.ofNullable(logs.get(gameId));
-   }
+    public Optional<List<LogEntry>> getLog(final long gameId) {
+        return Optional.ofNullable(logs.get(gameId));
+    }
 
-   public void delete(final long gameId) {
-      logs.remove(gameId);
-   }
+    public void delete(final long gameId) {
+        logs.remove(gameId);
+    }
 }

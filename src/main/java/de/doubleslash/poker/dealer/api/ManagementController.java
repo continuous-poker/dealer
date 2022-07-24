@@ -144,8 +144,8 @@ public class ManagementController {
     @GET
     @Path("/{gameId}/log")
     public List<LogEntry> filterLog(@PathParam("gameId") final long gameId, @QueryParam("from") final String from,
-            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId, @QueryParam("limit") final Integer limit,
-            @QueryParam("order") final String order) {
+            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId,
+            @QueryParam("limit") final Integer limit, @QueryParam("order") final String order) {
         final List<LogEntry> list = new ArrayList<>(log.getLog(gameId).orElse(Collections.emptyList()));
 
         final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp()

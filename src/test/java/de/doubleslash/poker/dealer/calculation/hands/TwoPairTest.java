@@ -29,6 +29,10 @@ public class TwoPairTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 2, 28, 10, 12 }, score);
+        assertArrayEquals(new int[] { 2,
+                                      28,
+                                      10,
+                                      12
+        }, score);
     }
 }

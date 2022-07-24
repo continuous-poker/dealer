@@ -26,14 +26,15 @@ public class StraightTest {
 
     @Test
     public void testCalculate_withLongStraight() throws Exception {
-        final List<Card> cards =
-                Arrays.asList(new Card(SIX, SPADES), new Card(ACE, CLUBS), new Card(FIVE, HEARTS), new Card(TWO, CLUBS),
-                        new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(THREE, SPADES));
+        final List<Card> cards = Arrays.asList(new Card(SIX, SPADES), new Card(ACE, CLUBS), new Card(FIVE, HEARTS),
+                new Card(TWO, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(THREE, SPADES));
         Collections.shuffle(cards);
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 4, 6 }, score);
+        assertArrayEquals(new int[] { 4,
+                                      6
+        }, score);
     }
 
     @Test
@@ -44,7 +45,9 @@ public class StraightTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 4, 7 }, score);
+        assertArrayEquals(new int[] { 4,
+                                      7
+        }, score);
     }
 
     @Test
@@ -55,6 +58,8 @@ public class StraightTest {
 
         final int[] score = strategy.calculateScore(cards);
 
-        assertArrayEquals(new int[] { 4, 5 }, score);
+        assertArrayEquals(new int[] { 4,
+                                      5
+        }, score);
     }
 }

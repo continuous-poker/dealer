@@ -15,39 +15,42 @@ import de.doubleslash.poker.dealer.data.Rank;
 
 public class ThreeOfAKind implements PokerHand {
 
-   @Override
-   public int[] calculateScore(final List<Card> cardsToScore) {
-      final List<Card> cards = new ArrayList<>(cardsToScore);
-      // [3,6-42,2-14,2-14]
+    @Override
+    public int[] calculateScore(final List<Card> cardsToScore) {
+        final List<Card> cards = new ArrayList<>(cardsToScore);
+        // [3,6-42,2-14,2-14]
 
-      final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
-      final List<Card> triplets = getTriplets(cardsGroupedByRank);
+        final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
+        final List<Card> triplets = getTriplets(cardsGroupedByRank);
 
-      final int tripletScore = triplets.stream().mapToInt(Card::getValue).sum();
+        final int tripletScore = triplets.stream().mapToInt(Card::getValue).sum();
 
-      cards.removeAll(triplets);
+        cards.removeAll(triplets);
 
-      Collections.sort(cards);
+        Collections.sort(cards);
 
-      return IntStream.of(3, tripletScore, cards.get(0).getValue(), cards.get(1).getValue()).toArray();
+        return IntStream.of(3, tripletScore, cards.get(0).getValue(), cards.get(1).getValue()).toArray();
 
-   }
+    }
 
-   private List<Card> getTriplets(final Map<Rank, List<Card>> cardsGroupedBySuit) {
-      final Map<Rank, List<Card>> sortedMap = new TreeMap<>(cardsGroupedBySuit);
-      final Optional<List<Card>> findFirst = sortedMap.entrySet().stream().filter(entry -> entry.getValue().size() == 3)
-            .map(Entry::getValue).findFirst();
-      return findFirst.orElseThrow(IllegalStateException::new);
-   }
+    private List<Card> getTriplets(final Map<Rank, List<Card>> cardsGroupedBySuit) {
+        final Map<Rank, List<Card>> sortedMap = new TreeMap<>(cardsGroupedBySuit);
+        final Optional<List<Card>> findFirst = sortedMap.entrySet()
+                                                        .stream()
+                                                        .filter(entry -> entry.getValue().size() == 3)
+                                                        .map(Entry::getValue)
+                                                        .findFirst();
+        return findFirst.orElseThrow(IllegalStateException::new);
+    }
 
-   @Override
-   public boolean matches(final List<Card> cardsToScore) {
-      final Map<Rank, List<Card>> collect = getCardsGroupedByRank(cardsToScore);
-      return collect.values().stream().anyMatch(list -> list.size() == 3);
-   }
+    @Override
+    public boolean matches(final List<Card> cardsToScore) {
+        final Map<Rank, List<Card>> collect = getCardsGroupedByRank(cardsToScore);
+        return collect.values().stream().anyMatch(list -> list.size() == 3);
+    }
 
-   private Map<Rank, List<Card>> getCardsGroupedByRank(final List<Card> cardsToScore) {
-      return cardsToScore.stream().collect(Collectors.groupingBy(Card::getRank));
-   }
+    private Map<Rank, List<Card>> getCardsGroupedByRank(final List<Card> cardsToScore) {
+        return cardsToScore.stream().collect(Collectors.groupingBy(Card::getRank));
+    }
 
 }

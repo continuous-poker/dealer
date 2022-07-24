@@ -16,26 +16,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
-import de.doubleslash.poker.dealer.calculation.hands.HighCard;
 import de.doubleslash.poker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
 public class HighCardTest {
 
-   private final HighCard strategy = new HighCard();
+    private final HighCard strategy = new HighCard();
 
-   @Test
-   public void testCalculate() throws Exception {
-      final List<Card> cards = Arrays.asList(new Card(KING, SPADES), new Card(TWO, CLUBS), new Card(FIVE, SPADES),
-            new Card(JACK, SPADES), new Card(TEN, SPADES), new Card(FOUR, SPADES), new Card(NINE, HEARTS));
-      Collections.shuffle(cards);
+    @Test
+    public void testCalculate() throws Exception {
+        final List<Card> cards = Arrays.asList(new Card(KING, SPADES), new Card(TWO, CLUBS), new Card(FIVE, SPADES),
+                new Card(JACK, SPADES), new Card(TEN, SPADES), new Card(FOUR, SPADES), new Card(NINE, HEARTS));
+        Collections.shuffle(cards);
 
-      final int[] score = strategy.calculateScore(cards);
+        final int[] score = strategy.calculateScore(cards);
 
-      assertArrayEquals(new int[] {
-            0, 13, 11, 10, 9, 5
-      }, score);
-   }
+        assertArrayEquals(new int[] { 0,
+                                      13,
+                                      11,
+                                      10,
+                                      9,
+                                      5
+        }, score);
+    }
 
 }

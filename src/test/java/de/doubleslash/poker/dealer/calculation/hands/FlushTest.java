@@ -14,24 +14,27 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
 import de.doubleslash.poker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
 public class FlushTest {
 
-   private final Flush flush = new Flush();
+    private final Flush flush = new Flush();
 
-   @Test
-   public void testCalculateFlush() throws Exception {
-      final List<Card> cards = Arrays.asList(new Card(ACE, SPADES), new Card(QUEEN, SPADES), new Card(FIVE, HEARTS),
-            new Card(ACE, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(NINE, SPADES));
-      Collections.shuffle(cards);
+    @Test
+    public void testCalculateFlush() throws Exception {
+        final List<Card> cards = Arrays.asList(new Card(ACE, SPADES), new Card(QUEEN, SPADES), new Card(FIVE, HEARTS),
+                new Card(ACE, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(NINE, SPADES));
+        Collections.shuffle(cards);
 
-      final int[] score = flush.calculateScore(cards);
+        final int[] score = flush.calculateScore(cards);
 
-      assertArrayEquals(new int[] {
-            5, 14, 12, 9, 5, 4
-      }, score);
-   }
+        assertArrayEquals(new int[] { 5,
+                                      14,
+                                      12,
+                                      9,
+                                      5,
+                                      4
+        }, score);
+    }
 }
