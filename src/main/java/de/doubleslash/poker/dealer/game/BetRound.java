@@ -123,42 +123,75 @@ public class BetRound {
         int result = player.getActionProvider().requestBet(table.copyForActivePlayer());
         log.debug("Player {} returned bet of {}", player.getName(), result);
 
-        if (result < player.getBet()) {
+        if (result < player.getBet() || result < table.getMinimumBet()) {
             log.debug("Result {} is lower than current bet of {} for player {}, setting it to the current bet.", result,
                     player.getBet(), player.getName());
             result = player.getBet();
         }
 
-        if (result < table.getMinimumBet()) {
-            if (noPlayerHasBetYet(table)) {
-                player.bet(0);
-                logger.log(gameId, table.getId(), "Player %s checks.", player.getName());
+        determineAction(table, player, result);
+    }
+
+    private void determineAction(final Table table, final Player player, final int bet) {
+        if (noPlayerHasBetYet(table)) {
+            if (bet >= table.getMinimumBet()) {
+                bet(table, player, bet);
             } else {
-                player.fold();
-                logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
-            }
-        } else if (result >= table.getMinimumBet() && result < table.getMinimumRaise()) {
-            if (noPlayerHasBetYet(table)) {
-                logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), result);
-                player.bet(result);
-            } else {
-                // not enough for a raise, just a call
-                logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", player.getName(),
-                        table.getMinimumBet());
-                player.bet(table.getMinimumBet());
+                check(table, player);
             }
         } else {
-            player.bet(result);
-            if (player.isAllIn()) {
-                logger.log(gameId, table.getId(), ALL_IN_TEXT, player.getName(), player.getBet());
-            } else {
-                if (noPlayerHasBetYet(table)) {
-                    logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), result);
+            if (bet >= table.getMinimumRaise()) {
+                raise(table, player, bet);
+            } else if (bet >= table.getMinimumBet()) {
+                if (bet == player.getBet()) {
+                    check(table, player);
                 } else {
-                    logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), result);
+                    call(table, player);
                 }
+            } else {
+                fold(table, player);
             }
         }
+    }
+
+    private boolean playerCanPayIt(final Table table, final Player player, final int bet) {
+        if (player.isGoingAllIn(bet)) {
+            player.bet(bet);
+            logger.log(gameId, table.getId(), ALL_IN_TEXT, player.getName(), player.getBet());
+            return false;
+        }
+        return true;
+    }
+
+    private void raise(final Table table, final Player player, final int bet) {
+        if (playerCanPayIt(table, player, bet)) {
+            logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), bet);
+            player.bet(bet);
+        }
+    }
+
+    private void call(final Table table, final Player player) {
+        if (playerCanPayIt(table, player, table.getMinimumBet())) {
+            logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", player.getName(),
+                    table.getMinimumBet());
+            player.bet(table.getMinimumBet());
+        }
+    }
+
+    private void bet(final Table table, final Player player, final int bet) {
+        if (playerCanPayIt(table, player, bet)) {
+            logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), bet);
+            player.bet(bet);
+        }
+    }
+
+    private void fold(final Table table, final Player player) {
+        logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
+        player.fold();
+    }
+
+    private void check(final Table table, final Player player) {
+        logger.log(gameId, table.getId(), "Player %s checks.", player.getName());
     }
 
     private boolean noPlayerHasBetYet(final Table table) {

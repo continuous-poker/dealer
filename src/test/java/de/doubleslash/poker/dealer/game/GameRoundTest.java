@@ -17,7 +17,7 @@ import de.doubleslash.poker.dealer.data.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GameRoundTest {
+class GameRoundTest {
 
     private GameLogger logger;
     private List<Player> players;
@@ -29,8 +29,8 @@ public class GameRoundTest {
     @BeforeEach
     public void setUp() {
         logger = mock(GameLogger.class);
-        player1 = new Player("player1", Status.ACTIVE, 100, 0, new ArrayList<>(), table -> Integer.MAX_VALUE);
-        player2 = new Player("player2", Status.ACTIVE, 100, 0, new ArrayList<>(), table -> Integer.MAX_VALUE);
+        player1 = new Player("player1", Status.ACTIVE, 100, 0, table -> Integer.MAX_VALUE);
+        player2 = new Player("player2", Status.ACTIVE, 100, 0, table -> Integer.MAX_VALUE);
         players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
@@ -40,7 +40,7 @@ public class GameRoundTest {
     }
 
     @Test
-    public void testPlayWithDeck() throws Exception {
+    void testPlayWithDeck() throws Exception {
         final List<Card> cards = new ArrayList<>();
         fillCards(cards);
         final Deck deck = new Deck(cards);

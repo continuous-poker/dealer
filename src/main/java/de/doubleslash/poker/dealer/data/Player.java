@@ -69,6 +69,10 @@ public class Player implements CardReceiver, Serializable {
         return status.equals(Status.ACTIVE) && bet == stack;
     }
 
+    public boolean isGoingAllIn(final int potentialBet) {
+        return status.equals(Status.ACTIVE) && bet + potentialBet >= stack;
+    }
+
     public void out() {
         this.status = Status.OUT;
     }
