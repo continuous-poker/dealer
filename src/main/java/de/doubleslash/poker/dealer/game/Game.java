@@ -1,46 +1,46 @@
 package de.doubleslash.poker.dealer.game;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import de.doubleslash.poker.dealer.GameLogger;
 import de.doubleslash.poker.dealer.Team;
 import de.doubleslash.poker.dealer.data.Player;
 import de.doubleslash.poker.dealer.data.Status;
 import de.doubleslash.poker.dealer.data.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class Game implements Runnable {
 
-    private static final int START_SMALLBLIND = 5;
+    private static final int START_SMALL_BLIND = 5;
     private static final int START_STACK = 100;
     private static final int POINTS = 1;
-
-    private final List<Team> teams;
-    private final GameLogger logger;
+    private final List<Team> teams = new ArrayList<>();
+    @Getter
     private final long gameId;
-    private int tableId = 0;
+    @Getter
     private final String name;
-
-    public Game(final long gameId, final String name, final GameLogger log) {
-        this.gameId = gameId;
-        this.name = name;
-        this.teams = new ArrayList<>();
-        this.logger = log;
-    }
+    private final GameLogger logger;
+    private final Duration timeBetweenGameRounds;
+    private int tableId = 0;
 
     @Override
     public void run() {
         try {
             final List<Player> players = initPlayers();
-            final long id = tableId++;
-            final Table table = new Table(id, players, START_SMALLBLIND);
+
+            final long id = nextTableId();
+            final Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg));
 
             while (isMoreThanOnePlayerLeft(players)) {
                 new GameRound(players, table, logger, gameId).run();
-                sleep(3, TimeUnit.SECONDS);
+                sleep();
             }
             addWinnerPoints(players, id);
 
@@ -49,9 +49,13 @@ public class Game implements Runnable {
         }
     }
 
-    private void sleep(final int sleeptime, final TimeUnit unit) {
+    private long nextTableId() {
+        return tableId++;
+    }
+
+    private void sleep() {
         try {
-            Thread.sleep(unit.toMillis(sleeptime));
+            Thread.sleep(timeBetweenGameRounds.toMillis());
         } catch (InterruptedException e) {
             log.error("Got interrupted in sleep", e);
             Thread.currentThread().interrupt();
@@ -85,14 +89,6 @@ public class Game implements Runnable {
         return players;
     }
 
-    public long getGameId() {
-        return gameId;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
     public void addPlayer(final Team team) {
         teams.add(team);
     }
@@ -101,8 +97,7 @@ public class Game implements Runnable {
         teams.remove(team);
     }
 
-    public String getName() {
-        return name;
+    public List<Team> getTeams() {
+        return Collections.unmodifiableList(teams);
     }
-
 }

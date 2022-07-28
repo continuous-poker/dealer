@@ -16,7 +16,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @AllArgsConstructor
 @Slf4j
 public class Player implements CardReceiver, Serializable {
-    private static final long serialVersionUID = -8077734808775553430L;
 
     private final String name;
     private Status status;
@@ -32,13 +31,12 @@ public class Player implements CardReceiver, Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
-    public int bet(final int chips) {
+    public void bet(final int chips) {
         if (chips > stack) {
             bet = stack;
         } else if (chips > bet) {
             bet = chips;
         }
-        return chips;
     }
 
     @Override
@@ -70,7 +68,8 @@ public class Player implements CardReceiver, Serializable {
     }
 
     public boolean isGoingAllIn(final int potentialBet) {
-        return status.equals(Status.ACTIVE) && bet + potentialBet >= stack;
+        // convert to long for this check to avoid integer overflows
+        return status.equals(Status.ACTIVE) && (long)bet + (long)potentialBet >= stack;
     }
 
     public void out() {

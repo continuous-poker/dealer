@@ -60,13 +60,12 @@ public class BetRound {
 
             if (currentPlayer.equals(lastBettingPlayer)) {
                 if (lastBet == 0 || (isPreFlop && lastBet == table.getSmallBlind() * 2)) {
-                    // nobody bet / raised and we are at the starting player again
+                    // nobody bet / raised, and we are at the starting player again
                     // let him bet / raise or check
-                    callPlayer(table, currentPlayer);
-                    if (lastBet > 0 && currentPlayer.getBet() <= table.getMinimumBet()) {
-                        // he checked
+                    final Action action = callPlayer(table, currentPlayer);
+                    if (action.equals(Action.CHECK)) {
                         break;
-                    } else {
+                    } else if (action.equals(Action.BET) || action.equals(Action.RAISE)) {
                         // he bet / raised
                         lastBet = currentPlayer.getBet();
                         if (lastBet > 0) {
@@ -91,7 +90,6 @@ public class BetRound {
     }
 
     private Player collectBlinds(final Table table, final Seats seats) {
-        // collect blinds
         final Player small = seats.getCurrentPlayer();
         small.bet(table.getSmallBlind());
 
@@ -117,7 +115,7 @@ public class BetRound {
         return big;
     }
 
-    private void callPlayer(final Table table, final Player player) {
+    private Action callPlayer(final Table table, final Player player) {
         log.debug("Calling player {} with table {}", player.getName(), table);
         int result = player.getActionProvider().requestBet(table.copyForActivePlayer());
         log.debug("Player {} returned bet of {}", player.getName(), result);
@@ -128,7 +126,7 @@ public class BetRound {
             result = player.getBet();
         }
 
-        new BetDecision(gameId, logger).determineAction(table, player, result);
+        return new BetDecision(gameId, logger).performAction(table, player, result);
     }
 
 }

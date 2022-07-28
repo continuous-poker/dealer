@@ -1,10 +1,10 @@
 package de.doubleslash.poker.dealer.game;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,16 +43,12 @@ public class GameRound {
                 return;
             }
 
-            sleep(500, TimeUnit.MILLISECONDS);
-
             deal(table, deck, 3);
             logFlop(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
                 return;
             }
-
-            sleep(500, TimeUnit.MILLISECONDS);
 
             deal(table, deck, 1);
             logTurn(table);
@@ -61,16 +57,12 @@ public class GameRound {
                 return;
             }
 
-            sleep(500, TimeUnit.MILLISECONDS);
-
             deal(table, deck, 1);
             logRiver(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
                 return;
             }
-
-            sleep(500, TimeUnit.MILLISECONDS);
 
             showdown(table, playersInPlayOrder);
 
@@ -81,15 +73,6 @@ public class GameRound {
             logger.log(gameId, table.getId(), "Ending round %s.", table.getRound());
             table.resetForNextRound();
 
-        }
-    }
-
-    private void sleep(final int sleeptime, final TimeUnit unit) {
-        try {
-            Thread.sleep(unit.toMillis(sleeptime));
-        } catch (InterruptedException e) {
-            log.error("Got interrupted in sleep", e);
-            Thread.currentThread().interrupt();
         }
     }
 
@@ -149,7 +132,14 @@ public class GameRound {
         final Map<int[], List<Player>> rankedPlayers = new HandCalculator().determineWinningHand(playersStillActive,
                 Collections.unmodifiableList(table.getCommunityCards()));
 
+        rankedPlayers.values().stream().flatMap(Collection::stream).forEach(player -> logPlayerCards(table, player));
+
         table.payWinners(rankedPlayers);
+    }
+
+    private void logPlayerCards(final Table table, final Player player) {
+        logger.log(gameId, table.getId(), "Player %s has %s.", player.getName(),
+                player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 
     private boolean everyoneIsAllIn(final List<Player> playersInPlayOrder) {

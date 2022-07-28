@@ -34,7 +34,7 @@ class GameRoundTest {
         players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
-        table = new Table(1, players, 5);
+        table = new Table(1, players, 5, msg -> logger.log(1, 1, msg));
         testee = new GameRound(players, table, logger, 1);
 
     }

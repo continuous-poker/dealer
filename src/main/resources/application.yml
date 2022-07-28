@@ -15,3 +15,8 @@ quarkus:
     category:
       "de.doubleslash":
         level: DEBUG
+
+
+gameround:
+  sleep:
+    duration: PT3S

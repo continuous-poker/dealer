@@ -9,12 +9,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@ToString
 public class Pot implements Serializable {
+
+    private final transient Consumer<String> logger;
 
     public int getTotalSize() {
         return pots.stream().mapToInt(PotPart::getSize).sum();
@@ -64,7 +69,8 @@ public class Pot implements Serializable {
 
     private final List<PotPart> pots = new ArrayList<>();
 
-    public Pot() {
+    public Pot(final Consumer<String> logger) {
+        this.logger = logger;
         reset();
     }
 
@@ -96,8 +102,16 @@ public class Pot implements Serializable {
                     final int split = potSize / winners.size();
                     winners.forEach(p -> p.addToStack(split));
 
-                    log.info("Winners: {} ({} each)",
-                            winners.stream().map(Player::getName).collect(Collectors.joining(",")), split);
+                    final String winnerString = winners.stream().map(Player::getName).collect(Collectors.joining(","));
+                    log.info("Winners: {} ({} each)", winnerString, split);
+
+                    if (winners.size() > 1) {
+                        logger.accept(
+                                String.format("Pot of %s is split between %s (%s for each)", potSize, winnerString,
+                                        split));
+                    } else {
+                        logger.accept(String.format("Pot of %s goes to %s", potSize, winnerString));
+                    }
 
                     i.remove();
                 }

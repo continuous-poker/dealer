@@ -1,5 +1,6 @@
 package de.doubleslash.poker.dealer;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,18 +11,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import de.doubleslash.poker.dealer.game.Game;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class GameManager {
 
+    @ConfigProperty(name = "gameround.sleep.duration")
+    Duration gameRoundSleepDuration;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final GameLogger log;
+
+    private final Random random = new Random();
 
     private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
 
@@ -32,17 +38,13 @@ public class GameManager {
 
     public long createNewGame(final String name) {
         final long gameId = generateGameId();
-        final Game game = new Game(gameId, name, log);
+        final Game game = new Game(gameId, name, log, gameRoundSleepDuration);
         games.put(game, null);
         return gameId;
     }
 
-    public void startGame(final long gameId) {
-        resume(gameId);
-    }
-
     private long generateGameId() {
-        return new Random().nextInt(Integer.MAX_VALUE);
+        return random.nextInt(Integer.MAX_VALUE);
     }
 
     public synchronized void resume(final long gameId) {
@@ -66,7 +68,7 @@ public class GameManager {
 
     public Game runSingleGame(final String name, final Collection<Team> players) {
         final long generateGameId = generateGameId();
-        final Game game = new Game(generateGameId, name, log);
+        final Game game = new Game(generateGameId, name, log, Duration.ZERO);
         players.forEach(game::addPlayer);
         game.run();
         return game;
@@ -82,10 +84,6 @@ public class GameManager {
             }
         }
         return false;
-    }
-
-    public Collection<Long> getGameIds() {
-        return games.keySet().stream().map(Game::getGameId).collect(Collectors.toSet());
     }
 
     public Collection<Game> getGames() {

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,10 +17,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 @AllArgsConstructor
 public class Table implements CardReceiver, Serializable {
-    private static final long serialVersionUID = 2071494053199192220L;
 
     private final List<Card> communityCards;
     private final List<Player> players;
+
     private int round;
     private int smallBlind;
     private int minimumBet;
@@ -31,8 +32,8 @@ public class Table implements CardReceiver, Serializable {
     @JsonIgnore
     private final long id;
 
-    public Table(final long id, final List<Player> players, final int smallBlind) {
-        this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(), 0, 0, id);
+    public Table(final long id, final List<Player> players, final int smallBlind, final Consumer<String> tableLogger) {
+        this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(tableLogger), 0, 0, id);
     }
 
     @JsonProperty("pot")

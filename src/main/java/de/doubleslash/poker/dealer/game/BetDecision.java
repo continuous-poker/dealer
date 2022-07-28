@@ -17,24 +17,24 @@ public class BetDecision {
         this.logger = logger;
     }
 
-    void determineAction(final Table table, final Player player, final int bet) {
+    Action performAction(final Table table, final Player player, final int bet) {
         if (noPlayerHasBetYet(table)) {
             if (bet >= table.getMinimumBet()) {
-                bet(table, player, bet);
+                return bet(table, player, bet);
             } else {
-                check(table, player);
+                return check(table, player);
             }
         } else {
             if (bet >= table.getMinimumRaise()) {
-                raise(table, player, bet);
+                return raise(table, player, bet);
             } else if (bet >= table.getMinimumBet()) {
                 if (bet == player.getBet()) {
-                    check(table, player);
+                    return check(table, player);
                 } else {
-                    call(table, player);
+                    return call(table, player);
                 }
             } else {
-                fold(table, player);
+                return fold(table, player);
             }
         }
     }
@@ -48,35 +48,40 @@ public class BetDecision {
         return true;
     }
 
-    private void raise(final Table table, final Player player, final int bet) {
+    private Action raise(final Table table, final Player player, final int bet) {
         if (playerCanPayIt(table, player, bet)) {
             logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), bet);
             player.bet(bet);
         }
+        return Action.RAISE;
     }
 
-    private void call(final Table table, final Player player) {
+    private Action call(final Table table, final Player player) {
         if (playerCanPayIt(table, player, table.getMinimumBet())) {
             logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", player.getName(),
                     table.getMinimumBet());
             player.bet(table.getMinimumBet());
         }
+        return Action.CALL;
     }
 
-    private void bet(final Table table, final Player player, final int bet) {
+    private Action bet(final Table table, final Player player, final int bet) {
         if (playerCanPayIt(table, player, bet)) {
             logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), bet);
             player.bet(bet);
         }
+        return Action.BET;
     }
 
-    private void fold(final Table table, final Player player) {
+    private Action fold(final Table table, final Player player) {
         logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
         player.fold();
+        return Action.FOLD;
     }
 
-    private void check(final Table table, final Player player) {
+    private Action check(final Table table, final Player player) {
         logger.log(gameId, table.getId(), "Player %s checks.", player.getName());
+        return Action.CHECK;
     }
 
     private boolean noPlayerHasBetYet(final Table table) {
