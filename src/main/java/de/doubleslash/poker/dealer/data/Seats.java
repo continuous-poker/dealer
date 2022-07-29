@@ -3,11 +3,17 @@ package de.doubleslash.poker.dealer.data;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.Getter;
+
 public class Seats {
 
     private final LinkedList<Player> players;
 
     private int position = 0;
+    @Getter
+    private int lastBet;
+    @Getter
+    private Player lastBettingPlayer;
 
     public Seats(final List<Player> players) {
         this.players = new LinkedList<>(players);
@@ -47,5 +53,10 @@ public class Seats {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void setLastBetToCurrentPlayer() {
+        lastBet = getCurrentPlayer().getBet();
+        lastBettingPlayer = getCurrentPlayer();
     }
 }

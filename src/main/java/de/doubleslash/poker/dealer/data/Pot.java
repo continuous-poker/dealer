@@ -12,11 +12,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString
 public class Pot implements Serializable {
 
     private final transient Consumer<String> logger;
@@ -165,4 +163,8 @@ public class Pot implements Serializable {
 
     }
 
+    @Override
+    public String toString() {
+        return pots.stream().map(PotPart::toString).collect(Collectors.joining(","));
+    }
 }

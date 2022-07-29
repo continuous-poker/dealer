@@ -15,14 +15,13 @@ class GameManagerTest {
     @Test
     void testGameRun() {
         final Collection<Team> players = new ArrayList<>();
-        final Team winnerTeam = new Team("team2", table -> Integer.MAX_VALUE);
         players.add(new Team("team1", table -> 0));
-        players.add(winnerTeam);
+        players.add(new Team("team2", table -> Integer.MAX_VALUE));
 
         final Game testgame = state.runSingleGame("testgame", players);
 
         assertThat(testgame.getTeams()).hasSize(2);
-        assertThat(winnerTeam.getScore()).isOne();
+        assertThat(testgame.getTeams().stream().mapToLong(Team::getScore).sum()).isOne();
     }
 
 }
