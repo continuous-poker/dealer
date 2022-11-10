@@ -1,85 +1,40 @@
-# dealer Project
+# Poker Project - The Poker Dealer
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+The Poker Dealer is a part of the Poker Project and contains the base logic for a poker game.
+If all players have successfully deployed their application and registered it with the game,
+the dealer service will start playing tournaments over and over.
+It takes the action of each player(bot) every round and determines the winner after all necessary cards / bets are placed.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+The Counterparts are the Poker Player (Quarkus & Spring Boot)
+were you are able to implement your player logic that plays for you.
+For further information visit
+[continuous-poker-player-quarkus](https://github.com/ds-jkreutzfeld/continuous-poker-player-quarkus) &
+[continuous-poker-player-spring-boot](https://github.com/ds-jkreutzfeld/continuous-poker-player-spring-boot).
 
-## Running the application in dev mode
+## How do you create & start a new game?
 
-You can run your application in dev mode that enables live coding using:
+### 1. Fork the repository.
+### 2. Install and run the application in your IDE.
+### 3. Open `http://localhost:8080/q/swagger-ui/` in your browser.
+### 4. Choose a name for your game and create it via the `POST /games`.
+> **_Info:_** The `gameId` in the response body is important for configuration of the game.
 
-```shell script
-./mvnw compile quarkus:dev
-```
+### 5. Add new players to the game via the `POST /games/{gameId}/players`.
+ 1. Fill in the *gameId*, *playerUrl* and the *playerName* (teamName).
+ 2.  The playerUrl is the complete Url not only the port and needs to match with port of the application.yml of the Poker Player! Example: http://localhost:8081 
+> **_Info:_** If the port is missing, add the following code with the right formatting: 
+> - quarkus: http: port: `matching port`
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+> **_Info:_** You can check all players by GET / games / { `gameId` } / players.
 
-## Packaging and running the application
+### 6. Start your player application.
+> **_Info:_** If you set no port number the player cant connect to the dealer because of matching port numbers (8080).
 
-The application can be packaged using:
+### 7. Now you can start the game via the `PUT /games/{gameId}` and you will see how the game progresses in the console of your IDE. 
+> **_Info:_** For a better presentation open `http://localhost:8080/log.html?gameId = "insert your gameId"`
 
-```shell script
-./mvnw package
-```
+## Help develop the Dealer
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/dealer-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- Flyway ([guide](https://quarkus.io/guides/flyway)): Handle your database schema migrations
-- REST Client ([guide](https://quarkus.io/guides/rest-client)): Call REST services
-- YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code
-  for Hibernate ORM via the active record or the repository pattern
-- RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.
-
-### REST Client
-
-Invoke different services through REST with JSON
-
-[Related guide section...](https://quarkus.io/guides/rest-client)
-
-### RESTEasy JAX-RS
-
-Easily start your RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+If you want to participate in development contact [Jan Kreuzfeld](https://github.com/ds-jkreutzfeld) &
+look op the open issues on his [GitHub-Project](https://github.com/ds-jkreutzfeld/continuous-poker-dealer/issues).
+				
