@@ -3,28 +3,175 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 <style>
+
+    body{
+        background-color: #00ABB3;
+    }
     .logitem {
         list-style-type: none;
         padding-left: 23px;
+        max-height: 85%;
+        overflow: auto;
     }
+
+    #playerbar {
+        background-color: #B2B2B2;
+        max-height: 85%;
+        height: 85%;
+        width: 20%;
+        position: absolute;
+        left: 1%;
+        bottom: 1%;
+
+    }
+    #player {
+        background-color: darkorange;
+        height: 20%;
+        width: 80%;
+        margin-top: 5%;
+        margin-left: auto;
+        margin-right: auto;
+
+        display: grid;
+        grid-template-rows: 100%;
+        grid-template-columns: 40% 60%;
+    }
+
+    #playerinfo{
+        display: grid;
+        grid-template-rows: repeat(4, 0.25fr);
+        grid-template-columns: 1fr;
+    }
+    #playercards{
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns:repeat(2, 0.5fr);
+    }
+
+    #main-section{
+        background-color: cornflowerblue;
+        max-height: 85%;
+        height: 85%;
+        width: 75%;
+        position: absolute;
+        right: 1%;
+        bottom: 1%;
+    }
+    #pot{
+        border: 3px solid #000000;
+
+        margin-top: 5%;
+        margin-right:auto;
+        margin-left:auto;
+        height: 15%;
+        width: 33%;
+
+        text-align: center;
+        font-family: "Arial Black",serif;
+        font-size: 20px;
+    }
+    #desk{
+        background-color: whitesmoke;
+
+        border: 3px solid #000000;
+
+
+        height: 40%;
+        width: 100%;
+
+        margin-top: 5%;
+    }
+    .deskcard{
+        background-color: darkgreen;
+
+        display: inline-block;
+
+        margin-right:2.5%;
+        margin-left: 2.5%;
+        width: 15%;
+        height:  100%;
+
+
+    }
+    .deskcardPlayer{
+        background-color: darkgreen;
+
+        display: inline-block;
+
+        margin-right:2.5%;
+        margin-left: 2.5%;
+        width: 80%;
+        height:  50%;
+
+
+    }
+    #gamelog{
+        border: 3px solid #000000;
+
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 5%;
+
+        height: 15%;
+        width: 80%;
+
+        overflow: auto;
+    }
+
 </style>
+
+
 <div id="app">
-    <h1>Table Info (ID: {{ id }})</h1>
-    <p>
-        Game is {{ gamestate }}<br/>
-    </p>
-    <h2>Leaderboard</h2>
-    <ol>
-        <li v-for="value in score">
-            {{ value[0] }}: {{ value[1] }} Points
-        </li>
-    </ol>
-    <h2>Game Log</h2>
-    <ul>
-        <li class="logitem" v-for="log in logs">
-            [T{{ log.tableId }}] {{ log.message }}
-        </li>
-    </ul>
+
+    <header>
+        <h1>Poker - Game Table Info (ID: {{ id }})</h1>
+    </header>
+
+    <aside id="playerbar">
+        <h2>Players</h2>
+
+        <section id="player" v-for="player in table.players">
+
+            <section id="playerinfo">
+                <p id="name">Name: {{player.name}}</p>
+                <p id="bank">Bank: {{player.stack}}</p>
+                <p id="bet">Bet: {{player.bet}}</p>
+                <p id="status">Status: {{player.status}}</p>
+            </section>
+            
+<!--            <img :src="require({{getImageUrl(player.cards[1].suit, player.cards[1].rank)}})"> Das funktioniert nicht, weils glaube nicht dynamisch nachgeladen wird.-->
+
+        </section>
+
+
+    </aside>
+
+    <section id="main-section">
+
+
+        <p id="pot">POT: {{table.pot}}</p>
+
+        <section id="desk">
+            <section>
+            </section>
+
+            <img class="deskcard" src="Cards/DIAMONDS/Ass.png" alt="Example Display Card">
+            <img class="deskcard" src="Cards/CLUBS/Ass.png" alt="Example Display Card">
+            <img class="deskcard" src="Cards/HEARTS/Ass.png" alt="Example Display Card">
+            <img class="deskcard" src="Cards/SPADES/Ass.png" alt="Example Display Card">
+            <img class="deskcard" src="Cards/DIAMONDS/Ass.png" alt="Example Display Card">
+
+        </section>
+
+        <section id="gamelog">
+            <h2>Game Log</h2>
+            <ul>
+                <li class="logitem" v-for="log in logs">
+                    [T{{ log.tableId }}] {{ log.message }}
+                </li>
+            </ul></section>
+    </section>
+
 </div>
 
 <script>
@@ -37,7 +184,9 @@
                 logs: null,
                 gamestate: null,
                 score: null,
-                id: null
+                id: null,
+                table: null,
+                bla: "Cards/SPADES/Ass.png",
             }
         },
         created() {
@@ -48,6 +197,54 @@
             this.cancelAutoUpdate();
         },
         methods: {
+
+            getImageUrl(suit, rank) {
+                return "Cards/"+ suit +"/" + this.getCardValue(rank) + ".png";
+            },
+            getCardValue(value){
+                switch (value){
+                    case "2":
+                        return "Two";
+                        break;
+                    case "3":
+                        return "Three";
+                        break;
+                    case "4":
+                        return "Four";
+                        break;
+                    case "5":
+                        return "Five";
+                        break;
+                    case "6":
+                        return "Six";
+                        break;
+                    case "7":
+                        return "Seven";
+                        break;
+                    case "8":
+                        return "Eight";
+                        break;
+                    case "9":
+                        return "Nine";
+                        break;
+                    case "10":
+                        return "Ten";
+                        break;
+                    case "J":
+                        return "Knave";
+                        break;
+                    case "Q":
+                        return "Queen";
+                        break;
+                    case "K":
+                        return "King";
+                        break;
+                    case "A":
+                        return "Ass";
+                        break;
+                }
+            },
+
             update() {
                 // Simple GET request using fetch
                 this.id = new URL(location.href).searchParams.get('gameId')
@@ -73,6 +270,12 @@
                     .get("/games/" + this.id)
                     .then(response => {
                         this.gamestate = response.data;
+                    });
+
+                axios
+                    .get("/games/"+this.id+"/table")
+                    .then(response => {
+                        this.table = response.data;
                     });
             },
             cancelAutoUpdate() {

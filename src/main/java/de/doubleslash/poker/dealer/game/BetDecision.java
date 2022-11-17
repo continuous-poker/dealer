@@ -42,7 +42,7 @@ public class BetDecision {
     private boolean playerCanPayIt(final Table table, final Player player, final int bet) {
         if (player.isGoingAllIn(bet)) {
             player.bet(bet);
-            logger.log(gameId, table.getId(), ALL_IN_TEXT, player.getName(), player.getBet());
+            logger.log(gameId, table.getId(), ALL_IN_TEXT, table, player.getName(), player.getBet());
             return false;
         }
         return true;
@@ -50,7 +50,7 @@ public class BetDecision {
 
     private Action raise(final Table table, final Player player, final int bet) {
         if (playerCanPayIt(table, player, bet)) {
-            logger.log(gameId, table.getId(), "Player %s raises to %s.", player.getName(), bet);
+            logger.log(gameId, table.getId(), "Player %s raises to %s.", table, player.getName(), bet);
             player.bet(bet);
         }
         return Action.RAISE;
@@ -58,7 +58,7 @@ public class BetDecision {
 
     private Action call(final Table table, final Player player) {
         if (playerCanPayIt(table, player, table.getMinimumBet())) {
-            logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", player.getName(),
+            logger.log(gameId, table.getId(), "Player %s calls the bet of %s.", table, player.getName(),
                     table.getMinimumBet());
             player.bet(table.getMinimumBet());
         }
@@ -67,20 +67,20 @@ public class BetDecision {
 
     private Action bet(final Table table, final Player player, final int bet) {
         if (playerCanPayIt(table, player, bet)) {
-            logger.log(gameId, table.getId(), "Player %s bets %s.", player.getName(), bet);
+            logger.log(gameId, table.getId(), "Player %s bets %s.", table, player.getName(), bet);
             player.bet(bet);
         }
         return Action.BET;
     }
 
     private Action fold(final Table table, final Player player) {
-        logger.log(gameId, table.getId(), "Player %s folds.", player.getName());
+        logger.log(gameId, table.getId(), "Player %s folds.", table, player.getName());
         player.fold();
         return Action.FOLD;
     }
 
     private Action check(final Table table, final Player player) {
-        logger.log(gameId, table.getId(), "Player %s checks.", player.getName());
+        logger.log(gameId, table.getId(), "Player %s checks.", table,player.getName());
         return Action.CHECK;
     }
 

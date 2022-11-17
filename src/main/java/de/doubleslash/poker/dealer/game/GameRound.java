@@ -32,7 +32,7 @@ public class GameRound {
     }
 
     protected void playWithDeck(final Deck deck) {
-        logger.log(gameId, table.getId(), "Starting round %s.", table.getRound());
+        logger.log(gameId, table.getId(), "Starting round %s.", table, table.getRound());
 
         final List<Player> playersInPlayOrder = table.getPlayersInPlayOrder();
         deck.dealCards(playersInPlayOrder, 2);
@@ -70,7 +70,7 @@ public class GameRound {
 
             checkPlayerState(playersInPlayOrder);
             clearCards(players);
-            logger.log(gameId, table.getId(), "Ending round %s.", table.getRound());
+            logger.log(gameId, table.getId(), "Ending round %s.", table, table.getRound());
             table.resetForNextRound();
 
         }
@@ -81,7 +81,7 @@ public class GameRound {
                                        .stream()
                                        .map(Card::toString)
                                        .collect(Collectors.joining(", "));
-        logger.log(gameId, table.getId(), "Flop: %s", dealtCards);
+        logger.log(gameId, table.getId(), "Flop: %s", table, dealtCards);
     }
 
     private void logTurn(final Table table) {
@@ -90,7 +90,7 @@ public class GameRound {
                                        .skip(3)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), "Turn: %s", dealtCards);
+        logger.log(gameId, table.getId(), "Turn: %s", table, dealtCards);
     }
 
     private void logRiver(final Table table) {
@@ -99,7 +99,7 @@ public class GameRound {
                                        .skip(4)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), "River: %s", dealtCards);
+        logger.log(gameId, table.getId(), "River: %s", table, dealtCards);
     }
 
     private void checkPlayerState(final List<Player> playersInPlayOrder) {
@@ -138,7 +138,7 @@ public class GameRound {
     }
 
     private void logPlayerCards(final Table table, final Player player) {
-        logger.log(gameId, table.getId(), "Player %s has %s.", player.getName(),
+        logger.log(gameId, table.getId(), "Player %s has %s.", table, player.getName(),
                 player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 

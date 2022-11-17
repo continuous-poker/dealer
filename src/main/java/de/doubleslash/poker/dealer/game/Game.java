@@ -36,7 +36,7 @@ public class Game implements Runnable {
             final List<Player> players = initPlayers();
 
             final long id = nextTableId();
-            final Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg));
+            final Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg, null));
 
             while (isMoreThanOnePlayerLeft(players)) {
                 new GameRound(players, table, logger, gameId).run();
@@ -65,7 +65,7 @@ public class Game implements Runnable {
     private void addWinnerPoints(final List<Player> players, final long tableId) {
         players.stream().filter(s -> !s.getStatus().equals(Status.OUT)).map(this::getTeam).forEach(team -> {
             team.addToScore(POINTS);
-            logger.log(gameId, tableId, "Player %s won the table!", team.getName());
+            logger.log(gameId, tableId, "Player %s won the table!", null, team.getName());
         });
     }
 

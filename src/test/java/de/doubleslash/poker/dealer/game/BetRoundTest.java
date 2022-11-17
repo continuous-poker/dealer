@@ -25,7 +25,7 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", table -> 0);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg));
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg, null));
         final BetRound betRound = new BetRound(GAME_ID, table, players, true, logger);
 
         final Optional<Player> winner = betRound.run();
@@ -40,7 +40,7 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", table -> 0);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg));
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg, null));
         final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();
@@ -55,7 +55,7 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", Table::getMinimumBet);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg));
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg, null));
         final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();
@@ -70,7 +70,7 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", Table::getMinimumRaise);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg));
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, msg, null));
         final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();

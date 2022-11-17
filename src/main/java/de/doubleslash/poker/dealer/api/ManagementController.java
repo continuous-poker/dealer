@@ -29,6 +29,8 @@ import de.doubleslash.poker.dealer.GameManager;
 import de.doubleslash.poker.dealer.LogEntry;
 import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
+import de.doubleslash.poker.dealer.data.Card;
+import de.doubleslash.poker.dealer.data.Table;
 import de.doubleslash.poker.dealer.game.Game;
 
 @Path("/games")
@@ -166,4 +168,12 @@ public class ManagementController {
 
         return logEntryStream.toList();
     }
+
+        @GET
+        @Path("/{gameId}/table")
+        public Table getTable(@PathParam("gameId") final long gameId) {
+           final List<LogEntry> logItem = log.getLog(gameId).get().stream().toList();
+
+            return logItem.get(logItem.size()-1).getTable();
+        }
 }

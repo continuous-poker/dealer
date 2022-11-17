@@ -34,7 +34,7 @@ class GameRoundTest {
         players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
-        table = new Table(1, players, 5, msg -> logger.log(1, 1, msg));
+        table = new Table(1, players, 5, msg -> logger.log(1, 1, msg, null));
         testee = new GameRound(players, table, logger, 1);
 
     }
@@ -47,6 +47,7 @@ class GameRoundTest {
 
         testee.playWithDeck(deck);
 
+        assertEquals(0, player1.getStack());
         assertEquals(200, player2.getStack());
     }
 
