@@ -19,8 +19,8 @@ public class GameLogger {
     private static final int LOG_MAX_LENGTH = 10000;
     private final Map<Long, List<LogEntry>> logs = new HashMap<>();
 
-    public void log(final long gameId, final long tableId, final String msg, final Table table, final Object... args) {
-        final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args), table);
+    public void log(final long gameId, final long tableId, final String msg, final Object... args) {
+        final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args));
         add(logEntry);
 
         log.info(logEntry.toString());

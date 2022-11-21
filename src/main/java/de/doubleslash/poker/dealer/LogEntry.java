@@ -11,7 +11,4 @@ public class LogEntry {
     private final long gameId;
     private final long tableId;
     private final String message;
-
-    //new for display of cards
-    private final Table table;
 }

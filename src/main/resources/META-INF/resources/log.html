@@ -2,176 +2,200 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
 <style>
 
-    body{
-        background-color: #00ABB3;
-    }
-    .logitem {
-        list-style-type: none;
-        padding-left: 23px;
-        max-height: 85%;
-        overflow: auto;
-    }
+    /*Color-Template*/
+    .color1 {color: #122933;}
+    .color2 {color: #124551;}
+    .color3 {color: #12707a;}
+    .color4 {color: #17a4ab;}
+    .color5 {color: #20dad9;}
 
-    #playerbar {
-        background-color: #B2B2B2;
-        max-height: 85%;
-        height: 85%;
-        width: 20%;
-        position: absolute;
-        left: 1%;
-        bottom: 1%;
+    /*Styles for whole website*/
+    .headlines{
+        margin-top: 2%;
+        margin-bottom: 2%;
 
-    }
-    #player {
-        background-color: darkorange;
-        height: 20%;
-        width: 80%;
-        margin-top: 5%;
-        margin-left: auto;
-        margin-right: auto;
-
-        display: grid;
-        grid-template-rows: 100%;
-        grid-template-columns: 40% 60%;
-    }
-
-    #playerinfo{
-        display: grid;
-        grid-template-rows: repeat(4, 0.25fr);
-        grid-template-columns: 1fr;
-    }
-    #playercards{
-        display: grid;
-        grid-template-rows: 1fr;
-        grid-template-columns:repeat(2, 0.5fr);
-    }
-
-    #main-section{
-        background-color: cornflowerblue;
-        max-height: 85%;
-        height: 85%;
-        width: 75%;
-        position: absolute;
-        right: 1%;
-        bottom: 1%;
-    }
-    #pot{
-        border: 3px solid #000000;
-
-        margin-top: 5%;
-        margin-right:auto;
-        margin-left:auto;
-        height: 15%;
-        width: 33%;
-
+        color: white;
         text-align: center;
-        font-family: "Arial Black",serif;
-        font-size: 20px;
     }
-    #desk{
-        background-color: whitesmoke;
+    #header{
+        font-size: 2rem;
+        color: white;
+        text-align: center;
+    }
+    body{
+        background-color: #0C2D48;
+    }
 
-        border: 3px solid #000000;
+    /*Css-Style for PlayerBar*/
+    #playerBar {
+        height: 92%;
+        width: 24%;
+        margin: 0.5%;
+        float: left;
 
+        background-color: #2E8BC0;
+        overflow-x: hidden;
+    }
+    #singlePlayer {
+        height: 20%;
+        width: 90%;
+        margin: 2.5% auto;
 
+        background-color: #B1D4E0;
+        border: 3px solid #0C2D48;
+    }
+    #playerInfos{
+        height: 100%;
+        width: 40%;
+        float:left;
+    }
+    .playerInfo {
+        height: 20%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+
+        text-align:center;
+    }
+    #playerCards{
+        height: 100%;
+        width: 60%;
+        float: right;
+    }
+    .playerCard {
+        height: 75%;
+        top: 12.5%;
+        width: 40%;
+        position: relative;
+        margin-right: 5%;
+        margin-left: 5%;
+    }
+
+    /*Css-Style for MainSection including GameLog, Desk & Pot*/
+    #mainSection{
+        height: 92%;
+        width: 74%;
+        margin: 0.5%;
+        float: right;
+
+        background-color: #2E8BC0;
+    }
+
+    /*Css-Style for GameLog*/
+    #gameLog{
         height: 40%;
-        width: 100%;
+        width: 95%;
+        margin: 1.5% auto;
 
-        margin-top: 5%;
+        background-color: #B1D4E0;
+        border: 3px solid #0C2D48;
     }
-    .deskcard{
-        background-color: darkgreen;
+    .logItems{
+        height: 100%;
+        width: 50%;
+        float:left;
 
-        display: inline-block;
-
-        margin-right:2.5%;
-        margin-left: 2.5%;
-        width: 15%;
-        height:  100%;
-
-
+        overflow: auto;
     }
-    .deskcardPlayer{
-        background-color: darkgreen;
+    .logItem {
+        max-height: 85%;
+        padding-left: 23px;
 
-        display: inline-block;
-
-        margin-right:2.5%;
-        margin-left: 2.5%;
-        width: 80%;
-        height:  50%;
-
-
+        list-style-type: none;
+        overflow: auto;
     }
-    #gamelog{
-        border: 3px solid #000000;
-
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 5%;
-
-        height: 15%;
-        width: 80%;
+    .logHistory{
+        width: 50%;
+        float: right;
 
         overflow: auto;
     }
 
+    /*Css-Style for Desk with Deskcards*/
+    #desk{
+        height: 40%;
+        width: 95%;
+        margin: 1.5% auto;
+
+        background-color: #B1D4E0;
+        border: 3px solid #0C2D48;
+    }
+    .deskCard{
+        margin: 2.5% 1.6%;
+        display: flow;
+    }
+
+    /*Css-Style for GameLog*/
+    #pot{
+        height: 10%;
+        width: 33%;
+        margin: 1.5% auto;
+
+        border: 3px solid #0C2D48;
+        text-align: center;
+        font-size: 50px;
+        color: white;
+    }
 </style>
+
 
 
 <div id="app">
 
-    <header>
-        <h1>Poker - Game Table Info (ID: {{ id }})</h1>
+    <header id="header">
+        <h1>Poker - Game Table Info (ID: {{ gameId }})</h1>
     </header>
 
-    <aside id="playerbar">
-        <h2>Players</h2>
+    <aside id="playerBar">
+        <h2 class="headlines">Players</h2>
 
-        <section id="player" v-for="player in table.players">
-
-            <section id="playerinfo">
-                <p id="name">Name: {{player.name}}</p>
-                <p id="bank">Bank: {{player.stack}}</p>
-                <p id="bet">Bet: {{player.bet}}</p>
-                <p id="status">Status: {{player.status}}</p>
+        <section id="singlePlayer" v-for="player in table.players">
+            <section id="playerInfos">
+                <p class="playerInfo">Name: {{player.name}}</p>
+                <p class="playerInfo">Bank: {{player.stack}}</p>
+                <p class="playerInfo">Bet: {{player.bet}}</p>
+                <p class="playerInfo">Status: {{player.status}}</p>
             </section>
-            
-<!--            <img :src="require({{getImageUrl(player.cards[1].suit, player.cards[1].rank)}})"> Das funktioniert nicht, weils glaube nicht dynamisch nachgeladen wird.-->
 
+            <section id="playerCards">
+                <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Schrott">
+            </section>
         </section>
-
-
     </aside>
 
-    <section id="main-section">
-
-
-        <p id="pot">POT: {{table.pot}}</p>
-
-        <section id="desk">
-            <section>
+    <section id="mainSection">
+        <section id="gameLog">
+            <section class="logItems">
+                <h2 class="headlines">Game Log</h2>
+                <ul>
+                    <li class="logItem" v-for="log in logs">
+                        [T{{ log.tableId }}] {{ log.message }}
+                    </li>
+                </ul>
             </section>
-
-            <img class="deskcard" src="Cards/DIAMONDS/Ass.png" alt="Example Display Card">
-            <img class="deskcard" src="Cards/CLUBS/Ass.png" alt="Example Display Card">
-            <img class="deskcard" src="Cards/HEARTS/Ass.png" alt="Example Display Card">
-            <img class="deskcard" src="Cards/SPADES/Ass.png" alt="Example Display Card">
-            <img class="deskcard" src="Cards/DIAMONDS/Ass.png" alt="Example Display Card">
-
+            <section class="logHistory">
+                <h2 class="headlines"> Log History</h2>
+                <ul>
+                    <li class="logItem">Log from table/ round 1</li>
+                    <li class="logItem">Log from round 2</li>
+                    <li class="logItem">Log from round 3</li>
+                    <li class="logItem">Log from round 4</li>
+                    <li class="logItem">Log from round 5</li>
+                    <li class="logItem">Log from round 6</li>
+                </ul>
+            </section>
         </section>
 
-        <section id="gamelog">
-            <h2>Game Log</h2>
-            <ul>
-                <li class="logitem" v-for="log in logs">
-                    [T{{ log.tableId }}] {{ log.message }}
-                </li>
-            </ul></section>
-    </section>
+        <section id="desk">
+            <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)">
+        </section>
 
+        <section>
+            <p id="pot">POT: {{table.pot}}</p>
+        </section>
+    </section>
 </div>
 
 <script>
@@ -184,11 +208,12 @@
                 logs: null,
                 gamestate: null,
                 score: null,
-                id: null,
+                gameId: null,
+                tableId: null,
                 table: null,
-                bla: "Cards/SPADES/Ass.png",
             }
         },
+
         created() {
             this.update();
             this.timer = setInterval(this.update, 1000);
@@ -198,8 +223,10 @@
         },
         methods: {
 
-            getImageUrl(suit, rank) {
-                return "Cards/"+ suit +"/" + this.getCardValue(rank) + ".png";
+            getImageUrl(card){
+                if(card.suit && card.rank) {
+                    return "Cards/" + card.suit + "/" + this.getCardValue(card.rank) + ".png";
+                }
             },
             getCardValue(value){
                 switch (value){
@@ -247,14 +274,17 @@
 
             update() {
                 // Simple GET request using fetch
-                this.id = new URL(location.href).searchParams.get('gameId')
+                this.gameId = new URL(location.href).searchParams.get('gameId')
                 axios
-                    .get("/games/" + this.id + "/log?order=desc&limit=50")
+                    .get("/games/" + this.gameId + "/log?order=desc&limit=50")
                     .then(response => {
                         this.logs = response.data;
+
+                        this.tableId = this.logs[this.logs.length-1].tableId;
                     });
+
                 axios
-                    .get("/games/" + this.id + "/score")
+                    .get("/games/" + this.gameId + "/score")
                     .then(response => {
                         let sortable = [];
                         for (var team in response.data) {
@@ -267,13 +297,13 @@
                         this.score = sortable;
                     });
                 axios
-                    .get("/games/" + this.id)
+                    .get("/games/" + this.gameId)
                     .then(response => {
                         this.gamestate = response.data;
                     });
 
                 axios
-                    .get("/games/"+this.id+"/table")
+                    .get("/games/"+this.gameId+"/table/"+ this.tableId)
                     .then(response => {
                         this.table = response.data;
                     });

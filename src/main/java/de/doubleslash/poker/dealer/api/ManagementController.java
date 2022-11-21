@@ -170,10 +170,9 @@ public class ManagementController {
     }
 
         @GET
-        @Path("/{gameId}/table")
-        public Table getTable(@PathParam("gameId") final long gameId) {
-           final List<LogEntry> logItem = log.getLog(gameId).get().stream().toList();
+        @Path("/{gameId}/table/{tableId}")
+        public Table getTable(@PathParam("gameId") final long gameId , @PathParam("tableId") final long tableId) {
 
-            return logItem.get(logItem.size()-1).getTable();
+            return gameState.getGame(gameId).map(game -> game.getTables().get(tableId)).orElse(null);
         }
 }

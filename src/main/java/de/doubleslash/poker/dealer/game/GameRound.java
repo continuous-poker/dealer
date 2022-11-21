@@ -17,6 +17,7 @@ import de.doubleslash.poker.dealer.data.Status;
 import de.doubleslash.poker.dealer.data.Table;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,52 +28,62 @@ public class GameRound {
     private final GameLogger logger;
     private final long gameId;
 
-    public void run() {
-        playWithDeck(new Deck());
+    public Table run() {
+        return playWithDeck(new Deck());
     }
 
-    protected void playWithDeck(final Deck deck) {
-        logger.log(gameId, table.getId(), "Starting round %s.", table, table.getRound());
+    protected Table playWithDeck(final Deck deck) {
 
         final List<Player> playersInPlayOrder = table.getPlayersInPlayOrder();
         deck.dealCards(playersInPlayOrder, 2);
         deck.burnCard();
 
+        logger.log(gameId, table.getId(), "Starting round %s.", table.getRound());
+
+
         try {
             if (determineWinner(table, playersInPlayOrder, true)) {
-                return;
+                return table;
             }
 
             deal(table, deck, 3);
             logFlop(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return;
+                return table;
             }
 
             deal(table, deck, 1);
             logTurn(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return;
+                return table;
             }
 
             deal(table, deck, 1);
             logRiver(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return;
+                return table;
             }
 
             showdown(table, playersInPlayOrder);
+            return table;
 
         } finally {
 
+            try{
+                Thread.sleep(1000);
+            }catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+
+            logger.log(gameId, table.getId(), "Ending round %s.", table.getRound());
+
             checkPlayerState(playersInPlayOrder);
             clearCards(players);
-            logger.log(gameId, table.getId(), "Ending round %s.", table, table.getRound());
             table.resetForNextRound();
-
         }
     }
 
@@ -81,7 +92,7 @@ public class GameRound {
                                        .stream()
                                        .map(Card::toString)
                                        .collect(Collectors.joining(", "));
-        logger.log(gameId, table.getId(), "Flop: %s", table, dealtCards);
+        logger.log(gameId, table.getId(), "Flop: %s", dealtCards);
     }
 
     private void logTurn(final Table table) {
@@ -90,7 +101,7 @@ public class GameRound {
                                        .skip(3)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), "Turn: %s", table, dealtCards);
+        logger.log(gameId, table.getId(), "Turn: %s", dealtCards);
     }
 
     private void logRiver(final Table table) {
@@ -99,7 +110,7 @@ public class GameRound {
                                        .skip(4)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), "River: %s", table, dealtCards);
+        logger.log(gameId, table.getId(), "River: %s", dealtCards);
     }
 
     private void checkPlayerState(final List<Player> playersInPlayOrder) {
@@ -138,7 +149,7 @@ public class GameRound {
     }
 
     private void logPlayerCards(final Table table, final Player player) {
-        logger.log(gameId, table.getId(), "Player %s has %s.", table, player.getName(),
+        logger.log(gameId, table.getId(), "Player %s has %s.", player.getName(),
                 player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 

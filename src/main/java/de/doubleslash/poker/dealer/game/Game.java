@@ -3,7 +3,9 @@ package de.doubleslash.poker.dealer.game;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.doubleslash.poker.dealer.GameLogger;
 import de.doubleslash.poker.dealer.Team;
@@ -22,6 +24,10 @@ public class Game implements Runnable {
     private static final int START_STACK = 100;
     private static final int POINTS = 1;
     private final List<Team> teams = new ArrayList<>();
+
+    @Getter
+    private final Map<Long, Table> tables = new HashMap<>();
+
     @Getter
     private final long gameId;
     @Getter
@@ -36,13 +42,19 @@ public class Game implements Runnable {
             final List<Player> players = initPlayers();
 
             final long id = nextTableId();
-            final Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg, null));
+            Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg));
+
+            tables.put(id, table);
 
             while (isMoreThanOnePlayerLeft(players)) {
-                new GameRound(players, table, logger, gameId).run();
+
+                table = new GameRound(players, table, logger, gameId).run();
+                tables.put(id,table);
                 sleep();
             }
+
             addWinnerPoints(players, id);
+            tables.put(id ,table);
 
         } catch (final Exception e) {
             log.error("Unexpected error in game", e);
@@ -65,7 +77,7 @@ public class Game implements Runnable {
     private void addWinnerPoints(final List<Player> players, final long tableId) {
         players.stream().filter(s -> !s.getStatus().equals(Status.OUT)).map(this::getTeam).forEach(team -> {
             team.addToScore(POINTS);
-            logger.log(gameId, tableId, "Player %s won the table!", null, team.getName());
+            logger.log(gameId, tableId, "Player %s won the table!" , team.getName());
         });
     }
 
