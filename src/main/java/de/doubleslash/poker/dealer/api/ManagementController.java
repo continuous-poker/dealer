@@ -30,6 +30,7 @@ import de.doubleslash.poker.dealer.LogEntry;
 import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
 import de.doubleslash.poker.dealer.data.Card;
+import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.data.Table;
 import de.doubleslash.poker.dealer.game.Game;
 
@@ -169,10 +170,15 @@ public class ManagementController {
         return logEntryStream.toList();
     }
 
-        @GET
-        @Path("/{gameId}/table/{tableId}")
-        public Table getTable(@PathParam("gameId") final long gameId , @PathParam("tableId") final long tableId) {
+    @GET
+    @Path("/{gameId}/table/{tableId}")
+    public Table getTable(@PathParam("gameId") final long gameId, @PathParam("tableId") final long tableId) {
+        return gameState.getGame(gameId).map(game -> game.getTables().get(tableId)).orElse(null);
+    }
 
-            return gameState.getGame(gameId).map(game -> game.getTables().get(tableId)).orElse(null);
-        }
+    @GET
+    @Path("/{gameId}/gameHistory")
+    public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam("gameId") final long gameId) {
+        return gameState.getGame(gameId).map(Game::getGameHistory).map(GameHistory::getGameLogHistory).orElse(null);
+    }
 }

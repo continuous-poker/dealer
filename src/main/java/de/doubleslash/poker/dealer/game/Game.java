@@ -1,20 +1,30 @@
 package de.doubleslash.poker.dealer.game;
 
+import java.sql.SQLOutput;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
 import de.doubleslash.poker.dealer.GameLogger;
+import de.doubleslash.poker.dealer.LogEntry;
 import de.doubleslash.poker.dealer.Team;
+import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.data.Player;
 import de.doubleslash.poker.dealer.data.Status;
 import de.doubleslash.poker.dealer.data.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +39,8 @@ public class Game implements Runnable {
     private final Map<Long, Table> tables = new HashMap<>();
 
     @Getter
+    private final GameHistory gameHistory = new GameHistory();
+    @Getter
     private final long gameId;
     @Getter
     private final String name;
@@ -42,19 +54,19 @@ public class Game implements Runnable {
             final List<Player> players = initPlayers();
 
             final long id = nextTableId();
-            Table table = new Table(id, players, START_SMALL_BLIND, logMsg -> logger.log(gameId, id, logMsg));
+            Table table = new Table(id, players, START_SMALL_BLIND,
+                    logMsg -> logger.log(gameId, id, 0, logMsg));
 
             tables.put(id, table);
 
             while (isMoreThanOnePlayerLeft(players)) {
 
                 table = new GameRound(players, table, logger, gameId).run();
-                tables.put(id,table);
+                tables.put(id, table);
                 sleep();
             }
-
             addWinnerPoints(players, id);
-            tables.put(id ,table);
+            gameHistory.addTableRoundHistory(id, logger.getCopyGameLog());
 
         } catch (final Exception e) {
             log.error("Unexpected error in game", e);
@@ -77,7 +89,7 @@ public class Game implements Runnable {
     private void addWinnerPoints(final List<Player> players, final long tableId) {
         players.stream().filter(s -> !s.getStatus().equals(Status.OUT)).map(this::getTeam).forEach(team -> {
             team.addToScore(POINTS);
-            logger.log(gameId, tableId, "Player %s won the table!" , team.getName());
+            logger.log(gameId, tableId, 0, "Player %s won the table!", team.getName());
         });
     }
 

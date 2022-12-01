@@ -28,7 +28,7 @@ public class BetRound {
     }
 
     public Optional<Player> run() {
-        logger.log(gameId, table.getId(), "Starting bet round.");
+        logger.log(gameId, table.getId(), table.getRound(), "Starting bet round.");
         final Seats seats = new Seats(playersInPlayOrder);
         if (isPreFlop) {
             collectBlinds(table, seats);
@@ -41,7 +41,7 @@ public class BetRound {
             // check for only one left -> he wins
             if (seats.getNumberOfActivePlayers() == 1) {
                 // we have a winner
-                logger.log(gameId, table.getId(), "Ending bet round with winner: %s",
+                logger.log(gameId, table.getId(), table.getRound(), "Ending bet round with winner: %s",
                         seats.getCurrentPlayer().getName());
 
                 return Optional.of(seats.getCurrentPlayer());
@@ -51,7 +51,7 @@ public class BetRound {
             }
         }
 
-        logger.log(gameId, table.getId(), "Ending bet round.");
+        logger.log(gameId, table.getId(), table.getRound(), "Ending bet round.");
         return Optional.empty();
 
     }
@@ -105,10 +105,11 @@ public class BetRound {
         big.bet(table.getSmallBlind() * 2);
 
         if (big.isAllIn()) {
-            logger.log(gameId, table.getId(), "Player %s goes all in for big blind with %s.", big.getName(),
-                    big.getBet());
+            logger.log(gameId, table.getId(), table.getRound(), "Player %s goes all in for big blind with %s.",
+                    big.getName(), big.getBet());
         } else {
-            logger.log(gameId, table.getId(), "Player %s pays big blind of %s.", big.getName(), big.getBet());
+            logger.log(gameId, table.getId(), table.getRound(), "Player %s pays big blind of %s.", big.getName(),
+                    big.getBet());
             log.info("{} pays big blind of {}", big.getName(), big.getBet());
         }
     }
@@ -118,10 +119,11 @@ public class BetRound {
         small.bet(table.getSmallBlind());
 
         if (small.isAllIn()) {
-            logger.log(gameId, table.getId(), "Player %s goes all in for small blind with %s.", small.getName(),
-                    small.getBet());
+            logger.log(gameId, table.getId(), table.getRound(), "Player %s goes all in for small blind with %s.",
+                    small.getName(), small.getBet());
         } else {
-            logger.log(gameId, table.getId(), "Player %s pays small blind of %s.", small.getName(), small.getBet());
+            logger.log(gameId, table.getId(), table.getRound(), "Player %s pays small blind of %s.", small.getName(),
+                    small.getBet());
             log.info("{} pays small blind of {}", small.getName(), small.getBet());
         }
     }
@@ -132,7 +134,8 @@ public class BetRound {
         log.debug("Player {} returned bet of {}", player.getName(), result);
 
         if (result < player.getBet() || result < table.getMinimumBet()) {
-            log.debug("Result {} is lower than current bet of {} for player {}, setting it to the current bet.", result, player.getBet(), player.getName());
+            log.debug("Result {} is lower than current bet of {} for player {}, setting it to the current bet.", result,
+                    player.getBet(), player.getName());
             result = player.getBet();
         }
 

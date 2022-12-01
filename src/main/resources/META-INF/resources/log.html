@@ -6,26 +6,42 @@
 <style>
 
     /*Color-Template*/
-    .color1 {color: #122933;}
-    .color2 {color: #124551;}
-    .color3 {color: #12707a;}
-    .color4 {color: #17a4ab;}
-    .color5 {color: #20dad9;}
+    .color1 {
+        color: #122933;
+    }
+
+    .color2 {
+        color: #124551;
+    }
+
+    .color3 {
+        color: #12707a;
+    }
+
+    .color4 {
+        color: #17a4ab;
+    }
+
+    .color5 {
+        color: #20dad9;
+    }
 
     /*Styles for whole website*/
-    .headlines{
+    .headlines {
         margin-top: 2%;
         margin-bottom: 2%;
 
         color: white;
         text-align: center;
     }
-    #header{
+
+    #header {
         font-size: 2rem;
         color: white;
         text-align: center;
     }
-    body{
+
+    body {
         background-color: #0C2D48;
     }
 
@@ -39,6 +55,7 @@
         background-color: #2E8BC0;
         overflow-x: hidden;
     }
+
     #singlePlayer {
         height: 20%;
         width: 90%;
@@ -47,23 +64,27 @@
         background-color: #B1D4E0;
         border: 3px solid #0C2D48;
     }
-    #playerInfos{
+
+    #playerInfos {
         height: 100%;
         width: 40%;
-        float:left;
+        float: left;
     }
+
     .playerInfo {
         height: 20%;
         margin-top: 5%;
         margin-bottom: 5%;
 
-        text-align:center;
+        text-align: center;
     }
-    #playerCards{
+
+    #playerCards {
         height: 100%;
         width: 60%;
         float: right;
     }
+
     .playerCard {
         height: 75%;
         top: 12.5%;
@@ -74,7 +95,7 @@
     }
 
     /*Css-Style for MainSection including GameLog, Desk & Pot*/
-    #mainSection{
+    #mainSection {
         height: 92%;
         width: 74%;
         margin: 0.5%;
@@ -84,7 +105,7 @@
     }
 
     /*Css-Style for GameLog*/
-    #gameLog{
+    #LogBox {
         height: 40%;
         width: 95%;
         margin: 1.5% auto;
@@ -92,43 +113,73 @@
         background-color: #B1D4E0;
         border: 3px solid #0C2D48;
     }
-    .logItems{
+
+    #logHistoryEntry {
+        width: 90%;
+        float: left;
+        text-align: center;
+        margin-top: 2%;
+        margin-bottom: 2%;
+
+        font-size: 2rem;
+        color: white;
+    }
+
+    #cross {
+        width: 10%;
+        float: right;
+        text-align: center;
+
+        margin-top: 2%;
+        margin-bottom: 2%;
+        color: white;
+        background-color: darkred;
+        border: 3px solid white;
+    }
+
+    .logItems {
         height: 100%;
         width: 50%;
-        float:left;
 
+        float: left;
         overflow: auto;
     }
+
     .logItem {
-        max-height: 85%;
         padding-left: 23px;
 
         list-style-type: none;
         overflow: auto;
     }
-    .logHistory{
+
+    .logHistory {
         width: 50%;
+        height: 100%;
         float: right;
 
         overflow: auto;
     }
 
     /*Css-Style for Desk with Deskcards*/
-    #desk{
+    #desk {
         height: 40%;
         width: 95%;
         margin: 1.5% auto;
 
         background-color: #B1D4E0;
         border: 3px solid #0C2D48;
+        overflow: hidden;
     }
-    .deskCard{
-        margin: 2.5% 1.6%;
+
+    .deskCard {
+        margin: 1.5% 1.13%;
         display: flow;
+        height: 90%;
+        width: auto;
     }
 
     /*Css-Style for GameLog*/
-    #pot{
+    #pot {
         height: 10%;
         width: 33%;
         margin: 1.5% auto;
@@ -139,7 +190,6 @@
         color: white;
     }
 </style>
-
 
 
 <div id="app">
@@ -160,40 +210,79 @@
             </section>
 
             <section id="playerCards">
-                <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Schrott">
+                <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Card not found">
             </section>
         </section>
     </aside>
 
     <section id="mainSection">
-        <section id="gameLog">
-            <section class="logItems">
+
+        <section id="LogBox">
+
+            <section class="logItems" v-if="gameLog">
                 <h2 class="headlines">Game Log</h2>
+
                 <ul>
                     <li class="logItem" v-for="log in logs">
                         [T{{ log.tableId }}] {{ log.message }}
                     </li>
                 </ul>
             </section>
+
+            <section class="logItems" v-if="legacyLog">
+
+                <h2 id="logHistoryEntry">LogHistoryEntry</h2>
+                <h2 id="cross" @click="displayChanger('x', null, null)">X</h2>
+
+                <section>
+                    <section v-if="displayLogTable">
+
+                        <ul class="logItem" v-if="gameHistory !== null" v-for="(table, tableIndex) in displayedHistory">
+
+                            <section>Round: {{tableIndex}}</section>
+
+                            <ul v-for="round in table">
+                                {{round}}
+                            </ul>
+                        </ul>
+                    </section>
+
+                    <section v-if="displayLogRound">
+
+                        <ul class="logItem" v-if="gameHistory !== null" v-for="round in displayedHistory">
+                            {{round}}
+                        </ul>
+                    </section>
+                </section>
+            </section>
+
+
             <section class="logHistory">
+
                 <h2 class="headlines"> Log History</h2>
-                <ul>
-                    <li class="logItem">Log from table/ round 1</li>
-                    <li class="logItem">Log from round 2</li>
-                    <li class="logItem">Log from round 3</li>
-                    <li class="logItem">Log from round 4</li>
-                    <li class="logItem">Log from round 5</li>
-                    <li class="logItem">Log from round 6</li>
+
+                <ul v-for="(table, tableIndex) in gameHistory">
+
+                    <section @click="displayChanger('table', tableIndex, null)">
+                        Table: {{tableIndex}}
+                    </section>
+
+                    <ul v-for="(round, roundIndex) in table">
+
+                        <section @click="displayChanger('round', tableIndex, roundIndex)">
+                            Round: {{roundIndex}}
+                        </section>
+                    </ul>
                 </ul>
             </section>
         </section>
 
         <section id="desk">
-            <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)">
+            <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)" alt="Card not found">
         </section>
 
         <section>
-            <p id="pot">POT: {{table.pot}}</p>
+            <section id="pot">POT: {{table.pot}}</section>
         </section>
     </section>
 </div>
@@ -206,11 +295,20 @@
         data() {
             return {
                 logs: null,
-                gamestate: null,
+                gameState: null,
                 score: null,
                 gameId: null,
                 tableId: null,
                 table: null,
+
+                gameLog: true,          //show currentLog
+                legacyLog: false,       //show historyLog
+
+                gameHistory: null,      //Object for whole history
+                displayedHistory: null, //Object for currently dispalyed history
+
+                displayLogTable: null,  //show a full table
+                displayLogRound: null,  //show a round
             }
         },
 
@@ -222,53 +320,47 @@
             this.cancelAutoUpdate();
         },
         methods: {
+            displayChanger(action, tableRound, playRound) {
+                switch (action) {
+                    case "x":
+                        this.gameLog = true;
+                        this.legacyLog = false;
+                        break;
+                    case "round":
+                        this.displayedHistory = this.gameHistory[tableRound][playRound];
+                        this.legacyLog = true;
+                        this.gameLog = false;
 
-            getImageUrl(card){
-                if(card.suit && card.rank) {
-                    return "Cards/" + card.suit + "/" + this.getCardValue(card.rank) + ".png";
+                        this.displayLogRound = true;
+                        this.displayLogTable = false;
+                        break;
+                    case "table":
+                        this.displayedHistory = this.gameHistory[tableRound];
+                        this.legacyLog = true;
+                        this.gameLog = false;
+
+                        this.displayLogTable = true;
+                        this.displayLogRound = false;
+                        break;
                 }
             },
-            getCardValue(value){
-                switch (value){
-                    case "2":
-                        return "Two";
-                        break;
-                    case "3":
-                        return "Three";
-                        break;
-                    case "4":
-                        return "Four";
-                        break;
-                    case "5":
-                        return "Five";
-                        break;
-                    case "6":
-                        return "Six";
-                        break;
-                    case "7":
-                        return "Seven";
-                        break;
-                    case "8":
-                        return "Eight";
-                        break;
-                    case "9":
-                        return "Nine";
-                        break;
-                    case "10":
-                        return "Ten";
-                        break;
+            getImageUrl(card) {
+                if (card.suit && card.rank) {
+                    return "SVG-cards/png/2x/" + (card.suit).toLowerCase().slice(0, -1) + "_" + this.getCardValue(card.rank) + ".png";
+                }
+            },
+            getCardValue(value) {
+                switch (value) {
                     case "J":
-                        return "Knave";
-                        break;
+                        return "jack";
                     case "Q":
-                        return "Queen";
-                        break;
+                        return "queen";
                     case "K":
-                        return "King";
-                        break;
+                        return "king";
                     case "A":
-                        return "Ass";
-                        break;
+                        return "1";
+                    default:
+                        return value;
                 }
             },
 
@@ -279,8 +371,7 @@
                     .get("/games/" + this.gameId + "/log?order=desc&limit=50")
                     .then(response => {
                         this.logs = response.data;
-
-                        this.tableId = this.logs[this.logs.length-1].tableId;
+                        this.tableId = this.logs[this.logs.length - 1].tableId;
                     });
 
                 axios
@@ -290,7 +381,6 @@
                         for (var team in response.data) {
                             sortable.push([team, response.data[team]]);
                         }
-
                         sortable.sort(function (a, b) {
                             return b[1] - a[1];
                         });
@@ -303,9 +393,14 @@
                     });
 
                 axios
-                    .get("/games/"+this.gameId+"/table/"+ this.tableId)
+                    .get("/games/" + this.gameId + "/table/" + this.tableId)
                     .then(response => {
                         this.table = response.data;
+                    });
+                axios
+                    .get("/games/" + this.gameId + "/gameHistory")
+                    .then(response => {
+                        this.gameHistory = response.data;
                     });
             },
             cancelAutoUpdate() {
