@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
 import de.doubleslash.poker.dealer.DummyPlayer;
 import de.doubleslash.poker.dealer.GameLogger;
@@ -29,7 +30,6 @@ import de.doubleslash.poker.dealer.GameManager;
 import de.doubleslash.poker.dealer.LogEntry;
 import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
-import de.doubleslash.poker.dealer.data.Card;
 import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.data.Table;
 import de.doubleslash.poker.dealer.game.Game;
@@ -50,7 +50,14 @@ public class ManagementController {
     public void registerPlayer(@PathParam("gameId") final long gameId, @QueryParam("playerUrl") final String playerUrl,
             @QueryParam("teamName") final String teamName) {
         final Optional<Game> game = gameState.getGame(gameId);
-        game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
+        final int teamListLength = gameState.getGame(gameId).get().getTeams().size();
+
+        if (teamListLength < 10){
+            game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
+            System.out.println("Added player: " + teamName);
+        } else {
+            System.out.println("To many players, cant add player: "+ teamName + "!");
+        }
     }
 
     @DELETE
