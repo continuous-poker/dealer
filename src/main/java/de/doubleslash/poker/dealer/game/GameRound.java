@@ -70,13 +70,6 @@ public class GameRound {
             return table;
 
         } finally {
-
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
             logger.log(gameId, table.getId(), table.getRound(), "Ending round %s.", table.getRound());
 
             checkPlayerState(playersInPlayOrder);

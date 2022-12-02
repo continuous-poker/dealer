@@ -3,9 +3,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+<!--Color-Template-->
 <style>
-
-    /*Color-Template*/
     .color1 {
         color: #122933;
     }
@@ -25,8 +24,9 @@
     .color5 {
         color: #20dad9;
     }
-
-    /*Styles for whole website*/
+</style>
+<!--Styles for whole website-->
+<style>
     .headlines {
         margin-top: 2%;
         margin-bottom: 2%;
@@ -44,8 +44,10 @@
     body {
         background-color: #0C2D48;
     }
+</style>
 
-    /*Css-Style for PlayerBar*/
+<!--Css-Style for PlayerBar including Players & Scoreboard-->
+<style>
     #playerBar {
         height: 92%;
         width: 24%;
@@ -54,6 +56,14 @@
 
         background-color: #2E8BC0;
         overflow-x: hidden;
+    }
+
+    .playerBarHeadLines {
+        display: inline;
+        text-align: center;
+        margin: 10%;
+
+        color: white;
     }
 
     #singlePlayer {
@@ -94,7 +104,24 @@
         margin-left: 5%;
     }
 
-    /*Css-Style for MainSection including GameLog, Desk & Pot*/
+    #scoreBoard {
+        width: 90%;
+        height: auto;
+        margin: 5% auto;
+
+        background-color: #0C2D48;
+        border: 3px solid #B1D4E0;
+    }
+
+    #scoreBoardInfo {
+        margin: 10% 0;
+        text-align: center;
+        font-size: 140%;
+        color: white;
+    }
+</style>
+<!--Css-Style for MainSection including GameLog, Desk & Pot-->
+<style>
     #mainSection {
         height: 92%;
         width: 74%;
@@ -115,7 +142,7 @@
     }
 
     #logHistoryEntry {
-        width: 90%;
+        width: 80%;
         float: left;
         text-align: center;
         margin-top: 2%;
@@ -128,10 +155,9 @@
     #cross {
         width: 10%;
         float: right;
-        text-align: center;
+        margin: 2% 5%;
 
-        margin-top: 2%;
-        margin-bottom: 2%;
+        text-align: center;
         color: white;
         background-color: darkred;
         border: 3px solid white;
@@ -152,7 +178,7 @@
         overflow: auto;
     }
 
-    .logHistory {
+    #logHistory {
         width: 50%;
         height: 100%;
         float: right;
@@ -191,27 +217,33 @@
     }
 </style>
 
-
 <div id="app">
 
     <header id="header">
         <h1>Poker - Game Table Info (ID: {{ gameId }})</h1>
     </header>
 
-    <aside id="playerBar">
-        <h2 class="headlines">Players</h2>
+    <aside id="playerBar" >
 
-        <section id="singlePlayer" v-for="player in table.players">
+            <h2 class="playerBarHeadLines" @click="displayHandler('players', null, null)">Players</h2>
+            <h2 class="playerBarHeadLines" @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
+
+        <section id="singlePlayer" v-if="displayPlayers" v-for="player in table.players">
             <section id="playerInfos">
                 <p class="playerInfo">Name: {{player.name}}</p>
                 <p class="playerInfo">Bank: {{player.stack}}</p>
                 <p class="playerInfo">Bet: {{player.bet}}</p>
                 <p class="playerInfo">Status: {{player.status}}</p>
             </section>
-
             <section id="playerCards">
                 <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Card not found">
             </section>
+        </section>
+
+        <section id="scoreBoard" v-if="displayScoreboard" >
+            <section id="scoreBoardInfo" v-for="(name, score) in score">
+                {{score + 1}}. Place: {{name[0]}} has won {{name[1]}} time/s)!
+                </section>
         </section>
     </aside>
 
@@ -232,7 +264,7 @@
             <section class="logItems" v-if="legacyLog">
 
                 <h2 id="logHistoryEntry">LogHistoryEntry</h2>
-                <h2 id="cross" @click="displayChanger('x', null, null)">X</h2>
+                <h2 id="cross" @click="displayHandler('x', null, null)">X</h2>
 
                 <section>
                     <section v-if="displayLogTable">
@@ -257,19 +289,19 @@
             </section>
 
 
-            <section class="logHistory">
+            <section id="logHistory">
 
                 <h2 class="headlines"> Log History</h2>
 
                 <ul v-for="(table, tableIndex) in gameHistory">
 
-                    <section @click="displayChanger('table', tableIndex, null)">
+                    <section @click="displayHandler('table', tableIndex, null)">
                         Table: {{tableIndex}}
                     </section>
 
                     <ul v-for="(round, roundIndex) in table">
 
-                        <section @click="displayChanger('round', tableIndex, roundIndex)">
+                        <section @click="displayHandler('round', tableIndex, roundIndex)">
                             Round: {{roundIndex}}
                         </section>
                     </ul>
@@ -305,10 +337,13 @@
                 legacyLog: false,       //show historyLog
 
                 gameHistory: null,      //Object for whole history
-                displayedHistory: null, //Object for currently dispalyed history
+                displayedHistory: null, //Object for currently displayed history
 
                 displayLogTable: null,  //show a full table
                 displayLogRound: null,  //show a round
+
+                displayPlayers: true,
+                displayScoreboard: false,
             }
         },
 
@@ -316,11 +351,13 @@
             this.update();
             this.timer = setInterval(this.update, 1000);
         },
+
         beforeDestroy() {
             this.cancelAutoUpdate();
         },
+
         methods: {
-            displayChanger(action, tableRound, playRound) {
+            displayHandler(action, tableRound, playRound) {
                 switch (action) {
                     case "x":
                         this.gameLog = true;
@@ -342,13 +379,24 @@
                         this.displayLogTable = true;
                         this.displayLogRound = false;
                         break;
+
+                    case 'scoreboard':
+                        this.displayScoreboard = true;
+                        this.displayPlayers = false;
+                        break;
+                    case 'players':
+                        this.displayPlayers = true;
+                        this.displayScoreboard = false;
+                        break;
                 }
             },
+
             getImageUrl(card) {
                 if (card.suit && card.rank) {
                     return "SVG-cards/png/2x/" + (card.suit).toLowerCase().slice(0, -1) + "_" + this.getCardValue(card.rank) + ".png";
                 }
             },
+
             getCardValue(value) {
                 switch (value) {
                     case "J":
@@ -403,6 +451,7 @@
                         this.gameHistory = response.data;
                     });
             },
+
             cancelAutoUpdate() {
                 clearInterval(this.timer);
             }
