@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -22,7 +23,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
 
 import de.doubleslash.poker.dealer.DummyPlayer;
 import de.doubleslash.poker.dealer.GameLogger;
@@ -32,6 +32,7 @@ import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
 import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.data.Table;
+import de.doubleslash.poker.dealer.exceptionHandling.exceptions.ObjectNotFoundException;
 import de.doubleslash.poker.dealer.game.Game;
 
 @Path("/games")
@@ -52,11 +53,11 @@ public class ManagementController {
         final Optional<Game> game = gameState.getGame(gameId);
         final int teamListLength = gameState.getGame(gameId).get().getTeams().size();
 
-        if (teamListLength < 10){
+        if (teamListLength < 10) {
             game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
             System.out.println("Added player: " + teamName);
         } else {
-            System.out.println("To many players, cant add player: "+ teamName + "!");
+            System.out.println("To many players, cant add player: " + teamName + "!");
         }
     }
 
@@ -179,13 +180,20 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/table/{tableId}")
-    public Table getTable(@PathParam("gameId") final long gameId, @PathParam("tableId") final long tableId) {
-        return gameState.getGame(gameId).map(game -> game.getTables().get(tableId)).orElse(null);
+    public Table getTable(@PathParam("gameId") final long gameId, @PathParam("tableId") final long tableId)
+            throws ObjectNotFoundException {
+        return gameState.getGame(gameId)
+                        .map(game -> game.getTables().get(tableId))
+                        .orElseThrow(() -> new ObjectNotFoundException("Table not found!"));
     }
 
     @GET
     @Path("/{gameId}/gameHistory")
-    public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam("gameId") final long gameId) {
-        return gameState.getGame(gameId).map(Game::getGameHistory).map(GameHistory::getGameLogHistory).orElse(null);
+    public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam("gameId") final long gameId)
+            throws ObjectNotFoundException {
+        return gameState.getGame(gameId)
+                        .map(Game::getGameHistory)
+                        .map(GameHistory::getGameLogHistory)
+                        .orElseThrow(() -> new ObjectNotFoundException("GameHistory not found!"));
     }
 }

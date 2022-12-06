@@ -49,12 +49,10 @@ class GameRoundTest {
         player3 = new Player("player3", Status.ACTIVE, 100, 0, actionProvider2);
 
         players = new ArrayList<>();
-        players.add(player1);
-        players.add(player2);
-        table = new Table(1, players, 5, msg -> logger.log(1, 1,0, msg, null));
+
+        table = new Table(1, players, 5, msg -> logger.log(1, 1,1, msg, null));
         logger = mock(GameLogger.class);
 
-        table = new Table(1, players, 5, msg -> logger.log(1, 1, msg));
         testee = new GameRound(players, table, logger, 1);
     }
 
