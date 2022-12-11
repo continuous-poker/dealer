@@ -1,9 +1,11 @@
-package de.doubleslash.poker.dealer.exceptionHandling.exceptions;
+package de.doubleslash.poker.dealer.exceptionhandling.exceptions;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class ObjectNotFoundException extends Exception implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ObjectNotFoundException() {
@@ -12,7 +14,5 @@ public class ObjectNotFoundException extends Exception implements Serializable {
     public ObjectNotFoundException(String msg) {
         super(msg);
     }
-    public ObjectNotFoundException(String msg, Exception e)  {
-        super(msg, e);
-    }
+
 }

@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.game.Game;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 

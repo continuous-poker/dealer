@@ -57,7 +57,7 @@ public class Game implements Runnable {
                 sleep();
             }
             addWinnerPoints(players, id);
-            gameHistory.addTableRoundHistory(id, logger.getCopyGameLog());
+            gameHistory.addTableRoundHistory(id, logger.getCopyGameLog(gameId));
 
         } catch (final Exception e) {
             log.error("Unexpected error in game", e);

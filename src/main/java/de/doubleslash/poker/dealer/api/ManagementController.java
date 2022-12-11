@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -32,7 +31,7 @@ import de.doubleslash.poker.dealer.RemotePlayer;
 import de.doubleslash.poker.dealer.Team;
 import de.doubleslash.poker.dealer.data.GameHistory;
 import de.doubleslash.poker.dealer.data.Table;
-import de.doubleslash.poker.dealer.exceptionHandling.exceptions.ObjectNotFoundException;
+import de.doubleslash.poker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
 import de.doubleslash.poker.dealer.game.Game;
 
 @Path("/games")
@@ -49,15 +48,17 @@ public class ManagementController {
     @POST
     @Path("/{gameId}/players")
     public void registerPlayer(@PathParam("gameId") final long gameId, @QueryParam("playerUrl") final String playerUrl,
-            @QueryParam("teamName") final String teamName) {
+            @QueryParam("teamName") final String teamName) throws ObjectNotFoundException {
         final Optional<Game> game = gameState.getGame(gameId);
-        final int teamListLength = gameState.getGame(gameId).get().getTeams().size();
+        final int teamListLength = gameState.getGame(gameId)
+                                            .map(Game::getTeams)
+                                            .map(List::size)
+                                            .orElseThrow(ObjectNotFoundException::new);
 
         if (teamListLength < 10) {
             game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
-            System.out.println("Added player: " + teamName);
         } else {
-            System.out.println("To many players, cant add player: " + teamName + "!");
+            throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
         }
     }
 

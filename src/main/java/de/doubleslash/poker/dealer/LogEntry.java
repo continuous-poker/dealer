@@ -2,7 +2,6 @@ package de.doubleslash.poker.dealer;
 
 import java.time.ZonedDateTime;
 
-import de.doubleslash.poker.dealer.data.Table;
 import lombok.Data;
 
 @Data
