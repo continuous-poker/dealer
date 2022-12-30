@@ -21,6 +21,7 @@ public class Table implements CardReceiver, Serializable {
     private final List<Card> communityCards;
     private final List<Player> players;
 
+    @Getter
     private int round;
     private int smallBlind;
     private int minimumBet;

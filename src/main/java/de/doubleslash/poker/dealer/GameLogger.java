@@ -18,8 +18,8 @@ public class GameLogger {
     private static final int LOG_MAX_LENGTH = 10000;
     private final Map<Long, List<LogEntry>> logs = new HashMap<>();
 
-    public void log(final long gameId, final long tableId, final String msg, final Object... args) {
-        final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, String.format(msg, args));
+    public void log(final long gameId, final long tableId, final long roundId, final String msg, final Object... args) {
+        final LogEntry logEntry = new LogEntry(ZonedDateTime.now(), gameId, tableId, roundId, String.format(msg, args));
         add(logEntry);
 
         log.info(logEntry.toString());
@@ -32,6 +32,11 @@ public class GameLogger {
             gameLog.remove(0);
         }
     }
+
+    public List<LogEntry> getCopyGameLog(final long gameId) {
+        return new ArrayList<>(logs.get(gameId));
+    }
+
 
     public Optional<List<LogEntry>> getLog(final long gameId) {
         return Optional.ofNullable(logs.get(gameId));

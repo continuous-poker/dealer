@@ -9,5 +9,6 @@ public class LogEntry {
     private final ZonedDateTime timestamp;
     private final long gameId;
     private final long tableId;
+    private final long roundId;
     private final String message;
 }

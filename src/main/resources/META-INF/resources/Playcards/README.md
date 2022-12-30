@@ -1,0 +1,1 @@
+The content of this folder originates from this repository: https://github.com/htdebeer/SVG-cards

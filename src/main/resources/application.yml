@@ -20,3 +20,6 @@ quarkus:
 gameround:
   sleep:
     duration: PT3S
+step:
+  sleep:
+    duration: PT3S
