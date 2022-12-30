@@ -80,7 +80,7 @@ public class Pot implements Serializable {
 
     public void pay(final Player winner) {
         pots.forEach(p -> log.info(p.toString()));
-        log.info("All pots go to {}", winner.getName());
+        logger.accept("All pots go to " + winner.getName() + " with " + getTotalSize() + " chips in total.");
         pots.forEach(pot -> winner.addToStack(pot.getSize()));
         reset();
     }

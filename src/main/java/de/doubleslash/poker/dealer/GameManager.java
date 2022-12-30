@@ -24,6 +24,9 @@ public class GameManager {
     @ConfigProperty(name = "gameround.sleep.duration")
     Duration gameRoundSleepDuration;
 
+    @ConfigProperty(name = "step.sleep.duration")
+    Duration stepSleepDuration;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final GameLogger log;
 
@@ -38,7 +41,7 @@ public class GameManager {
 
     public long createNewGame(final String name) {
         final long gameId = generateGameId();
-        final Game game = new Game(gameId, name, log, gameRoundSleepDuration);
+        final Game game = new Game(gameId, name, log, gameRoundSleepDuration, stepSleepDuration);
         games.put(game, null);
         return gameId;
     }
@@ -68,7 +71,7 @@ public class GameManager {
 
     public Game runSingleGame(final String name, final Collection<Team> players) {
         final long generateGameId = generateGameId();
-        final Game game = new Game(generateGameId, name, log, Duration.ZERO);
+        final Game game = new Game(generateGameId, name, log, Duration.ZERO, Duration.ZERO);
         players.forEach(game::addPlayer);
         game.run();
         return game;

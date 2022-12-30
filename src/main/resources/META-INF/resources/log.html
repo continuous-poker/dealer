@@ -62,7 +62,6 @@
         display: inline;
         text-align: center;
         margin: 10%;
-
         color: white;
     }
 
@@ -203,6 +202,19 @@
         height: 90%;
         width: auto;
     }
+    
+    .clickable:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .active {
+        color: #CCCCCC;
+    }
+    .active:hover {
+        cursor: default;
+        text-decoration: none;
+    }
 
     /*Css-Style for GameLog*/
     #pot {
@@ -220,29 +232,29 @@
 <div id="app">
 
     <header id="header">
-        <h1>Poker - Game Table Info (ID: {{ gameId }})</h1>
+        <h1>Poker - Game Table Info (ID: {{ gameId }} - State: {{ gamestate }})</h1>
     </header>
 
     <aside id="playerBar" >
 
-            <h2 class="playerBarHeadLines" @click="displayHandler('players', null, null)">Players</h2>
-            <h2 class="playerBarHeadLines" @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
+            <h2 class="playerBarHeadLines clickable" :class="{ active: displayPlayers }" @click="displayHandler('players', null, null)">Players</h2>
+            <h2 class="playerBarHeadLines clickable" :class="{ active: displayScoreboard }" @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
 
         <section id="singlePlayer" v-if="displayPlayers" v-for="player in table.players">
             <section id="playerInfos">
                 <p class="playerInfo">Name: {{player.name}}</p>
-                <p class="playerInfo">Bank: {{player.stack}}</p>
+                <p class="playerInfo">Chips: {{player.stack}}</p>
                 <p class="playerInfo">Bet: {{player.bet}}</p>
                 <p class="playerInfo">Status: {{player.status}}</p>
             </section>
-            <section id="playerCards">
+            <section id="playerCards" v-if="gameLog">
                 <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Card not found">
             </section>
         </section>
 
         <section id="scoreBoard" v-if="displayScoreboard" >
             <section id="scoreBoardInfo" v-for="(name, score) in score">
-                {{score + 1}}. Place: {{name[0]}} has won {{name[1]}} time/s)!
+                {{score + 1}}. Place: {{name[0]}} has {{name[1]}} point(s)!
                 </section>
         </section>
     </aside>
@@ -252,7 +264,7 @@
         <section id="LogBox">
 
             <section class="logItems" v-if="gameLog">
-                <h2 class="headlines">Game Log</h2>
+                <h2 class="headlines">Active Game Log</h2>
 
                 <ul>
                     <li class="logItem" v-for="log in logs">
@@ -263,26 +275,26 @@
 
             <section class="logItems" v-if="legacyLog">
 
-                <h2 id="logHistoryEntry">LogHistoryEntry</h2>
-                <h2 id="cross" @click="displayHandler('x', null, null)">X</h2>
+                <h2 id="logHistoryEntry">History</h2>
+                <h2 id="cross" class="clickable" @click="displayHandler('x', null, null)">X</h2>
 
                 <section>
                     <section v-if="displayLogTable">
 
-                        <ul class="logItem" v-if="gameHistory !== null" v-for="(table, tableIndex) in displayedHistory">
-
-                            <section>Round: {{tableIndex}}</section>
-
-                            <ul v-for="round in table">
-                                {{round}}
-                            </ul>
+                        <ul class="logItem" v-if="gameHistory !== null">
+                            <li v-for="(table, tableIndex) in displayedHistory">
+                                <section>Round: {{tableIndex}}</section>
+                                <ul>
+                                    <li v-for="round in table">{{round}}</li>
+                                </ul>
+                            </li>
                         </ul>
                     </section>
 
                     <section v-if="displayLogRound">
 
-                        <ul class="logItem" v-if="gameHistory !== null" v-for="round in displayedHistory">
-                            {{round}}
+                        <ul class="logItem" v-if="gameHistory !== null">
+                            <li v-for="round in displayedHistory">{{round}}</li>
                         </ul>
                     </section>
                 </section>
@@ -295,13 +307,13 @@
 
                 <ul v-for="(table, tableIndex) in gameHistory">
 
-                    <section @click="displayHandler('table', tableIndex, null)">
+                    <section class="clickable" @click="displayHandler('table', tableIndex, null)">
                         Table: {{tableIndex}}
                     </section>
 
                     <ul v-for="(round, roundIndex) in table">
 
-                        <section @click="displayHandler('round', tableIndex, roundIndex)">
+                        <section class="clickable" @click="displayHandler('round', tableIndex, roundIndex)">
                             Round: {{roundIndex}}
                         </section>
                     </ul>
@@ -310,7 +322,7 @@
         </section>
 
         <section id="desk">
-            <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)" alt="Card not found">
+            <img class="deskCard" v-if="gameLog" v-for="card in table.communityCards" :src="getImageUrl(card)" alt="Card not found">
         </section>
 
         <section>
@@ -446,7 +458,7 @@
                         this.table = response.data;
                     });
                 axios
-                    .get("/games/" + this.gameId + "/gameHistory")
+                    .get("/games/" + this.gameId + "/history")
                     .then(response => {
                         this.gameHistory = response.data;
                     });

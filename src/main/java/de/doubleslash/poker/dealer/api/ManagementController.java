@@ -189,7 +189,7 @@ public class ManagementController {
     }
 
     @GET
-    @Path("/{gameId}/gameHistory")
+    @Path("/{gameId}/history")
     public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam("gameId") final long gameId)
             throws ObjectNotFoundException {
         return gameState.getGame(gameId)

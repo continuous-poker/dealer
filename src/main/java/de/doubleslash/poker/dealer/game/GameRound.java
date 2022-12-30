@@ -1,5 +1,6 @@
 package de.doubleslash.poker.dealer.game;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,6 @@ import de.doubleslash.poker.dealer.data.Status;
 import de.doubleslash.poker.dealer.data.Table;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SerializationUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,8 +25,10 @@ public class GameRound {
 
     private final List<Player> players;
     private final Table table;
-    private final GameLogger logger;
+    private final GameLogger history;
     private final long gameId;
+
+    private final Duration timeBetweenSteps;
 
     public Table run() {
         return playWithDeck(new Deck());
@@ -38,12 +40,14 @@ public class GameRound {
         deck.dealCards(playersInPlayOrder, 2);
         deck.burnCard();
 
-        logger.log(gameId, table.getId(), table.getRound(), "Starting round %s.", table.getRound());
+        history.log(gameId, table.getId(), table.getRound(), "Starting round %s.", table.getRound());
 
         try {
             if (determineWinner(table, playersInPlayOrder, true)) {
                 return table;
             }
+
+            sleep();
 
             deal(table, deck, 3);
             logFlop(table);
@@ -52,12 +56,16 @@ public class GameRound {
                 return table;
             }
 
+            sleep();
+
             deal(table, deck, 1);
             logTurn(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
                 return table;
             }
+
+            sleep();
 
             deal(table, deck, 1);
             logRiver(table);
@@ -66,15 +74,26 @@ public class GameRound {
                 return table;
             }
 
+            sleep();
+
             showdown(table, playersInPlayOrder);
             return table;
 
         } finally {
-            logger.log(gameId, table.getId(), table.getRound(), "Ending round %s.", table.getRound());
+            history.log(gameId, table.getId(), table.getRound(), "Ending round %s.", table.getRound());
 
             checkPlayerState(playersInPlayOrder);
             clearCards(players);
             table.resetForNextRound();
+        }
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(timeBetweenSteps.toMillis());
+        } catch (InterruptedException e) {
+            log.error("Got interrupted in sleep", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -83,7 +102,7 @@ public class GameRound {
                                        .stream()
                                        .map(Card::toString)
                                        .collect(Collectors.joining(", "));
-        logger.log(gameId, table.getId(), table.getRound(), "Flop: %s", dealtCards);
+        history.log(gameId, table.getId(), table.getRound(), "Flop: %s", dealtCards);
     }
 
     private void logTurn(final Table table) {
@@ -92,7 +111,7 @@ public class GameRound {
                                        .skip(3)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), table.getRound(), "Turn: %s", dealtCards);
+        history.log(gameId, table.getId(), table.getRound(), "Turn: %s", dealtCards);
     }
 
     private void logRiver(final Table table) {
@@ -101,7 +120,7 @@ public class GameRound {
                                        .skip(4)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        logger.log(gameId, table.getId(), table.getRound(), "River: %s", dealtCards);
+        history.log(gameId, table.getId(), table.getRound(), "River: %s", dealtCards);
     }
 
     private void checkPlayerState(final List<Player> playersInPlayOrder) {
@@ -116,8 +135,7 @@ public class GameRound {
 
     private boolean determineWinner(final Table table, final List<Player> playersInPlayOrder, final boolean isPreFlop) {
         if (!everyoneIsAllIn(playersInPlayOrder)) {
-            final Optional<Player> winningPlayer = new BetRound(gameId, table, playersInPlayOrder, isPreFlop,
-                    logger).run();
+            final Optional<Player> winningPlayer = new BetRound(gameId, table, playersInPlayOrder, isPreFlop, history).run();
             table.collectChips(playersInPlayOrder);
             if (winningPlayer.isPresent()) {
                 final Player winner = winningPlayer.get();
@@ -140,7 +158,7 @@ public class GameRound {
     }
 
     private void logPlayerCards(final Table table, final Player player) {
-        logger.log(gameId, table.getId(), table.getRound(), "Player %s has %s.", player.getName(),
+        history.log(gameId, table.getId(), table.getRound(), "Player %s has %s.", player.getName(),
                 player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 

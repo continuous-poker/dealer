@@ -37,6 +37,7 @@ public class Game implements Runnable {
     private final String name;
     private final GameLogger logger;
     private final Duration timeBetweenGameRounds;
+    private final Duration timeBetweenSteps;
     private int tableId = 0;
 
     @Override
@@ -52,7 +53,7 @@ public class Game implements Runnable {
 
             while (isMoreThanOnePlayerLeft(players)) {
 
-                table = new GameRound(players, table, logger, gameId).run();
+                table = new GameRound(players, table, logger, gameId, timeBetweenSteps).run();
                 tables.put(id, table);
                 sleep();
             }

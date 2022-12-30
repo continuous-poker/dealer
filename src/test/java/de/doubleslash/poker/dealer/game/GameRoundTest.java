@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,10 +51,10 @@ class GameRoundTest {
 
         players = new ArrayList<>();
 
-        table = new Table(1, players, 5, msg -> logger.log(1, 1,1, msg, null));
+        table = new Table(1, players, 5, msg -> logger.log(1, 1,1, msg));
         logger = mock(GameLogger.class);
 
-        testee = new GameRound(players, table, logger, 1);
+        testee = new GameRound(players, table, logger, 1, Duration.ZERO);
     }
 
     @Test
