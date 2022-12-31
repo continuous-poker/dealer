@@ -36,6 +36,7 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/${{ env.DEPLOYMENT_NAME }}
 
       - name: Deploy
+        if: ${{ env.DEPLOYMENT_TOKEN }}
         run: |-
           echo "${{ env.DEPLOYMENT_TOKEN }}" > kubeconfig.yaml
           kubectl --kubeconfig kubeconfig.yaml --namespace techdays apply -f target/kubernetes/kubernetes.yml
