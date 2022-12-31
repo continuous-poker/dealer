@@ -24,8 +24,8 @@ public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
         wireMockServer.start();
         final String json = readString();
         wireMockServer.stubFor(post(urlEqualTo("/")).withRequestBody(equalToJson(json))
-                                                    .willReturn(aResponse().withHeader("Content-Type", "text/plain")
-                                                                           .withBody("5")));
+                                                    .willReturn(aResponse().withHeader("Content-Type", "application/json")
+                                                                           .withBody("{ \"bet\": 5 }")));
 
         return Collections.singletonMap("quarkus.rest-client.\"de.doubleslash.poker.dealer.RemotePlayerClient\".url",
                 wireMockServer.baseUrl());
