@@ -45,7 +45,7 @@ public class RemotePlayer implements ActionProvider {
         }
 
         try {
-            final int response = client.getExtensionsById(table);
+            final int response = client.getExtensionsById(table).bet();
             strike = 0;
             return response;
         } catch (final Exception e) {

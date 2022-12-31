@@ -6,6 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.doubleslash.poker.dealer.data.PlayerBet;
 import de.doubleslash.poker.dealer.data.Table;
 
 public interface RemotePlayerClient {
@@ -13,7 +14,7 @@ public interface RemotePlayerClient {
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.MEDIA_TYPE_WILDCARD)
-    int getExtensionsById(Table id);
+    @Produces(MediaType.APPLICATION_JSON)
+    PlayerBet getExtensionsById(Table id);
 
 }
