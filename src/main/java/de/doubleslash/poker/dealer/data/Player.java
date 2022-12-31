@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.doubleslash.poker.dealer.ActionProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,8 @@ public class Player implements CardReceiver, Serializable {
     private Status status;
     private int stack;
     private int bet;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final List<Card> cards = new ArrayList<>();
 
     @JsonIgnore
@@ -63,6 +66,7 @@ public class Player implements CardReceiver, Serializable {
         stack += chips;
     }
 
+    @JsonIgnore
     public boolean isAllIn() {
         return status.equals(Status.ACTIVE) && bet == stack;
     }

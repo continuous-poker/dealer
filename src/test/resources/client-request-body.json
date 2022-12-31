@@ -1,0 +1,53 @@
+{
+  "activePlayer": 2,
+  "communityCards": [
+    {
+      "rank": "10",
+      "suit": "HEARTS"
+    },
+    {
+      "rank": "5",
+      "suit": "CLUBS"
+    },
+    {
+      "rank": "A",
+      "suit": "DIAMONDS"
+    }
+  ],
+  "currentDealer" : 0,
+  "minimumBet": 20,
+  "minimumRaise": 40,
+  "players": [
+    {
+      "name": "Bot1",
+      "status": "ACTIVE",
+      "stack": 990,
+      "bet": 10
+    },
+    {
+      "name": "Bot2",
+      "status": "ACTIVE",
+      "stack": 980,
+      "bet": 20
+    },
+    {
+      "name": "Bot3",
+      "status": "ACTIVE",
+      "stack": 1000,
+      "bet": 0,
+      "cards": [
+        {
+          "rank": "2",
+          "suit": "HEARTS"
+        },
+        {
+          "rank": "J",
+          "suit": "CLUBS"
+        }
+      ]
+    }
+  ],
+  "pot": 0,
+  "round": 1,
+  "smallBlind": 10
+}

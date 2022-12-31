@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.lang3.SerializationUtils;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Getter
 @AllArgsConstructor
+@JsonPropertyOrder(alphabetic=true)
 public class Table implements CardReceiver, Serializable {
 
     private final List<Card> communityCards;
