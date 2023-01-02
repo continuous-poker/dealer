@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.doubleslash.poker.dealer.ActionProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,9 @@ public class Player implements CardReceiver, Serializable {
     private final String name;
     private Status status;
     private int stack;
-    private int bet;
+
+    @JsonProperty("bet")
+    private int currentBet;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final List<Card> cards = new ArrayList<>();
@@ -36,9 +39,9 @@ public class Player implements CardReceiver, Serializable {
 
     public void bet(final int chips) {
         if (chips > stack) {
-            bet = stack;
-        } else if (chips > bet) {
-            bet = chips;
+            currentBet = stack;
+        } else if (chips > currentBet) {
+            currentBet = chips;
         }
     }
 
@@ -52,8 +55,8 @@ public class Player implements CardReceiver, Serializable {
     }
 
     public int collectBet() {
-        final int chips = bet;
-        bet = 0;
+        final int chips = currentBet;
+        currentBet = 0;
         stack -= chips;
         log.info("Player {} stack: {}", name, stack);
         return chips;
@@ -68,12 +71,12 @@ public class Player implements CardReceiver, Serializable {
 
     @JsonIgnore
     public boolean isAllIn() {
-        return status.equals(Status.ACTIVE) && bet == stack;
+        return status.equals(Status.ACTIVE) && currentBet == stack;
     }
 
     public boolean isGoingAllIn(final int potentialBet) {
         // convert to long for this check to avoid integer overflows
-        return status.equals(Status.ACTIVE) && (long)bet + (long)potentialBet >= stack;
+        return status.equals(Status.ACTIVE) && (long) currentBet + (long) potentialBet >= stack;
     }
 
     public void out() {

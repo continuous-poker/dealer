@@ -7,9 +7,9 @@ import lombok.Getter;
 
 public class Seats {
 
-    private final LinkedList<Player> players;
+    private final List<Player> players;
 
-    private int position = 0;
+    private int position;
     @Getter
     private int lastBet;
     @Getter
@@ -56,7 +56,7 @@ public class Seats {
     }
 
     public void setLastBetToCurrentPlayer() {
-        lastBet = getCurrentPlayer().getBet();
+        lastBet = getCurrentPlayer().getCurrentBet();
         lastBettingPlayer = getCurrentPlayer();
     }
 }

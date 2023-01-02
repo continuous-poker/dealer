@@ -1,6 +1,7 @@
 package de.doubleslash.poker.dealer;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,6 +14,9 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 @Slf4j
 public class RemotePlayer implements ActionProvider {
 
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(30);
+    private static final int MAX_STRIKES = 3;
     @JsonProperty
     private final String url;
     private final RemotePlayerClient client;
@@ -26,8 +30,8 @@ public class RemotePlayer implements ActionProvider {
         this.url = toAbsolute(playerUrl);
         client = RestClientBuilder.newBuilder()
                                   .baseUri(URI.create(this.url))
-                                  .connectTimeout(10, TimeUnit.SECONDS)
-                                  .readTimeout(30, TimeUnit.SECONDS)
+                                  .connectTimeout(CONNECT_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
+                                  .readTimeout(READ_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
                                   .build(RemotePlayerClient.class);
     }
 
@@ -39,8 +43,9 @@ public class RemotePlayer implements ActionProvider {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public int requestBet(final Table table) {
-        if (table.getId() == blockedTable) {
+        if (table.getTableId() == blockedTable) {
             return 0;
         }
 
@@ -57,8 +62,8 @@ public class RemotePlayer implements ActionProvider {
 
     private void addStrike(final Table table) {
         strike++;
-        if (strike == 3) {
-            blockedTable = table.getId();
+        if (strike == MAX_STRIKES) {
+            blockedTable = table.getTableId();
             strike = 0;
         }
     }

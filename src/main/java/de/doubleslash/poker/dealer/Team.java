@@ -11,7 +11,7 @@ public class Team {
     private final ActionProvider provider;
 
     @Setter(AccessLevel.NONE)
-    private long score = 0;
+    private long score;
 
     public void addToScore(final long points) {
         score += points;

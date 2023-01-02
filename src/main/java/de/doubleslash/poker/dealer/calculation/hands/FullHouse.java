@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -15,6 +14,10 @@ import de.doubleslash.poker.dealer.data.Rank;
 
 public class FullHouse implements PokerHand {
 
+    private static final int SCORE = 6;
+    private static final int TRIPLET_SIZE = 3;
+    private static final int PAIR_SIZE = 2;
+
     @Override
     public int[] calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
@@ -23,7 +26,7 @@ public class FullHouse implements PokerHand {
         final int tripletScore = getTripletScore(cards);
         final int pairScore = getPairScore(cards);
 
-        return IntStream.of(6, tripletScore, pairScore).toArray();
+        return IntStream.of(SCORE, tripletScore, pairScore).toArray();
 
     }
 
@@ -39,25 +42,23 @@ public class FullHouse implements PokerHand {
     private int getPairScore(final List<Card> cards) {
         final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cards);
         final List<Card> pair = getPair(cardsGroupedByRank);
-        return pair.stream().mapToInt(Card::getValue).limit(2).sum();
+        return pair.stream().mapToInt(Card::getValue).limit(PAIR_SIZE).sum();
     }
 
     private List<Card> getTriplets(final Map<Rank, List<Card>> cardsGroupedBySuit) {
         final Map<Rank, List<Card>> sortedMap = new TreeMap<>(cardsGroupedBySuit);
-        final Optional<List<Card>> findFirst = sortedMap.entrySet()
+        final Optional<List<Card>> findFirst = sortedMap.values()
                                                         .stream()
-                                                        .filter(entry -> entry.getValue().size() == 3)
-                                                        .map(Entry::getValue)
+                                                        .filter(cards -> cards.size() == TRIPLET_SIZE)
                                                         .findFirst();
         return findFirst.orElseThrow(IllegalStateException::new);
     }
 
     private List<Card> getPair(final Map<Rank, List<Card>> cardsGroupedBySuit) {
         final Map<Rank, List<Card>> sortedMap = new TreeMap<>(cardsGroupedBySuit);
-        final Optional<List<Card>> findFirst = sortedMap.entrySet()
+        final Optional<List<Card>> findFirst = sortedMap.values()
                                                         .stream()
-                                                        .filter(entry -> entry.getValue().size() >= 2)
-                                                        .map(Entry::getValue)
+                                                        .filter(cards -> cards.size() >= PAIR_SIZE)
                                                         .findFirst();
         return findFirst.orElseThrow(IllegalStateException::new);
     }
@@ -68,13 +69,13 @@ public class FullHouse implements PokerHand {
         boolean tripletMatch = false;
         boolean pairMatch = false;
         for (final List<Card> cards : collect.values()) {
-            if (cards.size() == 3) {
+            if (cards.size() == TRIPLET_SIZE) {
                 if (tripletMatch) {
                     pairMatch = true;
                 } else {
                     tripletMatch = true;
                 }
-            } else if (cards.size() == 2) {
+            } else if (cards.size() == PAIR_SIZE) {
                 pairMatch = true;
             }
         }

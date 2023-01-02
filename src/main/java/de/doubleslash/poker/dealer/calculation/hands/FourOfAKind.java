@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -14,6 +13,9 @@ import de.doubleslash.poker.dealer.data.Card;
 import de.doubleslash.poker.dealer.data.Rank;
 
 public class FourOfAKind implements PokerHand {
+
+    private static final int SCORE = 7;
+    private static final int NUMBER_OF_CARDS = 4;
 
     @Override
     public int[] calculateScore(final List<Card> cardsToScore) {
@@ -29,16 +31,15 @@ public class FourOfAKind implements PokerHand {
 
         Collections.sort(cards);
 
-        return IntStream.of(7, quadScore, cards.get(0).getValue()).toArray();
+        return IntStream.of(SCORE, quadScore, cards.get(0).getValue()).toArray();
 
     }
 
     private List<Card> getQuads(final Map<Rank, List<Card>> cardsGroupedBySuit) {
         final Map<Rank, List<Card>> sortedMap = new TreeMap<>(cardsGroupedBySuit);
-        final Optional<List<Card>> findFirst = sortedMap.entrySet()
+        final Optional<List<Card>> findFirst = sortedMap.values()
                                                         .stream()
-                                                        .filter(entry -> entry.getValue().size() == 4)
-                                                        .map(Entry::getValue)
+                                                        .filter(cards -> cards.size() == NUMBER_OF_CARDS)
                                                         .findFirst();
         return findFirst.orElseThrow(IllegalStateException::new);
     }
@@ -46,7 +47,7 @@ public class FourOfAKind implements PokerHand {
     @Override
     public boolean matches(final List<Card> cardsToScore) {
         final Map<Rank, List<Card>> collect = getCardsGroupedByRank(cardsToScore);
-        return collect.values().stream().anyMatch(list -> list.size() == 4);
+        return collect.values().stream().anyMatch(list -> list.size() == NUMBER_OF_CARDS);
     }
 
     private Map<Rank, List<Card>> getCardsGroupedByRank(final List<Card> cardsToScore) {

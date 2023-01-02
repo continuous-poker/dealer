@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -23,7 +22,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import de.doubleslash.poker.dealer.DummyPlayer;
 import de.doubleslash.poker.dealer.GameLogger;
 import de.doubleslash.poker.dealer.GameManager;
 import de.doubleslash.poker.dealer.LogEntry;
@@ -37,6 +35,8 @@ import de.doubleslash.poker.dealer.game.Game;
 @Path("/games")
 public class ManagementController {
 
+    private static final int MAX_NUMBER_OF_PLAYERS = 10;
+    public static final String PARAM_GAME_ID = "gameId";
     private final GameManager gameState;
     private final GameLogger log;
 
@@ -47,15 +47,16 @@ public class ManagementController {
 
     @POST
     @Path("/{gameId}/players")
-    public void registerPlayer(@PathParam("gameId") final long gameId, @QueryParam("playerUrl") final String playerUrl,
-            @QueryParam("teamName") final String teamName) throws ObjectNotFoundException {
+    public void registerPlayer(@PathParam(PARAM_GAME_ID) final long gameId,
+            @QueryParam("playerUrl") final String playerUrl, @QueryParam("teamName") final String teamName)
+            throws ObjectNotFoundException {
         final Optional<Game> game = gameState.getGame(gameId);
         final int teamListLength = gameState.getGame(gameId)
                                             .map(Game::getTeams)
                                             .map(List::size)
                                             .orElseThrow(ObjectNotFoundException::new);
 
-        if (teamListLength < 10) {
+        if (teamListLength < MAX_NUMBER_OF_PLAYERS) {
             game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
         } else {
             throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
@@ -64,7 +65,8 @@ public class ManagementController {
 
     @DELETE
     @Path("/{gameId}/players")
-    public void removePlayer(@PathParam("gameId") final long gameId, @QueryParam("teamName") final String teamName) {
+    public void removePlayer(@PathParam(PARAM_GAME_ID) final long gameId,
+            @QueryParam("teamName") final String teamName) {
         final Optional<Game> game = gameState.getGame(gameId);
         game.ifPresent(g -> g.getTeams()
                              .stream()
@@ -75,7 +77,7 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/players")
-    public Collection<String> getPlayers(@PathParam("gameId") final long gameId) {
+    public Collection<String> getPlayers(@PathParam(PARAM_GAME_ID) final long gameId) {
         final Optional<Game> game = gameState.getGame(gameId);
         if (game.isPresent()) {
             final List<Team> teams = game.get().getTeams();
@@ -84,17 +86,6 @@ public class ManagementController {
         return Collections.emptyList();
     }
 
-    @GET
-    @Path("/testrun")
-    public long testRun() {
-        final Collection<Team> players = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            players.add(new Team("Team" + i, new DummyPlayer()));
-        }
-        return gameState.runSingleGame("Testrun Game " + new Random().nextInt(), players).getGameId();
-    }
-
-    //@PreAuthorize("hasRole('ADMIN')")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/")
@@ -104,13 +95,13 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}")
-    public String getStatus(@PathParam("gameId") final long gameId) {
+    public String getStatus(@PathParam(PARAM_GAME_ID) final long gameId) {
         return gameState.isRunning(gameId) ? "running" : "stopped";
     }
 
     @GET
     @Path("/{gameId}/score")
-    public Map<String, Long> getScore(@PathParam("gameId") final long gameId) {
+    public Map<String, Long> getScore(@PathParam(PARAM_GAME_ID) final long gameId) {
         final Map<String, Long> map = new HashMap<>();
 
         gameState.getGame(gameId)
@@ -128,7 +119,7 @@ public class ManagementController {
     //@PreAuthorize("hasRole('ADMIN')")
     @DELETE
     @Path("/{gameId}")
-    public void delete(@PathParam("gameId") final long gameId) {
+    public void delete(@PathParam(PARAM_GAME_ID) final long gameId) {
         gameState.delete(gameId);
         log.delete(gameId);
     }
@@ -136,7 +127,7 @@ public class ManagementController {
     //@PreAuthorize("hasRole('ADMIN')")
     @PUT
     @Path("/{gameId}")
-    public void toggleRun(@PathParam("gameId") final long gameId) {
+    public void toggleRun(@PathParam(PARAM_GAME_ID) final long gameId) {
         if (gameState.isRunning(gameId)) {
             gameState.pause(gameId);
         } else {
@@ -146,7 +137,7 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/log/{timestamp}")
-    public List<LogEntry> getLogSince(@PathParam("gameId") final long gameId,
+    public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
             @PathParam("timestamp") final String timestamp) {
         final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
 
@@ -155,15 +146,16 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/log")
-    public List<LogEntry> filterLog(@PathParam("gameId") final long gameId, @QueryParam("from") final String from,
-            @QueryParam("to") final String to, @QueryParam("tableId") final Long tableId,
-            @QueryParam("limit") final Integer limit, @QueryParam("order") final String order) {
+    public List<LogEntry> filterLog(@PathParam(PARAM_GAME_ID) final long gameId,
+            @QueryParam("from") final String limitFrom, @QueryParam("to") final String limitTo,
+            @QueryParam("tableId") final Long tableId, @QueryParam("limit") final Integer limit,
+            @QueryParam("order") final String order) {
         final List<LogEntry> list = new ArrayList<>(log.getLog(gameId).orElse(Collections.emptyList()));
 
-        final Predicate<LogEntry> isAfter = entry -> from == null || entry.getTimestamp()
-                                                                          .isAfter(ZonedDateTime.parse(from));
-        final Predicate<LogEntry> isBefore = entry -> to == null || entry.getTimestamp()
-                                                                         .isBefore(ZonedDateTime.parse(to));
+        final Predicate<LogEntry> isAfter = entry -> limitFrom == null || entry.getTimestamp()
+                                                                               .isAfter(ZonedDateTime.parse(limitFrom));
+        final Predicate<LogEntry> isBefore = entry -> limitTo == null || entry.getTimestamp()
+                                                                              .isBefore(ZonedDateTime.parse(limitTo));
         final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
 
         if ("desc".equals(order)) {
@@ -181,7 +173,7 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/table/{tableId}")
-    public Table getTable(@PathParam("gameId") final long gameId, @PathParam("tableId") final long tableId)
+    public Table getTable(@PathParam(PARAM_GAME_ID) final long gameId, @PathParam("tableId") final long tableId)
             throws ObjectNotFoundException {
         return gameState.getGame(gameId)
                         .map(game -> game.getTables().get(tableId))
@@ -190,7 +182,7 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/history")
-    public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam("gameId") final long gameId)
+    public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam(PARAM_GAME_ID) final long gameId)
             throws ObjectNotFoundException {
         return gameState.getGame(gameId)
                         .map(Game::getGameHistory)

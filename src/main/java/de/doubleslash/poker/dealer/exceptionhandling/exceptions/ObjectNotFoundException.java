@@ -11,7 +11,7 @@ public class ObjectNotFoundException extends Exception implements Serializable {
     public ObjectNotFoundException() {
         super();
     }
-    public ObjectNotFoundException(String msg) {
+    public ObjectNotFoundException(final String msg) {
         super(msg);
     }
 

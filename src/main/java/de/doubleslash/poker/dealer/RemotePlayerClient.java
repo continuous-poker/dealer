@@ -15,6 +15,6 @@ public interface RemotePlayerClient {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    PlayerBet getExtensionsById(Table id);
+    PlayerBet getExtensionsById(Table table);
 
 }

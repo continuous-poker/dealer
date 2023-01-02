@@ -23,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GameRound {
 
+    private static final int NUMBER_OF_FLOP_CARDS = 3;
+    private static final int NUMBER_OF_TURN_CARDS = 1;
+    private static final int NUMBER_OF_RIVER_CARDS = 1;
     private final List<Player> players;
     private final Table table;
     private final GameLogger history;
@@ -40,7 +43,7 @@ public class GameRound {
         deck.dealCards(playersInPlayOrder, 2);
         deck.burnCard();
 
-        history.log(gameId, table.getId(), table.getRound(), "Starting round %s.", table.getRound());
+        history.log(gameId, table.getTableId(), table.getRound(), "Starting round %s.", table.getRound());
 
         try {
             if (determineWinner(table, playersInPlayOrder, true)) {
@@ -49,7 +52,7 @@ public class GameRound {
 
             sleep();
 
-            deal(table, deck, 3);
+            deal(table, deck, NUMBER_OF_FLOP_CARDS);
             logFlop(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
@@ -58,7 +61,7 @@ public class GameRound {
 
             sleep();
 
-            deal(table, deck, 1);
+            deal(table, deck, NUMBER_OF_TURN_CARDS);
             logTurn(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
@@ -67,7 +70,7 @@ public class GameRound {
 
             sleep();
 
-            deal(table, deck, 1);
+            deal(table, deck, NUMBER_OF_RIVER_CARDS);
             logRiver(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
@@ -80,7 +83,7 @@ public class GameRound {
             return table;
 
         } finally {
-            history.log(gameId, table.getId(), table.getRound(), "Ending round %s.", table.getRound());
+            history.log(gameId, table.getTableId(), table.getRound(), "Ending round %s.", table.getRound());
 
             checkPlayerState(playersInPlayOrder);
             clearCards(players);
@@ -102,25 +105,25 @@ public class GameRound {
                                        .stream()
                                        .map(Card::toString)
                                        .collect(Collectors.joining(", "));
-        history.log(gameId, table.getId(), table.getRound(), "Flop: %s", dealtCards);
+        history.log(gameId, table.getTableId(), table.getRound(), "Flop: %s", dealtCards);
     }
 
     private void logTurn(final Table table) {
         final String dealtCards = table.getCommunityCards()
                                        .stream()
-                                       .skip(3)
+                                       .skip(NUMBER_OF_FLOP_CARDS)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        history.log(gameId, table.getId(), table.getRound(), "Turn: %s", dealtCards);
+        history.log(gameId, table.getTableId(), table.getRound(), "Turn: %s", dealtCards);
     }
 
     private void logRiver(final Table table) {
         final String dealtCards = table.getCommunityCards()
                                        .stream()
-                                       .skip(4)
+                                       .skip(NUMBER_OF_FLOP_CARDS + NUMBER_OF_TURN_CARDS)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        history.log(gameId, table.getId(), table.getRound(), "River: %s", dealtCards);
+        history.log(gameId, table.getTableId(), table.getRound(), "River: %s", dealtCards);
     }
 
     private void checkPlayerState(final List<Player> playersInPlayOrder) {
@@ -158,7 +161,7 @@ public class GameRound {
     }
 
     private void logPlayerCards(final Table table, final Player player) {
-        history.log(gameId, table.getId(), table.getRound(), "Player %s has %s.", player.getName(),
+        history.log(gameId, table.getTableId(), table.getRound(), "Player %s has %s.", player.getName(),
                 player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Deck {
+    @SuppressWarnings("PMD.LooseCoupling")
     private final LinkedList<Card> cards;
 
     public Deck(final List<Card> cards) {

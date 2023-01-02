@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder(alphabetic=true)
+@JsonPropertyOrder(alphabetic = true)
 public class Table implements CardReceiver, Serializable {
 
     private final List<Card> communityCards;
@@ -33,10 +33,10 @@ public class Table implements CardReceiver, Serializable {
     private int currentDealer;
 
     @JsonIgnore
-    private final long id;
+    private final long tableId;
 
-    public Table(final long id, final List<Player> players, final int smallBlind, final Consumer<String> tableLogger) {
-        this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(tableLogger), 0, 0, id);
+    public Table(final long tableId, final List<Player> players, final int smallBlind, final Consumer<String> tableLogger) {
+        this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(tableLogger), 0, 0, tableId);
     }
 
     @JsonProperty("pot")
@@ -80,10 +80,10 @@ public class Table implements CardReceiver, Serializable {
     @JsonIgnore
     public List<Player> getPlayersInPlayOrder() {
         final List<Player> playersInOrder = new ArrayList<>();
-        Player p = players.get(getCurrentDealer());
+        Player player = players.get(getCurrentDealer());
         for (int i = 0; i < getNumberOfActivePlayers(); i++) {
-            p = getNextActivePlayer(p);
-            playersInOrder.add(p);
+            player = getNextActivePlayer(player);
+            playersInOrder.add(player);
         }
         return playersInOrder;
     }
@@ -131,16 +131,16 @@ public class Table implements CardReceiver, Serializable {
     }
 
     public Table copyForActivePlayer() {
-        final Table t = SerializationUtils.clone(this);
-        final Player activePlayerObject = t.getPlayers().get(t.getActivePlayer());
+        final Table clonedTable = SerializationUtils.clone(this);
+        final Player activePlayerObject = clonedTable.getPlayers().get(clonedTable.getActivePlayer());
 
-        final List<Player> players2 = t.getPlayers();
+        final List<Player> players2 = clonedTable.getPlayers();
         for (final Player p : players2) {
             if (!p.equals(activePlayerObject)) {
                 p.clearCards();
             }
         }
-        return t;
+        return clonedTable;
     }
 
 }

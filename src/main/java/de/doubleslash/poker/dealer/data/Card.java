@@ -1,5 +1,6 @@
 package de.doubleslash.poker.dealer.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +10,7 @@ import org.apache.commons.text.WordUtils;
 @Data
 public class Card implements Comparable<Card>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6213516036380647535L;
 
     private final Rank rank;
@@ -20,8 +22,8 @@ public class Card implements Comparable<Card>, Serializable {
     }
 
     @Override
-    public int compareTo(final Card o) {
-        return rank.compareTo(o.getRank());
+    public int compareTo(final Card other) {
+        return rank.compareTo(other.getRank());
     }
 
     @JsonIgnore

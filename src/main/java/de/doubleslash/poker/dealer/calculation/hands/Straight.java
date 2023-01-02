@@ -10,6 +10,9 @@ import de.doubleslash.poker.dealer.data.Rank;
 
 public class Straight implements PokerHand {
 
+    private static final int SCORE = 4;
+    private static final int NUMBER_OF_CARDS = 5;
+
     @Override
     public int[] calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
@@ -22,7 +25,7 @@ public class Straight implements PokerHand {
             // Straight is A-5, so 5 is the highest card, not A
             highestValue = sequenceCards.get(1).getValue();
         }
-        return IntStream.of(4, highestValue).toArray();
+        return IntStream.of(SCORE, highestValue).toArray();
     }
 
     private boolean doesNotContainKing(final List<Card> sequenceCards) {
@@ -38,7 +41,7 @@ public class Straight implements PokerHand {
         final List<Card> cards = new ArrayList<>(cardsToScore);
 
         final List<Card> sequenceCards = getSequenceCards(cards);
-        return sequenceCards.size() >= 5;
+        return sequenceCards.size() >= NUMBER_OF_CARDS;
     }
 
     private List<Card> getSequenceCards(final List<Card> cards) {
@@ -56,14 +59,15 @@ public class Straight implements PokerHand {
                 } else if (lastCard.getValue() == card.getValue()) {
                     continue;
                 } else {
-                    if (sequenceCounter < 4) {
-                        sequenceCounter = 0;
+                    if (sequenceCounter < NUMBER_OF_CARDS) {
+                        sequenceCounter = 1;
                         sequenceCards.clear();
                         sequenceCards.add(card);
                     }
                 }
             } else {
                 sequenceCards.add(card);
+                sequenceCounter++;
             }
             lastCard = card;
         }

@@ -14,11 +14,17 @@ import de.doubleslash.poker.dealer.data.Suit;
 
 public class StraightFlush implements PokerHand {
 
+    private static final int SCORE = 8;
+    private static final int NUMBER_OF_CARDS = 5;
+
     @Override
     public int[] calculateScore(final List<Card> cardsToScore) {
         // [8,2-14]
         final Map<Suit, List<Card>> collect = getCardsGroupedBySuit(cardsToScore);
-        final Optional<List<Card>> flush = collect.values().stream().filter(list -> list.size() >= 5).findFirst();
+        final Optional<List<Card>> flush = collect.values()
+                                                  .stream()
+                                                  .filter(list -> list.size() >= NUMBER_OF_CARDS)
+                                                  .findFirst();
         final List<Card> sequenceCards = getSequenceCards(flush.orElseThrow(IllegalStateException::new));
         Collections.sort(sequenceCards);
         int highestValue = sequenceCards.get(0).getValue();
@@ -26,7 +32,7 @@ public class StraightFlush implements PokerHand {
             // Straight is A-5, so 5 is the highest card, not A
             highestValue = sequenceCards.get(1).getValue();
         }
-        return IntStream.of(8, highestValue).toArray();
+        return IntStream.of(SCORE, highestValue).toArray();
     }
 
     private boolean doesNotContainKing(final List<Card> sequenceCards) {
@@ -36,16 +42,16 @@ public class StraightFlush implements PokerHand {
     @Override
     public boolean matches(final List<Card> cardsToScore) {
         final Map<Suit, List<Card>> collect = getCardsGroupedBySuit(cardsToScore);
-        final Optional<List<Card>> flush = collect.values().stream().filter(list -> list.size() >= 5).findFirst();
-        if (flush.isPresent()) {
-            return hasSequence(flush.get());
-        }
-        return false;
+        final Optional<List<Card>> flush = collect.values()
+                                                  .stream()
+                                                  .filter(list -> list.size() >= NUMBER_OF_CARDS)
+                                                  .findFirst();
+        return flush.filter(this::hasSequence).isPresent();
     }
 
     private boolean hasSequence(final List<Card> cards) {
         final List<Card> sequenceCards = getSequenceCards(cards);
-        return sequenceCards.size() >= 5;
+        return sequenceCards.size() >= NUMBER_OF_CARDS;
     }
 
     private List<Card> getSequenceCards(final List<Card> cards) {
@@ -63,14 +69,15 @@ public class StraightFlush implements PokerHand {
                 } else if (lastCard.getValue() == card.getValue()) {
                     continue;
                 } else {
-                    if (sequenceCounter < 4) {
-                        sequenceCounter = 0;
+                    if (sequenceCounter < NUMBER_OF_CARDS) {
+                        sequenceCounter = 1;
                         sequenceCards.clear();
                         sequenceCards.add(card);
                     }
                 }
             } else {
                 sequenceCards.add(card);
+                sequenceCounter++;
             }
             lastCard = card;
         }

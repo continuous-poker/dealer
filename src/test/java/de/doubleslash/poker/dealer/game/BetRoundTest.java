@@ -30,8 +30,8 @@ class BetRoundTest {
 
         final Optional<Player> winner = betRound.run();
 
-        assertThat(player1.getBet()).isEqualTo(SMALL_BLIND);
-        assertThat(player2.getBet()).isEqualTo(SMALL_BLIND * 2);
+        assertThat(player1.getCurrentBet()).isEqualTo(SMALL_BLIND);
+        assertThat(player2.getCurrentBet()).isEqualTo(SMALL_BLIND * 2);
         assertThat(winner).contains(player2);
     }
 
@@ -45,8 +45,8 @@ class BetRoundTest {
 
         final Optional<Player> winner = betRound.run();
 
-        assertThat(player1.getBet()).isZero();
-        assertThat(player2.getBet()).isEqualTo(SMALL_BLIND * 2);
+        assertThat(player1.getCurrentBet()).isZero();
+        assertThat(player2.getCurrentBet()).isEqualTo(SMALL_BLIND * 2);
         assertThat(winner).contains(player2);
     }
 
@@ -60,8 +60,8 @@ class BetRoundTest {
 
         final Optional<Player> winner = betRound.run();
 
-        assertThat(player1.getBet()).isEqualTo(SMALL_BLIND * 2);
-        assertThat(player2.getBet()).isEqualTo(SMALL_BLIND * 2);
+        assertThat(player1.getCurrentBet()).isEqualTo(SMALL_BLIND * 2);
+        assertThat(player2.getCurrentBet()).isEqualTo(SMALL_BLIND * 2);
         assertThat(winner).isEmpty();
     }
 
@@ -75,8 +75,8 @@ class BetRoundTest {
 
         final Optional<Player> winner = betRound.run();
 
-        assertThat(player1.getBet()).isEqualTo(SMALL_BLIND * 4);
-        assertThat(player2.getBet()).isEqualTo(SMALL_BLIND * 4);
+        assertThat(player1.getCurrentBet()).isEqualTo(SMALL_BLIND * 4);
+        assertThat(player2.getCurrentBet()).isEqualTo(SMALL_BLIND * 4);
         assertThat(winner).isEmpty();
     }
 

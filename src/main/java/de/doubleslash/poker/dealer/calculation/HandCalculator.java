@@ -22,7 +22,7 @@ import de.doubleslash.poker.dealer.data.Player;
 
 public class HandCalculator {
 
-    List<PokerHand> hands;
+    private final List<PokerHand> hands;
 
     public HandCalculator() {
         hands = new ArrayList<>();
@@ -42,10 +42,10 @@ public class HandCalculator {
     public Map<int[], List<Player>> determineWinningHand(final List<Player> players, final List<Card> communityCards) {
 
         final TreeMap<int[], List<Player>> playerScores = new TreeMap<>(new ScoreComparator());
+        final List<Card> hand = new ArrayList<>();
         for (final Player player : players) {
             final List<Card> cards = player.getCards();
-
-            final List<Card> hand = new ArrayList<>();
+            hand.clear();
             hand.addAll(cards);
             hand.addAll(communityCards);
 

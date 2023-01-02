@@ -12,11 +12,15 @@ import de.doubleslash.poker.dealer.data.Rank;
 
 public class TwoPair implements PokerHand {
 
+    private static final int SCORE = 2;
+    private static final int NUMBER_OF_CARDS = 2;
+    private static final int NUMBER_OF_PAIRS = 2;
+
     @Override
     public int[] calculateScore(final List<Card> cardsToScore) {
         // [2,4-28,4-28,2-14]
 
-        final TreeMap<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
+        final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
 
         final int pairScore1 = getAndRemoveHighestPair(cardsGroupedByRank);
 
@@ -24,22 +28,26 @@ public class TwoPair implements PokerHand {
 
         final Card kicker = getHighestCard(cardsGroupedByRank);
 
-        return IntStream.of(2, pairScore1, pairScore2, kicker.getValue()).toArray();
+        return IntStream.of(SCORE, pairScore1, pairScore2, kicker.getValue()).toArray();
 
     }
 
-    private Card getHighestCard(final TreeMap<Rank, List<Card>> cardsGroupedByRank) {
-        return cardsGroupedByRank.firstEntry().getValue().get(0);
+    private Card getHighestCard(final Map<Rank, List<Card>> cardsGroupedByRank) {
+        return cardsGroupedByRank.values()
+                                 .stream()
+                                 .findFirst()
+                                 .map(list -> list.get(0))
+                                 .orElseThrow(IllegalStateException::new);
     }
 
-    private int getAndRemoveHighestPair(final TreeMap<Rank, List<Card>> cardsGroupedByRank) {
+    private int getAndRemoveHighestPair(final Map<Rank, List<Card>> cardsGroupedByRank) {
         final Rank rank = cardsGroupedByRank.entrySet()
                                             .stream()
-                                            .filter(e -> e.getValue().size() >= 2)
+                                            .filter(e -> e.getValue().size() >= NUMBER_OF_CARDS)
                                             .map(Entry::getKey)
                                             .findFirst()
                                             .orElseThrow(IllegalStateException::new);
-        final int pairScore = rank.getValue() * 2;
+        final int pairScore = rank.getValue() * NUMBER_OF_CARDS;
         cardsGroupedByRank.remove(rank);
         return pairScore;
     }
@@ -48,10 +56,11 @@ public class TwoPair implements PokerHand {
     public boolean matches(final List<Card> cardsToScore) {
         final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
 
-        return cardsGroupedByRank.values().stream().filter(list -> list.size() >= 2).count() >= 2;
+        return cardsGroupedByRank.values().stream().filter(list -> list.size() >= NUMBER_OF_CARDS).count()
+                >= NUMBER_OF_PAIRS;
     }
 
-    private TreeMap<Rank, List<Card>> getCardsGroupedByRank(final List<Card> cardsToScore) {
+    private Map<Rank, List<Card>> getCardsGroupedByRank(final List<Card> cardsToScore) {
         final Map<Rank, List<Card>> cardsGroupedByRank = cardsToScore.stream()
                                                                      .collect(Collectors.groupingBy(Card::getRank));
         return new TreeMap<>(cardsGroupedByRank);

@@ -38,27 +38,30 @@ public class Game implements Runnable {
     private final GameLogger logger;
     private final Duration timeBetweenGameRounds;
     private final Duration timeBetweenSteps;
-    private int tableId = 0;
+    private int tableId;
 
     @Override
+    @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
+                        "PMD.AvoidCatchingGenericException"
+    })
     public void run() {
         try {
             final List<Player> players = initPlayers();
 
-            final long id = nextTableId();
-            Table table = new Table(id, players, START_SMALL_BLIND,
-                    logMsg -> logger.log(gameId, id, 0, logMsg));
+            final long currentTableId = nextTableId();
+            Table table = new Table(currentTableId, players, START_SMALL_BLIND,
+                    logMsg -> logger.log(gameId, currentTableId, 0, logMsg));
 
-            tables.put(id, table);
+            tables.put(currentTableId, table);
 
             while (isMoreThanOnePlayerLeft(players)) {
 
                 table = new GameRound(players, table, logger, gameId, timeBetweenSteps).run();
-                tables.put(id, table);
+                tables.put(currentTableId, table);
                 sleep();
             }
-            addWinnerPoints(players, id);
-            gameHistory.addTableRoundHistory(id, logger.getCopyGameLog(gameId));
+            addWinnerPoints(players, currentTableId);
+            gameHistory.addTableRoundHistory(currentTableId, logger.getCopyGameLog(gameId));
 
         } catch (final Exception e) {
             log.error("Unexpected error in game", e);
@@ -97,12 +100,9 @@ public class Game implements Runnable {
     }
 
     private List<Player> initPlayers() {
-        final List<Player> players = new ArrayList<>();
-        for (final Team team : teams) {
-            final Player player = new Player(team.getName(), Status.ACTIVE, START_STACK, 0, team.getProvider());
-            players.add(player);
-        }
-        return players;
+        return teams.stream()
+                    .map(team -> new Player(team.getName(), Status.ACTIVE, START_STACK, 0, team.getProvider()))
+                    .toList();
     }
 
     public void addPlayer(final Team team) {
