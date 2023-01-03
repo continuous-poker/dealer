@@ -13,7 +13,7 @@ quarkus:
   log:
     level: INFO
     category:
-      "de.doubleslash":
+      "org.continuouspoker":
         level: DEBUG
 
 
