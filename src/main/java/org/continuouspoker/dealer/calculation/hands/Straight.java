@@ -74,12 +74,12 @@ public class Straight implements PokerHand {
         return sequenceCards;
     }
 
-    private int checkForLowEndAce(final List<Card> cards, final List<Card> sequenceCards, int sequenceCounter,
+    private int checkForLowEndAce(final List<Card> cards, final List<Card> sequenceCards, final int sequenceCounter,
             final Card card) {
         if (card.getRank() == Rank.TWO && containsAce(cards)) {
             // ace can be used at the low end of a straight too
-            sequenceCounter++;
             sequenceCards.add(getAce(cards));
+            return sequenceCounter + 1;
         }
         return sequenceCounter;
     }

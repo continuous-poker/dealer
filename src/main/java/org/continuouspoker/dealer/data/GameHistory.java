@@ -1,43 +1,39 @@
 package org.continuouspoker.dealer.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.continuouspoker.dealer.LogEntry;
 import lombok.Getter;
+import org.continuouspoker.dealer.LogEntry;
 
 public class GameHistory {
 
     @Getter
-    private final Map<Long, Map<Long, List<String>>> gameLogHistory = new HashMap<>(); //Map<tableId, Map<roundId, roundMessages>>
+    private final List<TableLog> gameLogHistory = new ArrayList<>();
 
     public void addTableRoundHistory(final Long tableId, final List<LogEntry> gameHistory) {
-        final Map<Long, List<String>> tableLogHistory = createMapForTable(gameHistory);
+        final List<RoundLog> tableLogHistory = createMapForTable(tableId, gameHistory);
 
-        gameLogHistory.put(tableId, tableLogHistory);
+        gameLogHistory.add(new TableLog(tableId, tableLogHistory));
     }
 
-    public Map<Long, List<String>> createMapForTable(final List<LogEntry> gameHistory) {
+    public List<RoundLog> createMapForTable(final Long tableId, final List<LogEntry> gameHistory) {
 
-        final Map<Long, List<String>> tableMessages = new HashMap<>();
-        final List<String> roundMessages = new ArrayList<>();
+        final List<RoundLog> tableMessages = new ArrayList<>();
 
-        long roundId = 1L;
+        gameHistory.stream()
+                   .filter(log -> log.getTableId() == tableId)
+                   .collect(Collectors.groupingBy(LogEntry::getRoundId))
+                   .forEach((roundId, messages) -> tableMessages.add(
+                           new RoundLog(roundId, messages.stream().map(LogEntry::getMessage).toList())));
 
-        for (final LogEntry logEntry : gameHistory) {
-
-            if (logEntry.getRoundId() == roundId || logEntry.getRoundId() == 0) {
-                roundMessages.add(logEntry.getMessage());
-            } else {
-                final List<String> copyMessageList = new ArrayList<>(roundMessages);
-                tableMessages.put(roundId, copyMessageList);
-                roundMessages.clear();
-                roundId = logEntry.getRoundId();
-                roundMessages.add(logEntry.getMessage());
-            }
-        }
         return tableMessages;
+    }
+
+    public record TableLog(long tableId, List<RoundLog> roundLogs) {
+    }
+
+    public record RoundLog(long roundId, List<String> messages) {
     }
 }

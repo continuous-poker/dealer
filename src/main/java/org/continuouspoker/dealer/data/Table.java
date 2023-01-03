@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -26,6 +27,8 @@ public class Table implements CardReceiver, Serializable {
     @Getter
     private int round;
     private int smallBlind;
+
+    @Setter
     private int minimumBet;
     @JsonIgnore
     private final Pot pot;
@@ -107,10 +110,6 @@ public class Table implements CardReceiver, Serializable {
 
     public void payWinners(final Map<int[], List<Player>> rankedPlayers) {
         pot.pay(rankedPlayers);
-    }
-
-    public void setMinimumBet(final int bet) {
-        minimumBet = bet;
     }
 
     public void resetForNextRound() {

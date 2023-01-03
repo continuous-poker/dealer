@@ -82,47 +82,57 @@ public class Pot implements Serializable {
     }
 
     public void collect(final List<Player> playersInPlayOrder) {
-        final List<Player> players = new ArrayList<>(playersInPlayOrder);
-        players.sort(Comparator.comparingInt(Player::getCurrentBet));
+        final List<Player> players = sortPlayersByCurrentBet(playersInPlayOrder);
 
         final PotPart startPot = pots.get(pots.size() - 1);
 
         pots.forEach(PotPart::resetBetLimit);
 
-        players.forEach(p -> {
-            int bet = p.collectBet();
+        players.forEach(p -> collectFromPlayer(startPot, p));
 
-            boolean skip = true;
-            for (final PotPart pot : pots) {
-                if (pot.equals(startPot)) {
-                    skip = false;
-                }
-                if (skip) {
-                    continue;
-                }
+    }
 
-                final int betLimit = pot.getBetLimit();
-                if (betLimit == 0) {
-                    pot.add(bet);
-                    if (p.isAllIn()) {
-                        pot.setBetLimit(bet);
-                    }
-                    bet = 0;
-                } else {
-                    pot.add(betLimit);
-                    bet -= betLimit;
-                }
+    private void collectFromPlayer(final PotPart startPot, final Player player) {
+        int remainingBet = player.collectBet();
 
-                pot.addPayee(p);
+        boolean skip = true;
+        for (final PotPart pot : pots) {
+            if (pot.equals(startPot)) {
+                skip = false;
             }
-            if (bet > 0) {
-                final PotPart pot = new PotPart();
-                pot.addPayee(p);
-                pot.add(bet);
-                pots.add(pot);
+            if (skip) {
+                continue;
             }
-        });
 
+            remainingBet = addToPot(player, remainingBet, pot);
+        }
+        if (remainingBet > 0) {
+            final PotPart pot = new PotPart();
+            pot.addPayee(player);
+            pot.add(remainingBet);
+            pots.add(pot);
+        }
+    }
+
+    private static int addToPot(final Player player, final int bet, final PotPart pot) {
+        final int betLimit = pot.getBetLimit();
+        pot.addPayee(player);
+        if (betLimit == 0) {
+            pot.add(bet);
+            if (player.isAllIn()) {
+                pot.setBetLimit(bet);
+            }
+            return 0;
+        } else {
+            pot.add(betLimit);
+            return bet - betLimit;
+        }
+    }
+
+    private static List<Player> sortPlayersByCurrentBet(final List<Player> players) {
+        final ArrayList<Player> localPlayers = new ArrayList<>(players);
+        localPlayers.sort(Comparator.comparingInt(Player::getCurrentBet));
+        return localPlayers;
     }
 
     @Override

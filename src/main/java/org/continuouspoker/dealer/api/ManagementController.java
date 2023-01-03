@@ -184,9 +184,19 @@ public class ManagementController {
     @Path("/{gameId}/history")
     public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam(PARAM_GAME_ID) final long gameId)
             throws ObjectNotFoundException {
-        return gameState.getGame(gameId)
-                        .map(Game::getGameHistory)
-                        .map(GameHistory::getGameLogHistory)
-                        .orElseThrow(() -> new ObjectNotFoundException("GameHistory not found!"));
+        final List<GameHistory.TableLog> tableLogs = gameState.getGame(gameId)
+                                                              .map(Game::getGameHistory)
+                                                              .map(GameHistory::getGameLogHistory)
+                                                              .orElseThrow(() -> new ObjectNotFoundException(
+                                                                      "GameHistory not found!"));
+        final Map<Long, Map<Long, List<String>>> map = new HashMap<>();
+        tableLogs.forEach(tableLog -> map.put(tableLog.tableId(), createMap(tableLog.roundLogs())));
+        return map;
+    }
+
+    private Map<Long, List<String>> createMap(final List<GameHistory.RoundLog> roundLogs) {
+        final HashMap<Long, List<String>> map = new HashMap<>();
+        roundLogs.forEach(roundLog -> map.put(roundLog.roundId(), roundLog.messages()));
+        return map;
     }
 }
