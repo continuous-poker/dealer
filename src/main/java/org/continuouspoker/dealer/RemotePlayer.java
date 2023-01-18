@@ -45,7 +45,7 @@ public class RemotePlayer implements ActionProvider {
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public int requestBet(final Table table) {
-        if (table.getTableId() == blockedTable) {
+        if (table.getTournamentId() == blockedTable) {
             return 0;
         }
 
@@ -63,7 +63,7 @@ public class RemotePlayer implements ActionProvider {
     private void addStrike(final Table table) {
         strike++;
         if (strike == MAX_STRIKES) {
-            blockedTable = table.getTableId();
+            blockedTable = table.getTournamentId();
             strike = 0;
         }
     }

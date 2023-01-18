@@ -1,6 +1,8 @@
 package org.continuouspoker.dealer.game;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,45 +11,60 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.continuouspoker.dealer.GameLogger;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.commons.lang3.SerializationUtils;
+import org.continuouspoker.dealer.GameRoundLogEntry;
 import org.continuouspoker.dealer.calculation.HandCalculator;
+import org.continuouspoker.dealer.calculation.hands.Score;
 import org.continuouspoker.dealer.data.Card;
 import org.continuouspoker.dealer.data.Deck;
 import org.continuouspoker.dealer.data.Player;
+import org.continuouspoker.dealer.data.Pot;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class GameRound {
 
     private static final int NUMBER_OF_FLOP_CARDS = 3;
     private static final int NUMBER_OF_TURN_CARDS = 1;
     private static final int NUMBER_OF_RIVER_CARDS = 1;
+
+    @Getter
+    private final long roundId;
+
     private final List<Player> players;
-    private final Table table;
-    private final GameLogger history;
-    private final long gameId;
+
+    @Getter
+    private Table table;
 
     private final Duration timeBetweenSteps;
 
-    public Table run() {
-        return playWithDeck(new Deck());
+    private final List<GameRoundLogEntry> gamelog = new ArrayList<>();
+
+    public void run() {
+        playWithDeck(new Deck());
     }
 
-    protected Table playWithDeck(final Deck deck) {
+    private void logStep(final String msg, final Object... values) {
+        gamelog.add(new GameRoundLogEntry(roundId, ZonedDateTime.now(), String.format(msg, values)));
+    }
+
+    protected void playWithDeck(final Deck deck) {
+        table.setPot(new Pot(this::logStep));
 
         final List<Player> playersInPlayOrder = table.getPlayersInPlayOrder();
         deck.dealCards(playersInPlayOrder, 2);
         deck.burnCard();
 
-        history.log(gameId, table.getTableId(), table.getRound(), "Starting round %s.", table.getRound());
+        logStep("Starting round %s.", table.getRound());
 
         try {
             if (determineWinner(table, playersInPlayOrder, true)) {
-                return table;
+                return;
             }
 
             sleep();
@@ -56,7 +73,7 @@ public class GameRound {
             logFlop(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return table;
+                return;
             }
 
             sleep();
@@ -65,7 +82,7 @@ public class GameRound {
             logTurn(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return table;
+                return;
             }
 
             sleep();
@@ -74,20 +91,24 @@ public class GameRound {
             logRiver(table);
 
             if (determineWinner(table, playersInPlayOrder, false)) {
-                return table;
+                return;
             }
 
             sleep();
 
             showdown(table, playersInPlayOrder);
-            return table;
 
         } finally {
-            history.log(gameId, table.getTableId(), table.getRound(), "Ending round %s.", table.getRound());
+            logStep("Ending round %s.", table.getRound());
 
             checkPlayerState(playersInPlayOrder);
+            final var clonedTable = SerializationUtils.clone(table);
+
             clearCards(players);
             table.resetForNextRound();
+
+            // store last table state for history
+            this.table = clonedTable;
         }
     }
 
@@ -105,7 +126,7 @@ public class GameRound {
                                        .stream()
                                        .map(Card::toString)
                                        .collect(Collectors.joining(", "));
-        history.log(gameId, table.getTableId(), table.getRound(), "Flop: %s", dealtCards);
+        logStep("Flop: %s", dealtCards);
     }
 
     private void logTurn(final Table table) {
@@ -114,16 +135,16 @@ public class GameRound {
                                        .skip(NUMBER_OF_FLOP_CARDS)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        history.log(gameId, table.getTableId(), table.getRound(), "Turn: %s", dealtCards);
+        logStep("Turn: %s", dealtCards);
     }
 
     private void logRiver(final Table table) {
         final String dealtCards = table.getCommunityCards()
                                        .stream()
-                                       .skip(NUMBER_OF_FLOP_CARDS + NUMBER_OF_TURN_CARDS)
+                                       .skip(NUMBER_OF_FLOP_CARDS + (long) NUMBER_OF_TURN_CARDS)
                                        .map(Card::toString)
                                        .collect(Collectors.joining());
-        history.log(gameId, table.getTableId(), table.getRound(), "River: %s", dealtCards);
+        logStep("River: %s", dealtCards);
     }
 
     private void checkPlayerState(final List<Player> playersInPlayOrder) {
@@ -138,7 +159,8 @@ public class GameRound {
 
     private boolean determineWinner(final Table table, final List<Player> playersInPlayOrder, final boolean isPreFlop) {
         if (!everyoneIsAllIn(playersInPlayOrder)) {
-            final Optional<Player> winningPlayer = new BetRound(gameId, table, playersInPlayOrder, isPreFlop, history).run();
+            final Optional<Player> winningPlayer = new BetRound(table, playersInPlayOrder, isPreFlop,
+                    this::logStep).run();
             table.collectChips(playersInPlayOrder);
             if (winningPlayer.isPresent()) {
                 final Player winner = winningPlayer.get();
@@ -152,16 +174,16 @@ public class GameRound {
     private void showdown(final Table table, final List<Player> players) {
         final List<Player> playersStillActive = players.stream().filter(p -> p.getStatus() == Status.ACTIVE).toList();
 
-        final Map<int[], List<Player>> rankedPlayers = new HandCalculator().determineWinningHand(playersStillActive,
+        final Map<Score, List<Player>> rankedPlayers = new HandCalculator().determineWinningHand(playersStillActive,
                 Collections.unmodifiableList(table.getCommunityCards()));
 
-        rankedPlayers.values().stream().flatMap(Collection::stream).forEach(player -> logPlayerCards(table, player));
+        rankedPlayers.values().stream().flatMap(Collection::stream).forEach(this::logPlayerCards);
 
         table.payWinners(rankedPlayers);
     }
 
-    private void logPlayerCards(final Table table, final Player player) {
-        history.log(gameId, table.getTableId(), table.getRound(), "Player %s has %s.", player.getName(),
+    private void logPlayerCards(final Player player) {
+        logStep("Player %s has %s.", player.getName(),
                 player.getCards().stream().map(Card::toString).collect(Collectors.joining(" and ")));
     }
 
@@ -184,5 +206,9 @@ public class GameRound {
 
     private void clearCards(final List<Player> players) {
         players.forEach(p -> p.getCards().clear());
+    }
+
+    public Stream<GameRoundLogEntry> getHistory() {
+        return this.gamelog.stream();
     }
 }

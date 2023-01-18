@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.continuouspoker.dealer.data.Card;
 import org.continuouspoker.dealer.data.Player;
+import org.continuouspoker.dealer.data.Pot;
 import org.continuouspoker.dealer.data.Rank;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Suit;
@@ -38,8 +39,8 @@ class RemotePlayerQuarkusTest {
         final Player bot3 = new Player("Bot3", Status.ACTIVE, 1000, 0, a -> 1);
         bot3.takeCard(new Card(Rank.TWO, Suit.HEARTS));
         bot3.takeCard(new Card(Rank.JACK, Suit.CLUBS));
-        final Table table = new Table(1, List.of(bot1, bot2, bot3), 10, a -> {
-        });
+        final Table table = new Table(1, List.of(bot1, bot2, bot3), 10);
+        table.setPot(new Pot(msg -> {}));
 
         table.takeCard(new Card(Rank.TEN, Suit.HEARTS));
         table.takeCard(new Card(Rank.FIVE, Suit.CLUBS));

@@ -19,14 +19,14 @@ public class FullHouse implements PokerHand {
     private static final int PAIR_SIZE = 2;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         // [6,6-42,4-28]
 
         final int tripletScore = getTripletScore(cards);
         final int pairScore = getPairScore(cards);
 
-        return IntStream.of(SCORE, tripletScore, pairScore).toArray();
+        return new Score("Full House", IntStream.of(SCORE, tripletScore, pairScore).toArray());
 
     }
 

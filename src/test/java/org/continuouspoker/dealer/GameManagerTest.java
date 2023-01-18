@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class GameManagerTest {
 
-    private final GameManager state = new GameManager(new GameLogger());
+    private final GameManager state = new GameManager();
 
     @Test
     void testGameRun() {

@@ -16,7 +16,7 @@ public class Flush implements PokerHand {
     private static final int SCORE = 5;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         // [5,2-14,2-14,2-14,2-14,2-14]
         final Map<Suit, List<Card>> cardsGroupedBySuit = getCardsGroupedBySuit(cardsToScore);
         final List<Card> flush = getFlushCards(cardsGroupedBySuit);
@@ -26,7 +26,8 @@ public class Flush implements PokerHand {
             flush.remove(flush.size() - 1);
         }
 
-        return IntStream.concat(IntStream.of(SCORE), flush.stream().mapToInt(Card::getValue)).toArray();
+        return new Score("Flush",
+                IntStream.concat(IntStream.of(SCORE), flush.stream().mapToInt(Card::getValue)).toArray());
     }
 
     private List<Card> getFlushCards(final Map<Suit, List<Card>> cardsGroupedBySuit) {

@@ -20,46 +20,46 @@ import java.util.List;
 import org.continuouspoker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
-public class StraightTest {
+class StraightTest {
 
     private final Straight strategy = new Straight();
 
     @Test
-    public void testCalculate_withLongStraight() throws Exception {
+    void testCalculate_withLongStraight() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(SIX, SPADES), new Card(ACE, CLUBS), new Card(FIVE, HEARTS),
                 new Card(TWO, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(THREE, SPADES));
         Collections.shuffle(cards);
 
-        final int[] score = strategy.calculateScore(cards);
+        final Score score = strategy.calculateScore(cards);
 
         assertArrayEquals(new int[] { 4,
                                       6
-        }, score);
+        }, score.scoreRank());
     }
 
     @Test
-    public void testCalculate() throws Exception {
+    void testCalculate() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(SIX, SPADES), new Card(ACE, CLUBS), new Card(SEVEN, HEARTS),
                 new Card(KING, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(THREE, SPADES));
         Collections.shuffle(cards);
 
-        final int[] score = strategy.calculateScore(cards);
+        final Score score = strategy.calculateScore(cards);
 
         assertArrayEquals(new int[] { 4,
                                       7
-        }, score);
+        }, score.scoreRank());
     }
 
     @Test
-    public void testCalculate_withLowEndAce() throws Exception {
+    void testCalculate_withLowEndAce() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(ACE, SPADES), new Card(FIVE, CLUBS), new Card(FIVE, HEARTS),
                 new Card(TWO, CLUBS), new Card(FOUR, SPADES), new Card(FIVE, SPADES), new Card(THREE, SPADES));
         Collections.shuffle(cards);
 
-        final int[] score = strategy.calculateScore(cards);
+        final Score score = strategy.calculateScore(cards);
 
         assertArrayEquals(new int[] { 4,
                                       5
-        }, score);
+        }, score.scoreRank());
     }
 }

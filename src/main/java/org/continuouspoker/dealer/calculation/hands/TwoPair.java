@@ -17,7 +17,7 @@ public class TwoPair implements PokerHand {
     private static final int NUMBER_OF_PAIRS = 2;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         // [2,4-28,4-28,2-14]
 
         final Map<Rank, List<Card>> cardsGroupedByRank = getCardsGroupedByRank(cardsToScore);
@@ -28,7 +28,7 @@ public class TwoPair implements PokerHand {
 
         final Card kicker = getHighestCard(cardsGroupedByRank);
 
-        return IntStream.of(SCORE, pairScore1, pairScore2, kicker.getValue()).toArray();
+        return new Score("Two Pair", IntStream.of(SCORE, pairScore1, pairScore2, kicker.getValue()).toArray());
 
     }
 

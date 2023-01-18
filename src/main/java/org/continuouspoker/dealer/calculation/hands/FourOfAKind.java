@@ -18,7 +18,7 @@ public class FourOfAKind implements PokerHand {
     private static final int NUMBER_OF_CARDS = 4;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         // [7,8-56,2-14]
 
@@ -31,7 +31,7 @@ public class FourOfAKind implements PokerHand {
 
         Collections.sort(cards);
 
-        return IntStream.of(SCORE, quadScore, cards.get(0).getValue()).toArray();
+        return new Score("Four Of A Kind", IntStream.of(SCORE, quadScore, cards.get(0).getValue()).toArray());
 
     }
 

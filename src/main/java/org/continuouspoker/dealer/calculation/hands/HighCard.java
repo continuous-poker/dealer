@@ -10,7 +10,7 @@ import org.continuouspoker.dealer.data.Card;
 public class HighCard implements PokerHand {
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         Collections.sort(cards);
         // [0,2-14,2-14,2-14,2-14,2-14]
@@ -19,7 +19,8 @@ public class HighCard implements PokerHand {
         cards.remove(cards.size() - 1);
         cards.remove(cards.size() - 1);
 
-        return IntStream.concat(IntStream.of(0), cards.stream().mapToInt(Card::getValue)).toArray();
+        return new Score("High Card",
+                IntStream.concat(IntStream.of(0), cards.stream().mapToInt(Card::getValue)).toArray());
     }
 
     @Override

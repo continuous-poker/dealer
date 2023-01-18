@@ -18,7 +18,7 @@ public class ThreeOfAKind implements PokerHand {
     private static final int NUMBER_OF_CARDS = 3;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         // [3,6-42,2-14,2-14]
 
@@ -31,7 +31,8 @@ public class ThreeOfAKind implements PokerHand {
 
         Collections.sort(cards);
 
-        return IntStream.of(SCORE, tripletScore, cards.get(0).getValue(), cards.get(1).getValue()).toArray();
+        return new Score("Three Of A Kind",
+                IntStream.of(SCORE, tripletScore, cards.get(0).getValue(), cards.get(1).getValue()).toArray());
 
     }
 

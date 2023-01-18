@@ -3,17 +3,16 @@ package org.continuouspoker.dealer;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.continuouspoker.dealer.game.Game;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -29,20 +28,13 @@ public class GameManager {
     /* package */ Duration stepSleepDuration;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
-    private final GameLogger log;
-
     private final Random random = new Random();
 
-    private final Map<Game, ScheduledFuture<?>> games = new ConcurrentHashMap<>();
-
-    @Inject
-    public GameManager(final GameLogger log) {
-        this.log = log;
-    }
+    private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
 
     public long createNewGame(final String name) {
         final long gameId = generateGameId();
-        final Game game = new Game(gameId, name, log, gameRoundSleepDuration, stepSleepDuration);
+        final Game game = new Game(gameId, name, gameRoundSleepDuration, stepSleepDuration);
         games.put(game, null);
         return gameId;
     }
@@ -76,7 +68,7 @@ public class GameManager {
 
     public Game runSingleGame(final String name, final Collection<Team> players) {
         final long generateGameId = generateGameId();
-        final Game game = new Game(generateGameId, name, log, Duration.ZERO, Duration.ZERO);
+        final Game game = new Game(generateGameId, name, Duration.ZERO, Duration.ZERO);
         players.forEach(game::addPlayer);
         game.run();
         return game;

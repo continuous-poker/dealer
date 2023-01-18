@@ -19,17 +19,17 @@ import java.util.List;
 import org.continuouspoker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
-public class HighCardTest {
+class HighCardTest {
 
     private final HighCard strategy = new HighCard();
 
     @Test
-    public void testCalculate() throws Exception {
+    void testCalculate() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(KING, SPADES), new Card(TWO, CLUBS), new Card(FIVE, SPADES),
                 new Card(JACK, SPADES), new Card(TEN, SPADES), new Card(FOUR, SPADES), new Card(NINE, HEARTS));
         Collections.shuffle(cards);
 
-        final int[] score = strategy.calculateScore(cards);
+        final Score score = strategy.calculateScore(cards);
 
         assertArrayEquals(new int[] { 0,
                                       13,
@@ -37,7 +37,7 @@ public class HighCardTest {
                                       10,
                                       9,
                                       5
-        }, score);
+        }, score.scoreRank());
     }
 
 }

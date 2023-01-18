@@ -13,6 +13,7 @@ import org.continuouspoker.dealer.calculation.hands.HighCard;
 import org.continuouspoker.dealer.calculation.hands.Pair;
 import org.continuouspoker.dealer.calculation.hands.PokerHand;
 import org.continuouspoker.dealer.calculation.hands.RoyalFlush;
+import org.continuouspoker.dealer.calculation.hands.Score;
 import org.continuouspoker.dealer.calculation.hands.Straight;
 import org.continuouspoker.dealer.calculation.hands.StraightFlush;
 import org.continuouspoker.dealer.calculation.hands.ThreeOfAKind;
@@ -39,9 +40,9 @@ public class HandCalculator {
         hands.add(new HighCard());
     }
 
-    public Map<int[], List<Player>> determineWinningHand(final List<Player> players, final List<Card> communityCards) {
+    public Map<Score, List<Player>> determineWinningHand(final List<Player> players, final List<Card> communityCards) {
 
-        final TreeMap<int[], List<Player>> playerScores = new TreeMap<>(new ScoreComparator());
+        final TreeMap<Score, List<Player>> playerScores = new TreeMap<>(new ScoreComparator());
         final List<Card> hand = new ArrayList<>();
         for (final Player player : players) {
             final List<Card> cards = player.getCards();
@@ -51,7 +52,9 @@ public class HandCalculator {
 
             for (final PokerHand calc : hands) {
                 if (calc.matches(Collections.unmodifiableList(hand))) {
-                    final int[] score = calc.calculateScore(hand);
+                    final Score score = calc.calculateScore(hand);
+
+
                     playerScores.computeIfAbsent(score, k -> new ArrayList<>()).add(player);
                     break;
                 }
@@ -59,5 +62,7 @@ public class HandCalculator {
         }
         return playerScores;
     }
+
+
 
 }

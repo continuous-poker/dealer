@@ -15,7 +15,7 @@ import org.continuouspoker.dealer.data.Rank;
 public class Pair implements PokerHand {
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         // [1,4-28,2-14,2-14,2-14]
 
@@ -28,8 +28,9 @@ public class Pair implements PokerHand {
 
         Collections.sort(cards);
 
-        return IntStream.of(1, pairScore, cards.get(0).getValue(), cards.get(1).getValue(), cards.get(2).getValue())
-                        .toArray();
+        return new Score("Pair",
+                IntStream.of(1, pairScore, cards.get(0).getValue(), cards.get(1).getValue(), cards.get(2).getValue())
+                         .toArray());
 
     }
 

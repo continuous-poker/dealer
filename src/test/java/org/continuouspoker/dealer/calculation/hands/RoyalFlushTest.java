@@ -31,10 +31,10 @@ class RoyalFlushTest {
                 new Card(JACK, SPADES), new Card(TEN, SPADES), new Card(NINE, SPADES), new Card(THREE, HEARTS));
         Collections.shuffle(cards);
 
-        final int[] score = strategy.calculateScore(cards);
+        final Score score = strategy.calculateScore(cards);
 
         assertArrayEquals(new int[] { 9
-        }, score);
+        }, score.scoreRank());
     }
 
     @Test

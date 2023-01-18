@@ -3,7 +3,7 @@ package org.continuouspoker.dealer.game;
 import java.util.List;
 import java.util.Optional;
 
-import org.continuouspoker.dealer.GameLogger;
+import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Seats;
 import org.continuouspoker.dealer.data.Table;
@@ -15,12 +15,10 @@ public class BetRound {
     private final Table table;
     private final List<Player> playersInPlayOrder;
     private final boolean isPreFlop;
-    private final GameLogger logger;
-    private final long gameId;
+    private final StepLogger logger;
 
-    public BetRound(final long gameId, final Table table, final List<Player> playersInPlayOrder,
-            final boolean isPreFlop, final GameLogger logger) {
-        this.gameId = gameId;
+    public BetRound(final Table table, final List<Player> playersInPlayOrder, final boolean isPreFlop,
+            final StepLogger logger) {
         this.table = table;
         this.playersInPlayOrder = playersInPlayOrder;
         this.isPreFlop = isPreFlop;
@@ -28,7 +26,7 @@ public class BetRound {
     }
 
     public Optional<Player> run() {
-        logger.log(gameId, table.getTableId(), table.getRound(), "Starting bet round.");
+        logger.log("Starting bet round.");
         final Seats seats = new Seats(playersInPlayOrder);
         if (isPreFlop) {
             collectBlinds(table, seats);
@@ -41,8 +39,7 @@ public class BetRound {
             // check for only one left -> he wins
             if (onlyOneActivePlayerLeft(seats)) {
                 // we have a winner
-                logger.log(gameId, table.getTableId(), table.getRound(), "Ending bet round with winner: %s",
-                        seats.getCurrentPlayer().getName());
+                logger.log("Ending bet round with winner: %s", seats.getCurrentPlayer().getName());
 
                 return Optional.of(seats.getCurrentPlayer());
             }
@@ -51,7 +48,7 @@ public class BetRound {
             }
         }
 
-        logger.log(gameId, table.getTableId(), table.getRound(), "Ending bet round.");
+        logger.log("Ending bet round.");
         return Optional.empty();
 
     }
@@ -109,11 +106,9 @@ public class BetRound {
         big.bet(table.getSmallBlind() * 2);
 
         if (big.isAllIn()) {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s goes all in for big blind with %s.",
-                    big.getName(), big.getCurrentBet());
+            logger.log("Player %s goes all in for big blind with %s.", big.getName(), big.getCurrentBet());
         } else {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s pays big blind of %s.", big.getName(),
-                    big.getCurrentBet());
+            logger.log("Player %s pays big blind of %s.", big.getName(), big.getCurrentBet());
             log.info("{} pays big blind of {}", big.getName(), big.getCurrentBet());
         }
     }
@@ -123,11 +118,9 @@ public class BetRound {
         small.bet(table.getSmallBlind());
 
         if (small.isAllIn()) {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s goes all in for small blind with %s.",
-                    small.getName(), small.getCurrentBet());
+            logger.log("Player %s goes all in for small blind with %s.", small.getName(), small.getCurrentBet());
         } else {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s pays small blind of %s.", small.getName(),
-                    small.getCurrentBet());
+            logger.log("Player %s pays small blind of %s.", small.getName(), small.getCurrentBet());
             log.info("{} pays small blind of {}", small.getName(), small.getCurrentBet());
         }
     }
@@ -143,7 +136,7 @@ public class BetRound {
             result = player.getCurrentBet();
         }
 
-        return new BetDecision(gameId, logger).performAction(table, player, result);
+        return new BetDecision(logger).performAction(table, player, result);
     }
 
 }

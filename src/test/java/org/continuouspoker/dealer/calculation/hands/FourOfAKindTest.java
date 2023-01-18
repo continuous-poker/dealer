@@ -15,21 +15,21 @@ import java.util.List;
 import org.continuouspoker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
-public class FourOfAKindTest {
+class FourOfAKindTest {
 
     private final FourOfAKind fourOfAKind = new FourOfAKind();
 
     @Test
-    public void testCalculateFourOfAKind() throws Exception {
+    void testCalculateFourOfAKind() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(ACE, SPADES), new Card(FIVE, CLUBS), new Card(FIVE, HEARTS),
                 new Card(ACE, CLUBS), new Card(ACE, DIAMONDS), new Card(FIVE, SPADES), new Card(ACE, HEARTS));
         Collections.shuffle(cards);
 
-        final int[] score = fourOfAKind.calculateScore(cards);
+        final Score score = fourOfAKind.calculateScore(cards);
 
         assertArrayEquals(new int[] { 7,
                                       56,
                                       5
-        }, score);
+        }, score.scoreRank());
     }
 }

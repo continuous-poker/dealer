@@ -4,42 +4,44 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.continuouspoker.dealer.calculation.hands.Score;
 
 @Getter
-@AllArgsConstructor
 @JsonPropertyOrder(alphabetic = true)
 public class Table implements CardReceiver, Serializable {
 
-    private final List<Card> communityCards;
+    @JsonIgnore
+    private final long tournamentId;
+    private final List<Card> communityCards = new ArrayList<>();
     private final List<Player> players;
 
     @Getter
-    private int round;
+    private int round = 1;
     private int smallBlind;
 
     @Setter
     private int minimumBet;
     @JsonIgnore
-    private final Pot pot;
+    @Setter
+    private Pot pot;
     private int activePlayer;
     private int currentDealer;
 
-    @JsonIgnore
-    private final long tableId;
 
-    public Table(final long tableId, final List<Player> players, final int smallBlind, final Consumer<String> tableLogger) {
-        this(new ArrayList<>(), players, 1, smallBlind, smallBlind * 2, new Pot(tableLogger), 0, 0, tableId);
+    public Table(final long tournamentId, final List<Player> players, final int smallBlind) {
+        this.tournamentId = tournamentId;
+        this.players = players;
+        this.smallBlind = smallBlind;
+        this.minimumBet = smallBlind * 2;
     }
 
     @JsonProperty("pot")
@@ -108,7 +110,7 @@ public class Table implements CardReceiver, Serializable {
         pot.pay(winner);
     }
 
-    public void payWinners(final Map<int[], List<Player>> rankedPlayers) {
+    public void payWinners(final Map<Score, List<Player>> rankedPlayers) {
         pot.pay(rankedPlayers);
     }
 

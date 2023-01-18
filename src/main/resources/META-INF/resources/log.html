@@ -202,18 +202,31 @@
         height: 90%;
         width: auto;
     }
-    
+
     .clickable:hover {
         cursor: pointer;
         text-decoration: underline;
     }
 
     .active {
+        color: #FFFFFF;
+    }
+
+    .scoreboard, .players {
         color: #CCCCCC;
     }
+
     .active:hover {
         cursor: default;
         text-decoration: none;
+    }
+
+    .toggle {
+        padding-right: 4px;
+    }
+
+    .toggle:hover {
+        cursor: pointer;
     }
 
     /*Css-Style for GameLog*/
@@ -232,13 +245,15 @@
 <div id="app">
 
     <header id="header">
-        <h1>Poker - Game Table Info (ID: {{ gameId }} - State: {{ gamestate }})</h1>
+        <h1>Poker - Game Table Info (ID: {{ gameId }} - State: {{ gamestate.state }})</h1>
     </header>
 
-    <aside id="playerBar" >
+    <aside id="playerBar">
 
-            <h2 class="playerBarHeadLines clickable" :class="{ active: displayPlayers }" @click="displayHandler('players', null, null)">Players</h2>
-            <h2 class="playerBarHeadLines clickable" :class="{ active: displayScoreboard }" @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
+        <h2 class="playerBarHeadLines clickable players" :class="{ active: displayPlayers }"
+            @click="displayHandler('players', null, null)">Players</h2>
+        <h2 class="playerBarHeadLines clickable scoreboard" :class="{ active: displayScoreboard }"
+            @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
 
         <section id="singlePlayer" v-if="displayPlayers" v-for="player in table.players">
             <section id="playerInfos">
@@ -247,15 +262,15 @@
                 <p class="playerInfo">Bet: {{player.bet}}</p>
                 <p class="playerInfo">Status: {{player.status}}</p>
             </section>
-            <section id="playerCards" v-if="gameLog">
+            <section id="playerCards">
                 <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Card not found">
             </section>
         </section>
 
-        <section id="scoreBoard" v-if="displayScoreboard" >
+        <section id="scoreBoard" v-if="displayScoreboard">
             <section id="scoreBoardInfo" v-for="(name, score) in score">
                 {{score + 1}}. Place: {{name[0]}} has {{name[1]}} point(s)!
-                </section>
+            </section>
         </section>
     </aside>
 
@@ -268,7 +283,7 @@
 
                 <ul>
                     <li class="logItem" v-for="log in logs">
-                        [T{{ log.tableId }}] {{ log.message }}
+                        [T{{ log.tournamentId }}] {{ log.message }}
                     </li>
                 </ul>
             </section>
@@ -305,24 +320,27 @@
 
                 <h2 class="headlines"> Log History</h2>
 
-                <ul v-for="(table, tableIndex) in gameHistory">
-
-                    <section class="clickable" @click="displayHandler('table', tableIndex, null)">
-                        Table: {{tableIndex}}
-                    </section>
-
-                    <ul v-for="(round, roundIndex) in table">
-
-                        <section class="clickable" @click="displayHandler('round', tableIndex, roundIndex)">
-                            Round: {{roundIndex}}
-                        </section>
-                    </ul>
+                <ul v-for="(table, tournamentIndex) in gameHistory">
+                    <li>
+                        <span class="toggle" v-if="!historyIsOpen(tournamentIndex)"
+                              @click="setHistoryOpen(tournamentIndex, true)">+</span><span class="toggle"
+                                                                                           v-if="historyIsOpen(tournamentIndex)"
+                                                                                           @click="setHistoryOpen(tournamentIndex, false)">-</span><span
+                            class="clickable"
+                            @click="displayHandler('tournament', tournamentIndex, null)">Tournament: {{tournamentIndex}}</span>
+                        <ul v-if="historyIsOpen(tournamentIndex)" v-for="(round, roundIndex) in table">
+                            <li>
+                                <span class="clickable" @click="displayHandler('round', tournamentIndex, roundIndex)">Round: {{roundIndex}}</span>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </section>
         </section>
 
         <section id="desk">
-            <img class="deskCard" v-if="gameLog" v-for="card in table.communityCards" :src="getImageUrl(card)" alt="Card not found">
+            <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)"
+                 alt="Card not found">
         </section>
 
         <section>
@@ -338,12 +356,13 @@
     createApp({
         data() {
             return {
-                logs: null,
-                gameState: null,
+                logs: [],
+                gamestate: {state: ""},
                 score: null,
+                tournamentHistoryOpenState: {},
                 gameId: null,
-                tableId: null,
-                table: null,
+                tournamentId: null,
+                table: {players: [], communityCards: []},
 
                 gameLog: true,          //show currentLog
                 legacyLog: false,       //show historyLog
@@ -359,6 +378,7 @@
             }
         },
 
+
         created() {
             this.update();
             this.timer = setInterval(this.update, 1000);
@@ -369,27 +389,38 @@
         },
 
         methods: {
-            displayHandler(action, tableRound, playRound) {
+            historyIsOpen(index) {
+                if (this.tournamentHistoryOpenState[index] != null) {
+                    return this.tournamentHistoryOpenState[index];
+                }
+                return false;
+            },
+            setHistoryOpen(tournamentIndex, opened) {
+                this.tournamentHistoryOpenState[tournamentIndex] = opened;
+            },
+            displayHandler(action, tournamentId, gameRound) {
                 switch (action) {
                     case "x":
                         this.gameLog = true;
                         this.legacyLog = false;
                         break;
                     case "round":
-                        this.displayedHistory = this.gameHistory[tableRound][playRound];
+                        this.displayedHistory = this.gameHistory[tournamentId][gameRound];
                         this.legacyLog = true;
                         this.gameLog = false;
 
                         this.displayLogRound = true;
                         this.displayLogTable = false;
+                        this.updateTable(this.gameId, tournamentId, gameRound);
                         break;
-                    case "table":
-                        this.displayedHistory = this.gameHistory[tableRound];
+                    case "tournament":
+                        this.displayedHistory = this.gameHistory[tournamentId];
                         this.legacyLog = true;
                         this.gameLog = false;
 
                         this.displayLogTable = true;
                         this.displayLogRound = false;
+                        this.table = {players: [], communityCards: []};
                         break;
 
                     case 'scoreboard':
@@ -427,40 +458,50 @@
             update() {
                 // Simple GET request using fetch
                 this.gameId = new URL(location.href).searchParams.get('gameId')
-                axios
-                    .get("/games/" + this.gameId + "/log?order=desc&limit=50")
-                    .then(response => {
-                        this.logs = response.data;
-                        this.tableId = this.logs[this.logs.length - 1].tableId;
-                    });
-
-                axios
-                    .get("/games/" + this.gameId + "/score")
-                    .then(response => {
-                        let sortable = [];
-                        for (var team in response.data) {
-                            sortable.push([team, response.data[team]]);
-                        }
-                        sortable.sort(function (a, b) {
-                            return b[1] - a[1];
+                if (this.gameId != null) {
+                    axios
+                        .get("/games/" + this.gameId + "/log?order=desc&limit=50")
+                        .then(response => {
+                            this.logs = response.data;
+                            if (this.logs.length > 0) {
+                                this.tournamentId = this.logs[this.logs.length - 1].tournamentId;
+                            }
                         });
-                        this.score = sortable;
-                    });
-                axios
-                    .get("/games/" + this.gameId)
-                    .then(response => {
-                        this.gamestate = response.data;
-                    });
 
+                    axios
+                        .get("/games/" + this.gameId + "/score")
+                        .then(response => {
+                            let sortable = [];
+                            for (var team in response.data) {
+                                sortable.push([team, response.data[team]]);
+                            }
+                            sortable.sort(function (a, b) {
+                                return b[1] - a[1];
+                            });
+                            this.score = sortable;
+                        });
+                    axios
+                        .get("/games/" + this.gameId)
+                        .then(response => {
+                            this.gamestate = response.data;
+                        });
+
+                    if (this.tournamentId != null && this.gameLog) {
+                        this.updateTable(this.gameId, this.tournamentId);
+                    }
+                    axios
+                        .get("/games/" + this.gameId + "/history")
+                        .then(response => {
+                            this.gameHistory = response.data;
+                        });
+                }
+            },
+
+            updateTable(gameId, tournamentId, gameRound) {
                 axios
-                    .get("/games/" + this.gameId + "/table/" + this.tableId)
+                    .get("/games/" + gameId + "/tournament/" + tournamentId + (gameRound == null ? "" : "/round/" + gameRound))
                     .then(response => {
                         this.table = response.data;
-                    });
-                axios
-                    .get("/games/" + this.gameId + "/history")
-                    .then(response => {
-                        this.gameHistory = response.data;
                     });
             },
 

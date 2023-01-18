@@ -22,12 +22,11 @@ public class Player implements CardReceiver, Serializable {
     private final String name;
     private Status status;
     private int stack;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final List<Card> cards = new ArrayList<>();
 
     @JsonProperty("bet")
     private int currentBet;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private final List<Card> cards = new ArrayList<>();
 
     @JsonIgnore
     private final transient ActionProvider actionProvider;
