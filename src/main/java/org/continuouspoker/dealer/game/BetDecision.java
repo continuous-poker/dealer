@@ -1,6 +1,6 @@
 package org.continuouspoker.dealer.game;
 
-import org.continuouspoker.dealer.GameLogger;
+import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Table;
 import lombok.extern.slf4j.Slf4j;
@@ -9,78 +9,76 @@ import lombok.extern.slf4j.Slf4j;
 public class BetDecision {
     private static final String ALL_IN_TEXT = "Player %s goes all in with %s.";
 
-    private final long gameId;
-    private final GameLogger logger;
+    private final StepLogger logger;
 
-    /* package */ BetDecision(final long gameId, final GameLogger logger) {
-        this.gameId = gameId;
+    /* package */ BetDecision(final StepLogger logger) {
         this.logger = logger;
     }
 
     /* package */ Action performAction(final Table table, final Player player, final int bet) {
         if (noPlayerHasBetYet(table)) {
             if (bet >= table.getMinimumBet()) {
-                return bet(table, player, bet);
+                return bet(player, bet);
             } else {
-                return check(table, player);
+                return check(player);
             }
         } else {
             if (bet >= table.getMinimumRaise()) {
-                return raise(table, player, bet);
+                return raise(player, bet);
             } else if (bet >= table.getMinimumBet()) {
                 if (bet == player.getCurrentBet()) {
-                    return check(table, player);
+                    return check(player);
                 } else {
-                    return call(table, player);
+                    return call(table.getMinimumBet(), player);
                 }
             } else {
-                return fold(table, player);
+                return fold(player);
             }
         }
     }
 
-    private boolean playerCanPayIt(final Table table, final Player player, final int bet) {
+    private boolean playerCanPayIt(final Player player, final int bet) {
         if (player.isGoingAllIn(bet)) {
             player.bet(bet);
-            logger.log(gameId, table.getTableId(), table.getRound(), ALL_IN_TEXT, player.getName(), player.getCurrentBet());
+            logger.log(ALL_IN_TEXT, player.getName(), player.getCurrentBet());
             return false;
         }
         return true;
     }
 
-    private Action raise(final Table table, final Player player, final int bet) {
-        if (playerCanPayIt(table, player, bet)) {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s raises to %s.", player.getName(), bet);
+    private Action raise(final Player player, final int bet) {
+        if (playerCanPayIt(player, bet)) {
+            logger.log("Player %s raises to %s.", player.getName(), bet);
             player.bet(bet);
         }
         return Action.RAISE;
     }
 
-    private Action call(final Table table, final Player player) {
-        if (playerCanPayIt(table, player, table.getMinimumBet())) {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s calls the bet of %s.", player.getName(),
-                    table.getMinimumBet());
-            player.bet(table.getMinimumBet());
+    private Action call(final int minimumBet, final Player player) {
+        if (playerCanPayIt(player, minimumBet)) {
+            logger.log("Player %s calls the bet of %s.", player.getName(),
+                    minimumBet);
+            player.bet(minimumBet);
         }
         return Action.CALL;
     }
 
-    private Action bet(final Table table, final Player player, final int bet) {
-        if (playerCanPayIt(table, player, bet)) {
-            logger.log(gameId, table.getTableId(), table.getRound(), "Player %s bets %s.", player.getName(), bet);
+    private Action bet(final Player player, final int bet) {
+        if (playerCanPayIt(player, bet)) {
+            logger.log("Player %s bets %s.", player.getName(), bet);
             player.bet(bet);
         }
         return Action.BET;
     }
 
-    private Action fold(final Table table, final Player player) {
-        logger.log(gameId, table.getTableId(), table.getRound(), "Player %s folds.", player.getName());
+    private Action fold(final Player player) {
+        logger.log("Player %s folds.", player.getName());
         player.fold();
         return Action.FOLD;
     }
 
-    private Action check(final Table table, final Player player) {
-        logger.log(gameId, table.getTableId(), table.getRound(), "Player %s checks.", player.getName());
+    private Action check(final Player player) {
+        logger.log("Player %s checks.", player.getName());
         return Action.CHECK;
     }
 

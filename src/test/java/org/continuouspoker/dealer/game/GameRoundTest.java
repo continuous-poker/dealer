@@ -1,7 +1,6 @@
 package org.continuouspoker.dealer.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.continuouspoker.dealer.ActionProvider;
-import org.continuouspoker.dealer.GameLogger;
 import org.continuouspoker.dealer.data.Card;
 import org.continuouspoker.dealer.data.Deck;
 import org.continuouspoker.dealer.data.Player;
@@ -24,24 +22,17 @@ import org.junit.jupiter.api.Test;
 
 class GameRoundTest {
 
-    private GameLogger logger;
     private List<Player> players;
-    private Table table;
     private GameRound testee;
 
     private Player player1;
     private Player player2;
     private Player player3;
 
-    private ActionProvider actionProvider1;
-    private ActionProvider actionProvider2;
-    private ActionProvider actionProvider3;
-
     @BeforeEach
     public void setUp() {
-        actionProvider1 = mock(ActionProvider.class);
-        actionProvider2 = mock(ActionProvider.class);
-        actionProvider3 = mock(ActionProvider.class);
+        ActionProvider actionProvider1 = mock(ActionProvider.class);
+        ActionProvider actionProvider2 = mock(ActionProvider.class);
 
         player1 = new Player("player1", Status.ACTIVE, 100, 0, actionProvider1);
         player2 = new Player("player2", Status.ACTIVE, 100, 0, actionProvider2);
@@ -49,10 +40,9 @@ class GameRoundTest {
 
         players = new ArrayList<>();
 
-        table = new Table(1, players, 5, msg -> logger.log(1, 1,1, msg));
-        logger = mock(GameLogger.class);
+        Table table = new Table(1, players, 5);
 
-        testee = new GameRound(players, table, logger, 1, Duration.ZERO);
+        testee = new GameRound(1, players, table, Duration.ZERO);
     }
 
     @Test

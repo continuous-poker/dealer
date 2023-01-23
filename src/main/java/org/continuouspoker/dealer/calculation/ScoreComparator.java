@@ -2,10 +2,14 @@ package org.continuouspoker.dealer.calculation;
 
 import java.util.Comparator;
 
-public class ScoreComparator implements Comparator<int[]> {
+import org.continuouspoker.dealer.calculation.hands.Score;
+
+public class ScoreComparator implements Comparator<Score> {
 
     @Override
-    public int compare(final int[] array1, final int[] array2) {
+    public int compare(final Score playerScore1, final Score playerScore2) {
+        final int[] array1 = playerScore1.scoreRank();
+        final int[] array2 = playerScore2.scoreRank();
         final int maxLength = Math.min(array1.length, array2.length);
 
         for (int i = 0; i < maxLength; i++) {

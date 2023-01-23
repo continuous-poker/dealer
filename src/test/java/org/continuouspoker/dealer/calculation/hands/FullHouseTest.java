@@ -15,22 +15,22 @@ import java.util.List;
 import org.continuouspoker.dealer.data.Card;
 import org.junit.jupiter.api.Test;
 
-public class FullHouseTest {
+class FullHouseTest {
 
     private final FullHouse fullHouse = new FullHouse();
 
     @Test
-    public void testCalculateFullHouse() throws Exception {
+    void testCalculateFullHouse() throws Exception {
         final List<Card> cards = Arrays.asList(new Card(ACE, SPADES), new Card(FIVE, CLUBS), new Card(FIVE, HEARTS),
                 new Card(ACE, CLUBS), new Card(FOUR, CLUBS), new Card(FIVE, SPADES), new Card(ACE, HEARTS));
         Collections.shuffle(cards);
 
-        final int[] score = fullHouse.calculateScore(cards);
+        final Score score = fullHouse.calculateScore(cards);
 
         assertArrayEquals(new int[] { 6,
                                       42,
                                       10
-        }, score);
+        }, score.scoreRank());
     }
 
 }

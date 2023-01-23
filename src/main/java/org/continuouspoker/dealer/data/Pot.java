@@ -9,19 +9,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.continuouspoker.dealer.StepLogger;
+import org.continuouspoker.dealer.calculation.hands.Score;
 
 @Slf4j
 public class Pot implements Serializable {
 
-    private final transient Consumer<String> logger;
+    private final transient StepLogger stepLogger;
     private final List<PotPart> pots = new ArrayList<>();
 
-    public Pot(final Consumer<String> logger) {
-        this.logger = logger;
+    public Pot(final StepLogger logger) {
+        this.stepLogger = logger;
         reset();
     }
 
@@ -37,14 +38,13 @@ public class Pot implements Serializable {
 
     public void pay(final Player winner) {
         pots.forEach(p -> log.info(p.toString()));
-        logger.accept("All pots go to " + winner.getName() + " with " + getTotalSize() + " chips in total.");
+        stepLogger.log("All pots go to " + winner.getName() + " with " + getTotalSize() + " chips in total.");
         pots.forEach(pot -> winner.addToStack(pot.getSize()));
         reset();
     }
 
-    public void pay(final Map<int[], List<Player>> rankedPlayers) {
-        final Collection<List<Player>> values = rankedPlayers.values();
-        values.forEach(players -> {
+    public void pay(final Map<Score, List<Player>> rankedPlayers) {
+        rankedPlayers.forEach((score, players) -> {
             final Iterator<PotPart> iterator = pots.iterator();
             final HashSet<Player> winners = new HashSet<>();
             while (iterator.hasNext()) {
@@ -59,14 +59,14 @@ public class Pot implements Serializable {
                     winners.forEach(p -> p.addToStack(split));
 
                     final String winnerString = winners.stream().map(Player::getName).collect(Collectors.joining(","));
-                    log.info("Winners: {} ({} each)", winnerString, split);
+                    log.info("Winners: {} ({} each) with a {}", winnerString, split, score.name());
 
                     if (moreThanOneWinner(winners)) {
-                        logger.accept(
-                                String.format("Pot of %s is split between %s (%s for each)", potSize, winnerString,
-                                        split));
+                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'",
+                                potSize, winnerString, split, score.name()));
                     } else {
-                        logger.accept(String.format("Pot of %s goes to %s", potSize, winnerString));
+                        stepLogger.log(String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString,
+                                score.name()));
                     }
 
                     iterator.remove();

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.continuouspoker.dealer.ActionProvider;
-import org.continuouspoker.dealer.GameLogger;
+import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
@@ -18,15 +18,15 @@ class BetRoundTest {
     private static final int SMALL_BLIND = 5;
     private static final int START_STACK = 100;
 
-    private final GameLogger logger = new GameLogger();
+    private final StepLogger logger = System.out::println;
 
     @Test
     void preFlop() {
         final Player player1 = createPlayer("player1", table -> 0);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 1, 0, msg));
-        final BetRound betRound = new BetRound(GAME_ID, table, players, true, logger);
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND);
+        final BetRound betRound = new BetRound(table, players, true, logger);
 
         final Optional<Player> winner = betRound.run();
 
@@ -40,8 +40,8 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", table -> 0);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 0, 0, msg));
-        final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND);
+        final BetRound betRound = new BetRound(table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();
 
@@ -55,8 +55,8 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", Table::getMinimumBet);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 0, 0, msg));
-        final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND);
+        final BetRound betRound = new BetRound(table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();
 
@@ -70,8 +70,8 @@ class BetRoundTest {
         final Player player1 = createPlayer("player1", Table::getMinimumRaise);
         final Player player2 = createPlayer("player2", Table::getMinimumBet);
         final List<Player> players = List.of(player1, player2);
-        final Table table = new Table(GAME_ID, players, SMALL_BLIND, msg -> logger.log(GAME_ID, 0, 0, msg));
-        final BetRound betRound = new BetRound(GAME_ID, table, players, false, logger);
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND);
+        final BetRound betRound = new BetRound(table, players, false, logger);
 
         final Optional<Player> winner = betRound.run();
 

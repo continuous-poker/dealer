@@ -1,15 +1,8 @@
 package org.continuouspoker.dealer.api;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -19,129 +12,89 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.continuouspoker.dealer.GameLogger;
-import org.continuouspoker.dealer.GameManager;
+import lombok.RequiredArgsConstructor;
 import org.continuouspoker.dealer.LogEntry;
-import org.continuouspoker.dealer.RemotePlayer;
-import org.continuouspoker.dealer.Team;
-import org.continuouspoker.dealer.data.GameHistory;
 import org.continuouspoker.dealer.data.Table;
 import org.continuouspoker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
 import org.continuouspoker.dealer.game.Game;
 
 @Path("/games")
+@Produces("application/json")
+@RequiredArgsConstructor
 public class ManagementController {
 
-    private static final int MAX_NUMBER_OF_PLAYERS = 10;
     public static final String PARAM_GAME_ID = "gameId";
-    private final GameManager gameState;
-    private final GameLogger log;
-
-    public ManagementController(final GameManager gameState, final GameLogger log) {
-        this.gameState = gameState;
-        this.log = log;
-    }
+    private final ManagementService service;
 
     @POST
     @Path("/{gameId}/players")
     public void registerPlayer(@PathParam(PARAM_GAME_ID) final long gameId,
             @QueryParam("playerUrl") final String playerUrl, @QueryParam("teamName") final String teamName)
             throws ObjectNotFoundException {
-        final Optional<Game> game = gameState.getGame(gameId);
-        final int teamListLength = gameState.getGame(gameId)
-                                            .map(Game::getTeams)
-                                            .map(List::size)
-                                            .orElseThrow(ObjectNotFoundException::new);
-
-        if (teamListLength < MAX_NUMBER_OF_PLAYERS) {
-            game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
-        } else {
-            throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
-        }
+        service.registerPlayer(gameId, playerUrl, teamName);
     }
 
     @DELETE
     @Path("/{gameId}/players")
     public void removePlayer(@PathParam(PARAM_GAME_ID) final long gameId,
             @QueryParam("teamName") final String teamName) {
-        final Optional<Game> game = gameState.getGame(gameId);
-        game.ifPresent(g -> g.getTeams()
-                             .stream()
-                             .filter(team -> team.getName().equals(teamName))
-                             .findFirst()
-                             .ifPresent(g::removePlayer));
+        service.removePlayer(gameId, teamName);
     }
 
     @GET
     @Path("/{gameId}/players")
     public Collection<String> getPlayers(@PathParam(PARAM_GAME_ID) final long gameId) {
-        final Optional<Game> game = gameState.getGame(gameId);
-        if (game.isPresent()) {
-            final List<Team> teams = game.get().getTeams();
-            return teams.stream().map(Team::getName).toList();
-        }
-        return Collections.emptyList();
+        return service.getPlayers(gameId);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/")
     public long start(@FormParam("name") final String name) {
-        return gameState.createNewGame(name);
+        return service.start(name);
     }
 
     @GET
     @Path("/{gameId}")
     public String getStatus(@PathParam(PARAM_GAME_ID) final long gameId) {
-        return gameState.isRunning(gameId) ? "running" : "stopped";
+        return service.getStatus(gameId);
     }
 
     @GET
     @Path("/{gameId}/score")
     public Map<String, Long> getScore(@PathParam(PARAM_GAME_ID) final long gameId) {
-        final Map<String, Long> map = new HashMap<>();
-
-        gameState.getGame(gameId)
-                 .ifPresent(game -> game.getTeams().forEach(team -> map.put(team.getName(), team.getScore())));
-
-        return map;
+        return service.getScore(gameId);
     }
 
     @GET
     @Path("/")
     public Collection<Game> listGames() {
-        return gameState.getGames();
+        return service.listGames();
     }
 
     //@PreAuthorize("hasRole('ADMIN')")
     @DELETE
     @Path("/{gameId}")
     public void delete(@PathParam(PARAM_GAME_ID) final long gameId) {
-        gameState.delete(gameId);
-        log.delete(gameId);
+        service.delete(gameId);
     }
 
     //@PreAuthorize("hasRole('ADMIN')")
     @PUT
     @Path("/{gameId}")
     public void toggleRun(@PathParam(PARAM_GAME_ID) final long gameId) {
-        if (gameState.isRunning(gameId)) {
-            gameState.pause(gameId);
-        } else {
-            gameState.resume(gameId);
-        }
+        service.toggleRun(gameId);
     }
 
     @GET
     @Path("/{gameId}/log/{timestamp}")
     public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
-            @PathParam("timestamp") final String timestamp) {
-        final List<LogEntry> list = log.getLog(gameId).orElse(Collections.emptyList());
-
-        return list.stream().filter(entry -> entry.getTimestamp().isAfter(ZonedDateTime.parse(timestamp))).toList();
+            @PathParam("timestamp") final String timestamp) throws ObjectNotFoundException {
+        return service.getLogSince(gameId, timestamp);
     }
 
     @GET
@@ -149,54 +102,30 @@ public class ManagementController {
     public List<LogEntry> filterLog(@PathParam(PARAM_GAME_ID) final long gameId,
             @QueryParam("from") final String limitFrom, @QueryParam("to") final String limitTo,
             @QueryParam("tableId") final Long tableId, @QueryParam("limit") final Integer limit,
-            @QueryParam("order") final String order) {
-        final List<LogEntry> list = new ArrayList<>(log.getLog(gameId).orElse(Collections.emptyList()));
-
-        final Predicate<LogEntry> isAfter = entry -> limitFrom == null || entry.getTimestamp()
-                                                                               .isAfter(ZonedDateTime.parse(limitFrom));
-        final Predicate<LogEntry> isBefore = entry -> limitTo == null || entry.getTimestamp()
-                                                                              .isBefore(ZonedDateTime.parse(limitTo));
-        final Predicate<LogEntry> isTable = entry -> tableId == null || entry.getTableId() == tableId;
-
-        if ("desc".equals(order)) {
-            Collections.reverse(list);
-        }
-
-        Stream<LogEntry> logEntryStream = list.stream().filter(isAfter.and(isBefore).and(isTable));
-
-        if (limit != null && limit > 0) {
-            logEntryStream = logEntryStream.limit(limit);
-        }
-
-        return logEntryStream.toList();
+            @QueryParam("order") final String order) throws ObjectNotFoundException {
+        return service.filterLog(gameId, limitFrom, limitTo, tableId, limit, order);
     }
 
     @GET
-    @Path("/{gameId}/table/{tableId}")
-    public Table getTable(@PathParam(PARAM_GAME_ID) final long gameId, @PathParam("tableId") final long tableId)
+    @Path("/{gameId}/tournament/{tournamentId}")
+    public Table getStateOfTournament(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam("tournamentId") final long tournamentId) throws ObjectNotFoundException {
+        return service.getStateOfTournament(gameId, tournamentId);
+    }
+
+    @GET
+    @Path("/{gameId}/tournament/{tournamentId}/round/{roundId}")
+    public Table getStateOfRound(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam("tournamentId") final long tournamentId, @PathParam("roundId") final long roundId)
             throws ObjectNotFoundException {
-        return gameState.getGame(gameId)
-                        .map(game -> game.getTables().get(tableId))
-                        .orElseThrow(() -> new ObjectNotFoundException("Table not found!"));
+        return service.getStateOfRound(gameId, tournamentId, roundId);
     }
 
     @GET
     @Path("/{gameId}/history")
     public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam(PARAM_GAME_ID) final long gameId)
             throws ObjectNotFoundException {
-        final List<GameHistory.TableLog> tableLogs = gameState.getGame(gameId)
-                                                              .map(Game::getGameHistory)
-                                                              .map(GameHistory::getGameLogHistory)
-                                                              .orElseThrow(() -> new ObjectNotFoundException(
-                                                                      "GameHistory not found!"));
-        final Map<Long, Map<Long, List<String>>> map = new HashMap<>();
-        tableLogs.forEach(tableLog -> map.put(tableLog.tableId(), createMap(tableLog.roundLogs())));
-        return map;
+        return service.getGameHistory(gameId);
     }
 
-    private Map<Long, List<String>> createMap(final List<GameHistory.RoundLog> roundLogs) {
-        final HashMap<Long, List<String>> map = new HashMap<>();
-        roundLogs.forEach(roundLog -> map.put(roundLog.roundId(), roundLog.messages()));
-        return map;
-    }
 }

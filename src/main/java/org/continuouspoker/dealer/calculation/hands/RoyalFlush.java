@@ -17,16 +17,19 @@ public class RoyalFlush implements PokerHand {
     private static final int NUMBER_OF_CARDS = 5;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         // [9]
-        return new int[] { SCORE
-        };
+        return new Score("Royal Flush", new int[] { SCORE
+        });
     }
 
     @Override
     public boolean matches(final List<Card> cardsToScore) {
         final Map<Suit, List<Card>> collect = getCardsGroupedBySuit(cardsToScore);
-        final Optional<List<Card>> flush = collect.values().stream().filter(list -> list.size() >= NUMBER_OF_CARDS).findFirst();
+        final Optional<List<Card>> flush = collect.values()
+                                                  .stream()
+                                                  .filter(list -> list.size() >= NUMBER_OF_CARDS)
+                                                  .findFirst();
         if (flush.isPresent()) {
             final List<Card> sequenceCards = getSequenceCards(flush.get());
             if (sequenceCards.size() >= NUMBER_OF_CARDS) {

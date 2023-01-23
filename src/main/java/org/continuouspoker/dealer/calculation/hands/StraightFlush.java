@@ -18,7 +18,7 @@ public class StraightFlush implements PokerHand {
     private static final int NUMBER_OF_CARDS = 5;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         // [8,2-14]
         final Map<Suit, List<Card>> collect = getCardsGroupedBySuit(cardsToScore);
         final Optional<List<Card>> flush = collect.values()
@@ -32,7 +32,7 @@ public class StraightFlush implements PokerHand {
             // Straight is A-5, so 5 is the highest card, not A
             highestValue = sequenceCards.get(1).getValue();
         }
-        return IntStream.of(SCORE, highestValue).toArray();
+        return new Score("Straight flush", IntStream.of(SCORE, highestValue).toArray());
     }
 
     private boolean doesNotContainKing(final List<Card> sequenceCards) {

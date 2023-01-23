@@ -14,7 +14,7 @@ public class Straight implements PokerHand {
     private static final int NUMBER_OF_CARDS = 5;
 
     @Override
-    public int[] calculateScore(final List<Card> cardsToScore) {
+    public Score calculateScore(final List<Card> cardsToScore) {
         final List<Card> cards = new ArrayList<>(cardsToScore);
         // [4,2-14]
         final List<Card> sequenceCards = getSequenceCards(cards);
@@ -25,7 +25,7 @@ public class Straight implements PokerHand {
             // Straight is A-5, so 5 is the highest card, not A
             highestValue = sequenceCards.get(1).getValue();
         }
-        return IntStream.of(SCORE, highestValue).toArray();
+        return new Score("Straight", IntStream.of(SCORE, highestValue).toArray());
     }
 
     private boolean doesNotContainKing(final List<Card> sequenceCards) {
