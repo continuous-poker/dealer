@@ -1,4 +1,28 @@
 quarkus:
+  http:
+    auth:
+      basic: true
+      policy:
+        admin-policy:
+          roles-allowed: admin
+      permission:
+        admin-permission:
+          policy: admin-policy
+          methods:
+            - POST
+            - DELETE
+            - PUT
+          paths: /*
+  security:
+    users:
+      embedded:
+        enabled: true
+        plain-text: true
+        users:
+          admin: ${API_PASSWORD:admin}
+        roles:
+          admin: admin
+
   swagger-ui:
     always-include: true
 
@@ -10,11 +34,18 @@ quarkus:
       limits:
         cpu: 1000m
         memory: 1Gi
+    env:
+      mapping:
+        "api_password":
+          from-secret: api-user
+      secrets: api-user
   log:
     level: INFO
     category:
       "org.continuouspoker":
         level: DEBUG
+
+
 
 
 gameround:
@@ -23,3 +54,5 @@ gameround:
 step:
   sleep:
     duration: PT3S
+
+

@@ -3,6 +3,7 @@ on: [ push ]
 env:
   DEPLOYMENT_NAME: poker-dealer
   DEPLOYMENT_TOKEN: ${{ secrets.TOKEN }}
+  NAMESPACE: ${{ secrets.NAMESPACE }}
 
 jobs:
   build:
@@ -39,7 +40,8 @@ jobs:
         if: ${{ env.DEPLOYMENT_TOKEN }}
         run: |-
           echo "${{ env.DEPLOYMENT_TOKEN }}" > kubeconfig.yaml
-          kubectl --kubeconfig kubeconfig.yaml --namespace techdays apply -f target/kubernetes/kubernetes.yml
-          kubectl --kubeconfig kubeconfig.yaml --namespace techdays rollout status deployment/${{ env.DEPLOYMENT_NAME }}
-          kubectl --kubeconfig kubeconfig.yaml --namespace techdays get services -o wide
+          kubectl --kubeconfig kubeconfig.yaml --namespace ${{ env.NAMESPACE }} create secret generic api-user --from-literal=username=admin --from-literal=password=${{ secrets.ADMIN_PASSWORD }}
+          kubectl --kubeconfig kubeconfig.yaml --namespace ${{ env.NAMESPACE }} apply -f target/kubernetes/kubernetes.yml
+          kubectl --kubeconfig kubeconfig.yaml --namespace ${{ env.NAMESPACE }} rollout status deployment/${{ env.DEPLOYMENT_NAME }}
+          kubectl --kubeconfig kubeconfig.yaml --namespace ${{ env.NAMESPACE }} get services -o wide
           rm kubeconfig.yaml

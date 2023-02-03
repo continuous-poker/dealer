@@ -1,6 +1,6 @@
-# Poker Project - The Poker Dealer
+# Continuous Poker Dealer
 
-The poker dealer is a part of the poker project and contains the base logic for a poker game.
+The poker dealer is a part of the continuous poker workshop and contains the base logic for a poker game.
 If all players have successfully deployed their application and registered it with the game,
 the dealer service will start playing tournaments over and over.
 It takes the action of each player(bot) every round and determines the winner after all necessary cards / bets are placed.
