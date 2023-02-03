@@ -38,6 +38,7 @@ quarkus:
       mapping:
         "api_password":
           from-secret: api-user
+          with-key: password
       secrets: api-user
   log:
     level: INFO
