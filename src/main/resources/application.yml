@@ -8,11 +8,7 @@ quarkus:
       permission:
         admin-permission:
           policy: admin-policy
-          methods:
-            - POST
-            - DELETE
-            - PUT
-          paths: /*
+          paths: /games/manage/*
   security:
     users:
       embedded:

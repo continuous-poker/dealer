@@ -31,7 +31,7 @@ public class ManagementController {
     private final ManagementService service;
 
     @POST
-    @Path("/{gameId}/players")
+    @Path("/manage/{gameId}/players")
     public void registerPlayer(@PathParam(PARAM_GAME_ID) final long gameId,
             @QueryParam("playerUrl") final String playerUrl, @QueryParam("teamName") final String teamName)
             throws ObjectNotFoundException {
@@ -39,7 +39,7 @@ public class ManagementController {
     }
 
     @DELETE
-    @Path("/{gameId}/players")
+    @Path("/manage/{gameId}/players")
     public void removePlayer(@PathParam(PARAM_GAME_ID) final long gameId,
             @QueryParam("teamName") final String teamName) {
         service.removePlayer(gameId, teamName);
@@ -53,7 +53,7 @@ public class ManagementController {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/")
+    @Path("/manage/")
     public long start(@FormParam("name") final String name) {
         return service.start(name);
     }
@@ -78,14 +78,14 @@ public class ManagementController {
 
     //@PreAuthorize("hasRole('ADMIN')")
     @DELETE
-    @Path("/{gameId}")
+    @Path("/manage/{gameId}")
     public void delete(@PathParam(PARAM_GAME_ID) final long gameId) {
         service.delete(gameId);
     }
 
     //@PreAuthorize("hasRole('ADMIN')")
     @PUT
-    @Path("/{gameId}")
+    @Path("/manage/{gameId}")
     public void toggleRun(@PathParam(PARAM_GAME_ID) final long gameId) {
         service.toggleRun(gameId);
     }
