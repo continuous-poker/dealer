@@ -1,4 +1,8 @@
-on: [ push ]
+on:
+  workflow_dispatch: # Trigger manually
+  push:
+    branches:
+      - main
 
 env:
   DEPLOYMENT_NAME: poker-dealer
