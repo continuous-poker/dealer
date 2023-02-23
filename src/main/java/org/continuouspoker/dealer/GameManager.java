@@ -55,13 +55,17 @@ public class GameManager {
 
     public void pause(final long gameId) {
         synchronized (this) {
-            getGame(gameId).ifPresent(game -> games.get(game).cancel(false));
+            getGame(gameId).flatMap(this::getScheduledGame).ifPresent(g -> g.cancel(false));
         }
+    }
+
+    private Optional<ScheduledFuture<?>> getScheduledGame(final Game game) {
+        return Optional.ofNullable(games.get(game));
     }
 
     public void delete(final long gameId) {
         getGame(gameId).ifPresent(game -> {
-            games.get(game).cancel(true);
+            getScheduledGame(game).ifPresent(g -> g.cancel(true));
             games.remove(game);
         });
     }
@@ -75,15 +79,7 @@ public class GameManager {
     }
 
     public boolean isRunning(final long gameId) {
-        final Optional<Game> game = getGame(gameId);
-        if (game.isPresent()) {
-            final Game key = game.get();
-            final ScheduledFuture<?> scheduledFuture = games.get(key);
-            if (scheduledFuture != null) {
-                return !scheduledFuture.isCancelled();
-            }
-        }
-        return false;
+        return getGame(gameId).flatMap(this::getScheduledGame).map(g -> !g.isCancelled()).orElse(false);
     }
 
     public Collection<Game> getGames() {
