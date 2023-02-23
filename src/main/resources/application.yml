@@ -47,9 +47,9 @@ quarkus:
 
 gameround:
   sleep:
-    duration: PT3S
+    duration: PT1S
 step:
   sleep:
-    duration: PT3S
+    duration: PT1S
 
 
