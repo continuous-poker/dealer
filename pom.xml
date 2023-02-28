@@ -18,7 +18,7 @@
         <surefire-plugin.version>3.0.0-M8</surefire-plugin.version>
         <lombok.version>1.18.24</lombok.version>
         <checkstyle-plugin.version>3.2.1</checkstyle-plugin.version>
-        <checkstyle.version>10.6.0</checkstyle.version>
+        <checkstyle.version>10.8.0</checkstyle.version>
         <spotbugs-plugin.version>4.7.3.0</spotbugs-plugin.version>
         <pmd-plugin.version>3.20.0</pmd-plugin.version>
         <jacoco.version>0.8.8</jacoco.version>
