@@ -36,3 +36,10 @@ For further information visit
 
 If you want to participate in development, look up the open [issues](https://github.com/ds-jkreutzfeld/continuous-poker-dealer/issues).
 				
+## License
+
+This program and the accompanying materials are made available under the terms
+of the Apache License, Version 2.0 which is available at
+https://www.apache.org/licenses/LICENSE-2.0.
+
+SPDX-License-Identifier: Apache-2.0
