@@ -14,7 +14,7 @@
       "suit": "DIAMONDS"
     }
   ],
-  "currentDealer": 0,
+  "currentDealer" : 0,
   "minimumBet": 20,
   "minimumRaise": 40,
   "players": [

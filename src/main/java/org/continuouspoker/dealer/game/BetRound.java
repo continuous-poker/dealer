@@ -3,11 +3,11 @@ package org.continuouspoker.dealer.game;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Seats;
 import org.continuouspoker.dealer.data.Table;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BetRound {
@@ -23,10 +23,6 @@ public class BetRound {
         this.playersInPlayOrder = playersInPlayOrder;
         this.isPreFlop = isPreFlop;
         this.logger = logger;
-    }
-
-    private static boolean onlyOneActivePlayerLeft(final Seats seats) {
-        return seats.getNumberOfActivePlayers() == 1;
     }
 
     public Optional<Player> run() {
@@ -55,6 +51,10 @@ public class BetRound {
         logger.log("Ending bet round.");
         return Optional.empty();
 
+    }
+
+    private static boolean onlyOneActivePlayerLeft(final Seats seats) {
+        return seats.getNumberOfActivePlayers() == 1;
     }
 
     private boolean handleCurrentPlayer(final Seats seats) {
