@@ -5,10 +5,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.continuouspoker.dealer.data.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.continuouspoker.dealer.data.Table;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @Slf4j

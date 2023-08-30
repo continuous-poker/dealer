@@ -3,11 +3,11 @@ package org.continuouspoker.dealer.game;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Seats;
 import org.continuouspoker.dealer.data.Table;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BetRound {

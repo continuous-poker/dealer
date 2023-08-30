@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import org.continuouspoker.dealer.data.Card;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Pot;
@@ -11,8 +13,6 @@ import org.continuouspoker.dealer.data.Rank;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Suit;
 import org.continuouspoker.dealer.data.Table;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,8 @@ class RemotePlayerQuarkusTest {
         bot3.takeCard(new Card(Rank.TWO, Suit.HEARTS));
         bot3.takeCard(new Card(Rank.JACK, Suit.CLUBS));
         final Table table = new Table(1, List.of(bot1, bot2, bot3), 10);
-        table.setPot(new Pot(msg -> {}));
+        table.setPot(new Pot(msg -> {
+        }));
 
         table.takeCard(new Card(Rank.TEN, Suit.HEARTS));
         table.takeCard(new Card(Rank.FIVE, Suit.CLUBS));

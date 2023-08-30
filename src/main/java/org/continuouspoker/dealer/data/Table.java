@@ -36,7 +36,6 @@ public class Table implements CardReceiver, Serializable {
     private int activePlayer;
     private int currentDealer;
 
-
     public Table(final long tournamentId, final List<Player> players, final int smallBlind) {
         this.tournamentId = tournamentId;
         this.players = players;

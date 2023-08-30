@@ -54,7 +54,6 @@ public class HandCalculator {
                 if (calc.matches(Collections.unmodifiableList(hand))) {
                     final Score score = calc.calculateScore(hand);
 
-
                     playerScores.computeIfAbsent(score, k -> new ArrayList<>()).add(player);
                     break;
                 }
@@ -62,7 +61,5 @@ public class HandCalculator {
         }
         return playerScores;
     }
-
-
 
 }

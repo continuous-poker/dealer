@@ -62,11 +62,11 @@ public class Pot implements Serializable {
                     log.info("Winners: {} ({} each) with a {}", winnerString, split, score.name());
 
                     if (moreThanOneWinner(winners)) {
-                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'",
-                                potSize, winnerString, split, score.name()));
+                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'", potSize,
+                                winnerString, split, score.name()));
                     } else {
-                        stepLogger.log(String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString,
-                                score.name()));
+                        stepLogger.log(
+                                String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString, score.name()));
                     }
 
                     iterator.remove();
