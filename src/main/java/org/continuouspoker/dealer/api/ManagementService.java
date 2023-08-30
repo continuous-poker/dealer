@@ -13,12 +13,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.websocket.Session;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.GameManager;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.RemotePlayer;
 import org.continuouspoker.dealer.Team;
+import org.continuouspoker.dealer.WebsocketPlayer;
 import org.continuouspoker.dealer.data.Table;
 import org.continuouspoker.dealer.exceptionhandling.exceptions.NoTableStateFoundException;
 import org.continuouspoker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
@@ -27,6 +30,7 @@ import org.continuouspoker.dealer.game.Tournament;
 
 @ApplicationScoped
 @RequiredArgsConstructor
+@Slf4j
 public class ManagementService {
 
     private static final int MAX_NUMBER_OF_PLAYERS = 10;
@@ -45,6 +49,80 @@ public class ManagementService {
         } else {
             throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
         }
+    }
+
+    public void registerPlayer(final long gameId, final Session playerSession, final String teamName)
+            throws ObjectNotFoundException {
+        log.info("New websocket user trying to connect to game {}, session {} and teamname {}", gameId, playerSession.getId(), teamName);
+        final Optional<Game> game = gameState.getGame(gameId);
+        final int teamListLength = gameState.getGame(gameId)
+                                            .map(Game::getTeams)
+                                            .map(List::size)
+                                            .orElseThrow(ObjectNotFoundException::new);
+
+        if (teamListLength < MAX_NUMBER_OF_PLAYERS) {
+            Optional<Team> foundTeam = getTeam(gameId, teamName);
+
+            if(foundTeam.isPresent()) {
+                log.debug("Websocket user with id {} is joining existing team {} on game {}", playerSession.getId(), teamName, gameId);
+
+                if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+                    throw new IllegalStateException("Websocket client tried connecting as an non websocket team");
+                }
+                provider.setSession(playerSession);
+                provider.setActive(true);
+                return;
+            }
+
+            log.debug("Websocket user with id {} is joining new team {} on game {}", playerSession.getId(), teamName, gameId);
+            game.get().addPlayer(new Team(teamName, new WebsocketPlayer(playerSession)));
+        } else {
+            throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
+        }
+    }
+
+    public void handleWebsocketDisconnect(final long gameId, final Session playerSession, final String teamName) {
+        log.error("Websocket client with id {} disconnected", playerSession.getId());
+        Optional<Team> foundTeam = getTeam(gameId, teamName);
+
+        if(foundTeam.isEmpty()) {
+            return;
+        }
+
+        if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+            throw new IllegalStateException("Websocket client accessing non Websocket team");
+        }
+
+        provider.setActive(false);
+
+    }
+
+    public void handleWebsocketMessage(final long gameId, final Session playerSession, final String teamName, final String message) {
+        Optional<Team> foundTeam = getTeam(gameId, teamName);
+
+        if(foundTeam.isEmpty()) {
+            return;
+        }
+
+        if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+            throw new IllegalStateException("Websocket client accessing non Websocket team");
+        }
+
+        provider.getMessages().offer(message);
+    }
+
+    public Optional<Team> getTeam(final long gameId, final String teamName) {
+        final Optional<Game> game = gameState.getGame(gameId);
+
+        if(game.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return game.get()
+                   .getTeams()
+                   .stream()
+                   .filter(t -> t.getName().equals(teamName))
+                   .findFirst();
     }
 
     public void removePlayer(final long gameId, final String teamName) {
