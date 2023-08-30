@@ -10,11 +10,13 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
 
-@ServerEndpoint("/websocket/{gameId}/{teamName}")
+@ServerEndpoint("/games/{gameId}/websocket/{teamName}")
 @RequiredArgsConstructor
 @ApplicationScoped
+@Slf4j
 public class WebsocketPlayerController {
 
 
@@ -35,7 +37,7 @@ public class WebsocketPlayerController {
 
     @OnError
     public void onError(Session session, @PathParam(PARAM_GAME_ID) long gameId, @PathParam(PARAM_TEAM_NAME) String teamName, Throwable throwable) {
-
+        log.error("Error received from websocket client with id {}", session.getId(), throwable);
     }
 
     @OnMessage

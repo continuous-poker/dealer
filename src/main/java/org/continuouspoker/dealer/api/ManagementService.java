@@ -1,5 +1,6 @@
 package org.continuouspoker.dealer.api;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
 import lombok.RequiredArgsConstructor;
@@ -59,14 +61,18 @@ public class ManagementService {
                                             .map(Game::getTeams)
                                             .map(List::size)
                                             .orElseThrow(ObjectNotFoundException::new);
+        if (game.isEmpty()) {
+            closeSession(playerSession);
+        }
 
         if (teamListLength < MAX_NUMBER_OF_PLAYERS) {
             Optional<Team> foundTeam = getTeam(gameId, teamName);
 
-            if(foundTeam.isPresent()) {
-                log.debug("Websocket user with id {} is joining existing team {} on game {}", playerSession.getId(), teamName, gameId);
+            if (foundTeam.isPresent()) {
+                log.debug("Websocket user with id {} is joining existing team {} on game {}", playerSession.getId(),
+                        teamName, gameId);
 
-                if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+                if (!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
                     throw new IllegalStateException("Websocket client tried connecting as an non websocket team");
                 }
                 provider.setSession(playerSession);
@@ -74,7 +80,8 @@ public class ManagementService {
                 return;
             }
 
-            log.debug("Websocket user with id {} is joining new team {} on game {}", playerSession.getId(), teamName, gameId);
+            log.debug("Websocket user with id {} is joining new team {} on game {}", playerSession.getId(), teamName,
+                    gameId);
             game.get().addPlayer(new Team(teamName, new WebsocketPlayer(playerSession)));
         } else {
             throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
@@ -82,7 +89,7 @@ public class ManagementService {
     }
 
     public void handleWebsocketDisconnect(final long gameId, final Session playerSession, final String teamName) {
-        log.error("Websocket client with id {} disconnected", playerSession.getId());
+        log.info("Websocket client with id {} disconnected", playerSession.getId());
         Optional<Team> foundTeam = getTeam(gameId, teamName);
 
         if(foundTeam.isEmpty()) {
@@ -109,6 +116,14 @@ public class ManagementService {
         }
 
         provider.getMessages().offer(message);
+    }
+
+    private void closeSession(Session session) {
+        try {
+            session.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Optional<Team> getTeam(final long gameId, final String teamName) {

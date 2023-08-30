@@ -10,6 +10,7 @@ import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -44,12 +45,13 @@ public class WebsocketPlayer implements ActionProvider{
 
     @Override
     public int requestBet(final Table table) {
-        if (table.getTournamentId() == blockedTable) {
+        if (table.getTournamentId() == blockedTable || !active) {
             return 0;
         }
 
         try {
-            this.session.getBasicRemote().sendText(table.toString());
+            ObjectMapper objectMapper = new ObjectMapper();
+            this.session.getBasicRemote().sendText(objectMapper.writeValueAsString(table));
         } catch (IOException e) {
             log.error("Error while requesting bet from websocket player with id {}", session.getId(), e);
             addStrike(table);
