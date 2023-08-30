@@ -1,9 +1,9 @@
 package org.continuouspoker.dealer.game;
 
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Table;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BetDecision {
@@ -56,8 +56,7 @@ public class BetDecision {
 
     private Action call(final int minimumBet, final Player player) {
         if (playerCanPayIt(player, minimumBet)) {
-            logger.log("Player %s calls the bet of %s.", player.getName(),
-                    minimumBet);
+            logger.log("Player %s calls the bet of %s.", player.getName(), minimumBet);
             player.bet(minimumBet);
         }
         return Action.CALL;

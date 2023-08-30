@@ -10,7 +10,7 @@
     <rule ref="category/java/bestpractices.xml">
         <!-- Too many false positives, seems to be broken when using var -->
         <exclude name="UnusedPrivateMethod"/>
-        <exclude name="GuardLogStatement" />
+        <exclude name="GuardLogStatement"/>
     </rule>
     <rule ref="category/java/codestyle.xml">
         <!-- Small methods are only bloated, big methods should raise eyebrows in code review -->
@@ -39,8 +39,8 @@
         <exclude name="BeanMembersShouldSerialize"/>
     </rule>
     <rule ref="category/java/multithreading.xml">
-        <exclude name="DoNotUseThreads" />
-        <exclude name="UseConcurrentHashMap" />
+        <exclude name="DoNotUseThreads"/>
+        <exclude name="UseConcurrentHashMap"/>
     </rule>
 
     <rule ref="category/java/performance.xml"></rule>

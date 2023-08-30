@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.continuouspoker.dealer.GameRoundLogEntry;
 import org.continuouspoker.dealer.calculation.HandCalculator;
@@ -23,7 +24,6 @@ import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Pot;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -37,13 +37,10 @@ public class GameRound {
     private final long roundId;
 
     private final List<Player> players;
-
+    private final Duration timeBetweenSteps;
+    private final List<GameRoundLogEntry> gamelog = new ArrayList<>();
     @Getter
     private Table table;
-
-    private final Duration timeBetweenSteps;
-
-    private final List<GameRoundLogEntry> gamelog = new ArrayList<>();
 
     public void run() {
         playWithDeck(new Deck());

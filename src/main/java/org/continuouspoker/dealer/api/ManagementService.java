@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,8 @@ public class ManagementService {
 
     public void registerPlayer(final long gameId, final Session playerSession, final String teamName)
             throws ObjectNotFoundException {
-        log.info("New websocket user trying to connect to game {}, session {} and teamname {}", gameId, playerSession.getId(), teamName);
+        log.info("New websocket user trying to connect to game {}, session {} and teamname {}", gameId,
+                playerSession.getId(), teamName);
         final Optional<Game> game = gameState.getGame(gameId);
         final int teamListLength = gameState.getGame(gameId)
                                             .map(Game::getTeams)
@@ -92,11 +92,11 @@ public class ManagementService {
         log.info("Websocket client with id {} disconnected", playerSession.getId());
         Optional<Team> foundTeam = getTeam(gameId, teamName);
 
-        if(foundTeam.isEmpty()) {
+        if (foundTeam.isEmpty()) {
             return;
         }
 
-        if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+        if (!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
             throw new IllegalStateException("Websocket client accessing non Websocket team");
         }
 
@@ -104,14 +104,15 @@ public class ManagementService {
 
     }
 
-    public void handleWebsocketMessage(final long gameId, final Session playerSession, final String teamName, final String message) {
+    public void handleWebsocketMessage(final long gameId, final Session playerSession, final String teamName,
+            final String message) {
         Optional<Team> foundTeam = getTeam(gameId, teamName);
 
-        if(foundTeam.isEmpty()) {
+        if (foundTeam.isEmpty()) {
             return;
         }
 
-        if(!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
+        if (!(foundTeam.get().getProvider() instanceof final WebsocketPlayer provider)) {
             throw new IllegalStateException("Websocket client accessing non Websocket team");
         }
 
@@ -129,15 +130,11 @@ public class ManagementService {
     public Optional<Team> getTeam(final long gameId, final String teamName) {
         final Optional<Game> game = gameState.getGame(gameId);
 
-        if(game.isEmpty()) {
+        if (game.isEmpty()) {
             return Optional.empty();
         }
 
-        return game.get()
-                   .getTeams()
-                   .stream()
-                   .filter(t -> t.getName().equals(teamName))
-                   .findFirst();
+        return game.get().getTeams().stream().filter(t -> t.getName().equals(teamName)).findFirst();
     }
 
     public void removePlayer(final long gameId, final String teamName) {

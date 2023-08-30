@@ -26,6 +26,31 @@ public class Pot implements Serializable {
         reset();
     }
 
+    private static boolean moreThanOneWinner(final Collection<Player> winners) {
+        return winners.size() > 1;
+    }
+
+    private static int addToPot(final Player player, final int bet, final PotPart pot) {
+        final int betLimit = pot.getBetLimit();
+        pot.addPayee(player);
+        if (betLimit == 0) {
+            pot.add(bet);
+            if (player.isAllIn()) {
+                pot.setBetLimit(bet);
+            }
+            return 0;
+        } else {
+            pot.add(betLimit);
+            return bet - betLimit;
+        }
+    }
+
+    private static List<Player> sortPlayersByCurrentBet(final List<Player> players) {
+        final ArrayList<Player> localPlayers = new ArrayList<>(players);
+        localPlayers.sort(Comparator.comparingInt(Player::getCurrentBet));
+        return localPlayers;
+    }
+
     public int getTotalSize() {
         return pots.stream().mapToInt(PotPart::getSize).sum();
     }
@@ -62,11 +87,11 @@ public class Pot implements Serializable {
                     log.info("Winners: {} ({} each) with a {}", winnerString, split, score.name());
 
                     if (moreThanOneWinner(winners)) {
-                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'",
-                                potSize, winnerString, split, score.name()));
+                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'", potSize,
+                                winnerString, split, score.name()));
                     } else {
-                        stepLogger.log(String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString,
-                                score.name()));
+                        stepLogger.log(
+                                String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString, score.name()));
                     }
 
                     iterator.remove();
@@ -75,10 +100,6 @@ public class Pot implements Serializable {
         });
 
         reset();
-    }
-
-    private static boolean moreThanOneWinner(final Collection<Player> winners) {
-        return winners.size() > 1;
     }
 
     public void collect(final List<Player> playersInPlayOrder) {
@@ -114,27 +135,6 @@ public class Pot implements Serializable {
         }
     }
 
-    private static int addToPot(final Player player, final int bet, final PotPart pot) {
-        final int betLimit = pot.getBetLimit();
-        pot.addPayee(player);
-        if (betLimit == 0) {
-            pot.add(bet);
-            if (player.isAllIn()) {
-                pot.setBetLimit(bet);
-            }
-            return 0;
-        } else {
-            pot.add(betLimit);
-            return bet - betLimit;
-        }
-    }
-
-    private static List<Player> sortPlayersByCurrentBet(final List<Player> players) {
-        final ArrayList<Player> localPlayers = new ArrayList<>(players);
-        localPlayers.sort(Comparator.comparingInt(Player::getCurrentBet));
-        return localPlayers;
-    }
-
     @Override
     public String toString() {
         return pots.stream().map(PotPart::toString).collect(Collectors.joining(","));
@@ -142,9 +142,8 @@ public class Pot implements Serializable {
 
     private static class PotPart implements Serializable {
 
-        private int size;
         private final Set<Player> payees = new HashSet<>();
-
+        private int size;
         private int betLimit;
 
         public int getSize() {

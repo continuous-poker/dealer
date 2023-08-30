@@ -21,16 +21,13 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class GameManager {
 
     private static final int GAME_INTERVAL_SECONDS = 10;
-    @ConfigProperty(name = "gameround.sleep.duration")
-    /* package */ Duration gameRoundSleepDuration;
-
-    @ConfigProperty(name = "step.sleep.duration")
-    /* package */ Duration stepSleepDuration;
-
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final Random random = new Random();
-
     private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
+    @ConfigProperty(name = "gameround.sleep.duration")
+    /* package */ Duration gameRoundSleepDuration;
+    @ConfigProperty(name = "step.sleep.duration")
+    /* package */ Duration stepSleepDuration;
 
     public long createNewGame(final String name) {
         final long gameId = generateGameId();

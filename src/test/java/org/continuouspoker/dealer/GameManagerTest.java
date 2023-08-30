@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.continuouspoker.dealer.game.Game;
 import org.assertj.core.api.Assertions;
+import org.continuouspoker.dealer.game.Game;
 import org.junit.jupiter.api.Test;
 
 class GameManagerTest {

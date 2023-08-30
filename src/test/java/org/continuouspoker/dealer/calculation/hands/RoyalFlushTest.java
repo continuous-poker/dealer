@@ -45,7 +45,6 @@ class RoyalFlushTest {
         assertTrue(strategy.matches(cards));
     }
 
-
     @Test
     void testMatches_doesNotMatch() {
         final List<Card> cards = Arrays.asList(new Card(KING, SPADES), new Card(ACE, SPADES), new Card(QUEEN, HEARTS),

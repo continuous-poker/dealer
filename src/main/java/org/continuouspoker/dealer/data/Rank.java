@@ -29,17 +29,17 @@ public enum Rank {
         this.value = value;
     }
 
-    @JsonValue
-    public String getToken() {
-        return token;
-    }
-
     @JsonCreator
     public static Rank forToken(final String token) {
         return Arrays.stream(Rank.values())
                      .filter(r -> r.getToken().equals(token))
                      .findFirst()
                      .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @JsonValue
+    public String getToken() {
+        return token;
     }
 
     public int getValue() {

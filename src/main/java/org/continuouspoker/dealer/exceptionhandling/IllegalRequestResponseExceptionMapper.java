@@ -11,5 +11,5 @@ public class IllegalRequestResponseExceptionMapper implements ExceptionMapper<Il
     public Response toResponse(final IllegalStateException onfe) {
         return Response.status(Response.Status.BAD_REQUEST).entity(onfe.getMessage()).build();
     }
-    
+
 }

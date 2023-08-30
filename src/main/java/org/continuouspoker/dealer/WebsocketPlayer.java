@@ -6,7 +6,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,14 +19,15 @@ import org.continuouspoker.dealer.data.Table;
 
 @RequiredArgsConstructor
 @Slf4j
-public class WebsocketPlayer implements ActionProvider{
+public class WebsocketPlayer implements ActionProvider {
 
+    private static final int MAX_QUEUE_SIZE = 3;
     @Setter
     @Getter
     private Session session;
 
     @Getter
-    private BlockingQueue<String> messages = new ArrayBlockingQueue<String>(3);
+    private BlockingQueue<String> messages = new ArrayBlockingQueue<String>(MAX_QUEUE_SIZE);
 
     @Getter
     @Setter
@@ -59,12 +59,12 @@ public class WebsocketPlayer implements ActionProvider{
 
         while (table.getTournamentId() != blockedTable) {
             Optional<String> message = pollMessage();
-            if(message.isEmpty()) {
+            if (message.isEmpty()) {
                 addStrike(table);
                 continue;
             }
 
-            if(!StringUtils.isNumeric(message.get())) {
+            if (!StringUtils.isNumeric(message.get())) {
                 log.error("Response not numeric");
                 addStrike(table);
                 continue;
