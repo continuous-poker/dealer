@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.continuouspoker.dealer.ActionProvider;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 @AllArgsConstructor
 @Slf4j
+@JsonIgnoreProperties({ "actionProvider" })
 public class Player implements CardReceiver, Serializable {
 
     private final String name;
@@ -28,7 +30,6 @@ public class Player implements CardReceiver, Serializable {
     @JsonProperty("bet")
     private int currentBet;
 
-    @JsonIgnore
     private final transient ActionProvider actionProvider;
 
     @Override
