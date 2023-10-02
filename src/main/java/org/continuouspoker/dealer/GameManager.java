@@ -49,7 +49,7 @@ public class GameManager {
     private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
 
     @PostConstruct
-    void initialize() {
+    /* package */ void initialize() {
         try {
             final var path = Path.of(storagePath);
             if (Files.exists(path)) {
@@ -71,7 +71,7 @@ public class GameManager {
     }
 
     @Scheduled(delayed = "10s", every = "10s")
-    void store() {
+    /* package */ void store() {
         try {
             final var path = Path.of(storagePath);
             final var listToSerialize = games.keySet()
@@ -85,8 +85,8 @@ public class GameManager {
                                                                                                         .getUrl()))
                                                                                                .toList()))
                                              .toList();
-            final String s = objectMapper.writeValueAsString(listToSerialize);
-            Files.writeString(path, s, StandardOpenOption.CREATE);
+            final var serializedList = objectMapper.writeValueAsString(listToSerialize);
+            Files.writeString(path, serializedList, StandardOpenOption.CREATE);
         } catch (IOException e) {
             log.error("Could not store game states, progress might get lost on restart.", e);
         }

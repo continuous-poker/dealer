@@ -208,6 +208,7 @@
                                 <exclude>**/*ExceptionMapper.class</exclude>
                                 <exclude>**/ManagementController.class</exclude>
                                 <exclude>**/ManagementService.class</exclude>
+                                <exclude>**/*BE.class</exclude>
                                 <exclude>**/GameManager.class</exclude>
                             </excludes>
                             <rules>
