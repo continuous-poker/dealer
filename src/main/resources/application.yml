@@ -52,4 +52,6 @@ step:
   sleep:
     duration: PT1S
 
+persistence:
+  path: pokerstate
 

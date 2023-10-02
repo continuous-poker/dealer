@@ -1,9 +1,14 @@
 package org.continuouspoker.dealer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -12,12 +17,18 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.scheduler.Scheduled;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.game.Game;
+import org.continuouspoker.dealer.persistence.GameBE;
+import org.continuouspoker.dealer.persistence.TeamBE;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
+@Slf4j
 public class GameManager {
 
     private static final int GAME_INTERVAL_SECONDS = 10;
@@ -27,10 +38,59 @@ public class GameManager {
     @ConfigProperty(name = "step.sleep.duration")
     /* package */ Duration stepSleepDuration;
 
+    @ConfigProperty(name = "persistence.path")
+    /* package */ String storagePath;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final Random random = new Random();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
+
+    @PostConstruct
+    void initialize() {
+        try {
+            final var path = Path.of(storagePath);
+            if (Files.exists(path)) {
+                final var serializedList = Files.readString(path);
+                final List<GameBE> gameList = objectMapper.readerForListOf(GameBE.class).readValue(serializedList);
+                gameList.forEach(g -> {
+                    final var game = new Game(g.gameId(), g.name(), gameRoundSleepDuration, stepSleepDuration);
+                    g.teams().forEach(t -> {
+                        final var team = new Team(t.name(), new RemotePlayer(t.providerUrl()));
+                        team.addToScore(t.score());
+                        game.addPlayer(team);
+                    });
+                    games.put(game, null);
+                });
+            }
+        } catch (IOException e) {
+            log.error("Could not load stored games on startup, continuing with empty list.", e);
+        }
+    }
+
+    @Scheduled(delayed = "10s", every = "10s")
+    void store() {
+        try {
+            final var path = Path.of(storagePath);
+            final var listToSerialize = games.keySet()
+                                             .stream()
+                                             .map(g -> new GameBE(g.getGameId(), g.getName(), g.getTeams()
+                                                                                               .stream()
+                                                                                               .map(t -> new TeamBE(
+                                                                                                       t.getScore(),
+                                                                                                       t.getName(),
+                                                                                                       t.getProvider()
+                                                                                                        .getUrl()))
+                                                                                               .toList()))
+                                             .toList();
+            final String s = objectMapper.writeValueAsString(listToSerialize);
+            Files.writeString(path, s, StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            log.error("Could not store game states, progress might get lost on restart.", e);
+        }
+    }
 
     public long createNewGame(final String name) {
         final long gameId = generateGameId();

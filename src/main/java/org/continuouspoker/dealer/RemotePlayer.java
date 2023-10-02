@@ -43,6 +43,11 @@ public class RemotePlayer implements ActionProvider {
     }
 
     @Override
+    public String getUrl() {
+        return url;
+    }
+
+    @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public int requestBet(final Table table) {
         if (table.getTournamentId() == blockedTable) {
