@@ -1,8 +1,6 @@
 on:
   workflow_dispatch: # Trigger manually
   push:
-    branches:
-      - main
 
 env:
   DEPLOYMENT_NAME: poker-dealer
@@ -34,14 +32,16 @@ jobs:
           mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=ghcr.io/${{ github.repository_owner }} -Dquarkus.container-image.name=${{ env.DEPLOYMENT_NAME }} -Dquarkus.container-image.tag=latest -Dquarkus.kubernetes.service-type=ClusterIP -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.ingress.host=dealer.play.continuouspoker.org -Dquarkus.kubernetes.ingress.ingress-class-name=nginx
 
       - name: Log in to registry
+        if: github.ref == 'refs/heads/main'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push the Docker image to GHCR
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/${{ env.DEPLOYMENT_NAME }}
 
       - name: Deploy
-        if: ${{ env.DEPLOYMENT_TOKEN }}
+        if: env.DEPLOYMENT_TOKEN && github.ref == 'refs/heads/main'
         run: |-
           echo "${{ env.DEPLOYMENT_TOKEN }}" > kubeconfig.yaml
           kubectl --kubeconfig kubeconfig.yaml --namespace ${{ env.NAMESPACE }} delete secret api-user --ignore-not-found
