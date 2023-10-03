@@ -17,6 +17,7 @@ import org.continuouspoker.dealer.Team;
 @RequiredArgsConstructor
 public class Game implements Runnable {
 
+    private static final int TOURNAMENT_LIMIT = 100;
     private final List<Team> teams = new ArrayList<>();
 
     @Getter
@@ -40,6 +41,9 @@ public class Game implements Runnable {
         final Tournament tournament = new Tournament(gameId, tournamentId++, teams, timeBetweenGameRounds,
                 timeBetweenSteps);
         tournaments.add(tournament);
+        while (tournaments.size() > TOURNAMENT_LIMIT) {
+            tournaments.remove(0);
+        }
         tournament.run();
     }
 
