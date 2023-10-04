@@ -1,10 +1,27 @@
 package org.continuouspoker.dealer.data;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Deck {
+
+    private static final Set<Card> ALL_EXISTING_CARDS;
+
+    static {
+        final var cardSet = new HashSet<Card>();
+
+        for (final Suit suit : Suit.values()) {
+            for (final Rank rank : Rank.values()) {
+                cardSet.add(new Card(rank, suit));
+            }
+        }
+
+        ALL_EXISTING_CARDS = Collections.unmodifiableSet(cardSet);
+    }
+
     @SuppressWarnings("PMD.LooseCoupling")
     private final LinkedList<Card> cards;
 
@@ -13,12 +30,7 @@ public class Deck {
     }
 
     public Deck() {
-        cards = new LinkedList<>();
-        for (final Suit suit : Suit.values()) {
-            for (final Rank rank : Rank.values()) {
-                cards.add(new Card(rank, suit));
-            }
-        }
+        cards = new LinkedList<>(ALL_EXISTING_CARDS);
         Collections.shuffle(cards);
     }
 

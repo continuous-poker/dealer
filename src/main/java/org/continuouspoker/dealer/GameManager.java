@@ -31,7 +31,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Slf4j
 public class GameManager {
 
-    private static final int GAME_INTERVAL_SECONDS = 10;
+    @ConfigProperty(name = "tournament.sleep.duration")
+    /* package */ Duration tournamentSleepDuration;
+
     @ConfigProperty(name = "gameround.sleep.duration")
     /* package */ Duration gameRoundSleepDuration;
 
@@ -107,7 +109,7 @@ public class GameManager {
         synchronized (this) {
             getGame(gameId).ifPresent(game -> {
                 if (games.get(game) == null || games.get(game).isCancelled()) {
-                    games.put(game, scheduler.scheduleAtFixedRate(game, 0, GAME_INTERVAL_SECONDS, TimeUnit.SECONDS));
+                    games.put(game, scheduler.scheduleAtFixedRate(game, 0, tournamentSleepDuration.getSeconds(), TimeUnit.SECONDS));
                 }
             });
         }

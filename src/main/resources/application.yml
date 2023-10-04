@@ -45,6 +45,9 @@ quarkus:
 
 
 
+tournament:
+  sleep:
+    duration: PT10S
 gameround:
   sleep:
     duration: PT1S
