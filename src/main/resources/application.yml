@@ -23,6 +23,12 @@ quarkus:
     always-include: true
 
   kubernetes:
+    mounts:
+      gamestore:
+        path: /home/jboss/persistence
+    pvc-volumes:
+      gamestore:
+        claim-name: pvc-dealer-gamestore
     resources:
       requests:
         cpu: 500m
@@ -56,5 +62,5 @@ step:
     duration: PT1S
 
 persistence:
-  path: pokerstate
+  path: /home/jboss/persistence/gamestate
 
