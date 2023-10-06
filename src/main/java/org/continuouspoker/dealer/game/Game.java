@@ -17,7 +17,7 @@ import org.continuouspoker.dealer.Team;
 @RequiredArgsConstructor
 public class Game implements Runnable {
 
-    private static final int TOURNAMENT_LIMIT = 100;
+    private static final int TOURNAMENT_LIMIT = 20;
     private final List<Team> teams = new ArrayList<>();
 
     @Getter
