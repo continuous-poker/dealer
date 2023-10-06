@@ -3,7 +3,7 @@ on:
   push:
 
 env:
-  DEPLOYMENT_NAME: poker-dealer
+  DEPLOYMENT_NAME: dealer
   DEPLOYMENT_TOKEN: ${{ secrets.TOKEN }}
   NAMESPACE: ${{ secrets.NAMESPACE }}
 
