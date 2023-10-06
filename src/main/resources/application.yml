@@ -23,6 +23,9 @@ quarkus:
     always-include: true
 
   kubernetes:
+    ingress:
+      annotations:
+        cert-manager.io/issuer: letsencrypt-nginx
     strategy: recreate
     security-context:
       run-as-user: 185
