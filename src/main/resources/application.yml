@@ -23,9 +23,11 @@ quarkus:
     always-include: true
 
   kubernetes:
+    strategy: recreate
     security-context:
-      run-as-group: 1001
-      fs-group: 1001
+      run-as-user: 185
+      run-as-group: 185
+      fs-group: 185
 
     mounts:
       gamestore:
