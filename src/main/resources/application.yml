@@ -23,6 +23,10 @@ quarkus:
     always-include: true
 
   kubernetes:
+    security-context:
+      run-as-group: 1001
+      fs-group: 1001
+
     mounts:
       gamestore:
         path: /home/jboss/persistence
