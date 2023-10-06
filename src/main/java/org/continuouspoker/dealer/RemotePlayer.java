@@ -51,6 +51,7 @@ public class RemotePlayer implements ActionProvider {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public int requestBet(final Table table) {
         if (table.getTournamentId() == blockedTable) {
+            log.info("Player is blocked from this table, will instantly return a bet of 0.");
             return 0;
         }
 
