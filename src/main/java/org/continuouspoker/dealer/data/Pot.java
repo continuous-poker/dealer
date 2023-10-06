@@ -140,7 +140,7 @@ public class Pot implements Serializable {
         return pots.stream().map(PotPart::toString).collect(Collectors.joining(","));
     }
 
-    private static class PotPart implements Serializable {
+    private static final class PotPart implements Serializable {
 
         private int size;
         private final Set<Player> payees = new HashSet<>();
