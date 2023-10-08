@@ -51,7 +51,7 @@ public class ManagementService {
         final Optional<Game> game = gameState.getGame(gameId);
         game.ifPresent(g -> g.getTeams()
                              .stream()
-                             .filter(team -> team.getName().equals(teamName))
+                             .filter(team -> teamName.equals(team.getName()))
                              .findFirst()
                              .ifPresent(g::removePlayer));
     }
