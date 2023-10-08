@@ -5,7 +5,8 @@ on:
 env:
   DEPLOYMENT_NAME: dealer
   DEPLOYMENT_TOKEN: ${{ secrets.TOKEN }}
-  NAMESPACE: ${{ secrets.NAMESPACE }}
+  NAMESPACE: ${{ vars.NAMESPACE }}
+  DEALER_URL: ${{ vars.DEALER_URL }}
 
 jobs:
   build:
@@ -29,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=ghcr.io/${{ github.repository_owner }} -Dquarkus.container-image.name=${{ env.DEPLOYMENT_NAME }} -Dquarkus.container-image.tag=latest -Dquarkus.kubernetes.service-type=ClusterIP -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.ingress.host=dealer.play.continuouspoker.org -Dquarkus.kubernetes.ingress.ingress-class-name=nginx -Dquarkus.kubernetes.ingress.tls.letsencrypt-nginx.enabled=true  -Dquarkus.kubernetes.ingress.tls.letsencrypt-nginx.hosts=dealer.play.continuouspoker.org
+          mvn --batch-mode --update-snapshots clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.group=ghcr.io/${{ github.repository_owner }} -Dquarkus.container-image.name=${{ env.DEPLOYMENT_NAME }} -Dquarkus.container-image.tag=latest -Dquarkus.kubernetes.service-type=ClusterIP -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.ingress.host=${{ env.DEALER_URL }} -Dquarkus.kubernetes.ingress.ingress-class-name=nginx -Dquarkus.kubernetes.ingress.tls.letsencrypt-nginx.enabled=true  -Dquarkus.kubernetes.ingress.tls.letsencrypt-nginx.hosts=${{ env.DEALER_URL }}
 
       - name: Log in to registry
         if: github.ref == 'refs/heads/main'
