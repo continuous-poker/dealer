@@ -111,7 +111,7 @@ public class Pot implements Serializable {
             pot.addPayee(player);
             pot.add(remainingBet);
             if (player.isAllIn()) {
-                pot.setBetLimit(bet);
+                pot.setBetLimit(remainingBet);
             }
             pots.add(pot);
         }
