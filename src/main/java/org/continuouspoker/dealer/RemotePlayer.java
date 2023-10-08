@@ -19,8 +19,6 @@ public class RemotePlayer implements ActionProvider {
     private static final int MAX_STRIKES = 3;
     @JsonProperty
     private final String url;
-    private final RemotePlayerClient client;
-
     @JsonProperty
     private int strike;
 
@@ -28,11 +26,6 @@ public class RemotePlayer implements ActionProvider {
 
     public RemotePlayer(final String playerUrl) {
         this.url = toAbsolute(playerUrl);
-        client = RestClientBuilder.newBuilder()
-                                  .baseUri(URI.create(this.url))
-                                  .connectTimeout(CONNECT_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
-                                  .readTimeout(READ_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
-                                  .build(RemotePlayerClient.class);
     }
 
     private String toAbsolute(final String playerUrl) {
@@ -55,7 +48,7 @@ public class RemotePlayer implements ActionProvider {
             return 0;
         }
 
-        try {
+        try (var client = createClient()) {
             final int response = client.getExtensionsById(table).bet();
             strike = 0;
             return response;
@@ -64,6 +57,14 @@ public class RemotePlayer implements ActionProvider {
             addStrike(table);
             return 0;
         }
+    }
+
+    private RemotePlayerClient createClient() {
+        return RestClientBuilder.newBuilder()
+                                .baseUri(URI.create(this.url))
+                                .connectTimeout(CONNECT_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
+                                .readTimeout(READ_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
+                                .build(RemotePlayerClient.class);
     }
 
     private void addStrike(final Table table) {
