@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Continuous Poker</title>
+    <link rel="stylesheet" href="css/base-layout.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div class="grid-container" id="app">
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <a href="log.html">Dashboard</a>
+        <a href="admin.html">Settings</a>
+    </header>
+
+    <main class="main">
+        <aside id="playerBar">
+
+            <h2 class="playerBarHeadLines clickable players" :class="{ active: displayPlayers }"
+                @click="displayHandler('players', null, null)">Players</h2>
+            <h2 class="playerBarHeadLines clickable scoreboard" :class="{ active: displayScoreboard }"
+                @click="displayHandler('scoreboard', null, null)">Scoreboard</h2>
+
+            <section id="singlePlayer" v-if="displayPlayers" v-for="player in table.players">
+                <section id="playerInfos">
+                    <p class="playerInfo">Name: {{player.name}}</p>
+                    <p class="playerInfo">Chips: {{player.stack}}</p>
+                    <p class="playerInfo">Bet: {{player.bet}}</p>
+                    <p class="playerInfo">Status: {{player.status}}</p>
+                </section>
+                <section id="playerCards">
+                    <img class="playerCard" v-for="card in player.cards" :src="getImageUrl(card)" alt="Card not found">
+                </section>
+            </section>
+
+            <section id="scoreBoard" v-if="displayScoreboard">
+                <section id="scoreBoardInfo" v-for="(name, score) in score">
+                    {{score + 1}}. Place: {{name[0]}} has {{name[1]}} point(s)!
+                </section>
+            </section>
+        </aside>
+
+        <section id="mainSection">
+
+            <section id="LogBox">
+
+                <section class="logItems" v-if="gameLog">
+                    <h2 class="headlines">Active Game Log</h2>
+
+                    <ul>
+                        <li class="logItem" v-for="log in logs">
+                            [T{{ log.tournamentId }}] {{ log.message }}
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="logItems" v-if="legacyLog">
+
+                    <h2 id="logHistoryEntry">History</h2>
+                    <h2 id="cross" class="clickable" @click="displayHandler('x', null, null)">X</h2>
+
+                    <section>
+                        <section v-if="displayLogTable">
+
+                            <ul class="logItem" v-if="gameHistory !== null">
+                                <li v-for="(table, tableIndex) in displayedHistory">
+                                    <section>Round: {{tableIndex}}</section>
+                                    <ul>
+                                        <li v-for="round in table">{{round}}</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section v-if="displayLogRound">
+
+                            <ul class="logItem" v-if="gameHistory !== null">
+                                <li v-for="round in displayedHistory">{{round}}</li>
+                            </ul>
+                        </section>
+                    </section>
+                </section>
+
+
+                <section id="logHistory">
+
+                    <h2 class="headlines"> Log History</h2>
+
+                    <ul v-for="(table, tournamentIndex) in gameHistory">
+                        <li>
+                        <span class="toggle" v-if="!historyIsOpen(tournamentIndex)"
+                              @click="setHistoryOpen(tournamentIndex, true)">+</span><span class="toggle"
+                                                                                           v-if="historyIsOpen(tournamentIndex)"
+                                                                                           @click="setHistoryOpen(tournamentIndex, false)">-</span><span
+                                class="clickable"
+                                @click="displayHandler('tournament', tournamentIndex, null)">Tournament: {{tournamentIndex}}</span>
+                            <ul v-if="historyIsOpen(tournamentIndex)" v-for="(round, roundIndex) in table">
+                                <li>
+                                    <span class="clickable" @click="displayHandler('round', tournamentIndex, roundIndex)">Round: {{roundIndex}}</span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+            </section>
+
+            <section id="desk">
+                <img class="deskCard" v-for="card in table.communityCards" :src="getImageUrl(card)"
+                     alt="Card not found">
+            </section>
+
+            <section id="pot">POT: {{table.pot}}</section>
+        </section>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Continuous Poker | <a href="https://continuouspoker.org">continuouspoker.org</a></p>
+    </footer>
+</div>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

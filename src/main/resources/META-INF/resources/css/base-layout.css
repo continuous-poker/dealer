@@ -1,0 +1,42 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.grid-container {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 100%;
+}
+
+/* Style for the top navigation bar */
+.navbar {
+    background-color: #3498db; /* Modern blue color */
+    overflow: hidden;
+}
+
+.navbar a {
+    display: block;
+    float: left;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar a:hover {
+    background-color: #46a3e1;
+}
+
+/* Style for the footer */
+.footer {
+    background-color: #333; /* Dark gray color */
+    color: white;
+    text-align: center;
+}
+.footer a, .footer a:active, .footer a:visited {
+    color: #3498db;
+}

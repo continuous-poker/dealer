@@ -1,0 +1,171 @@
+.main {
+    display: grid;
+    grid-template-columns: 25% 75%;
+}
+
+.color1 {
+    color: #122933;
+}
+
+.color2 {
+    color: #124551;
+}
+
+.color3 {
+    color: #12707a;
+}
+
+.color4 {
+    color: #17a4ab;
+}
+
+.color5 {
+    color: #20dad9;
+}
+
+.headlines {
+    text-align: center;
+}
+
+#header {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+}
+
+#playerBar {
+    text-align: center;
+}
+
+.playerBarHeadLines {
+    display: inline;
+    margin: 5px;
+}
+
+#singlePlayer {
+    width: 90%;
+    margin: 2.5% auto;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-items: center;
+    background-color: #ebebeb;
+    border: 3px solid #3498db;
+}
+
+#playerInfos {
+}
+
+.playerInfo {
+    text-align: center;
+}
+
+.playerCard {
+    width: 40%;
+    margin-right: 5%;
+}
+
+#scoreBoard {
+    width: 90%;
+    height: auto;
+    margin: 2.5% auto;
+
+    background-color: #ebebeb;
+    border: 3px solid #3498db;
+}
+
+#scoreBoardInfo {
+    margin: 10% 0;
+    text-align: center;
+}
+#mainSection {
+    margin: 0.5%;
+}
+
+/*Css-Style for GameLog*/
+#LogBox {
+    max-height: 400px;
+    display: grid;
+    grid-template-columns: 65% 35%;
+    background-color: #ebebeb;
+    border: 3px solid #3498db;
+    overflow: auto;
+}
+
+#logHistoryEntry {
+    text-align: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+#cross {
+    width: 10%;
+    float: right;
+    margin: 2% 5%;
+
+    text-align: center;
+    color: white;
+    background-color: darkred;
+    border: 3px solid white;
+}
+
+.logItem {
+    padding-left: 23px;
+    list-style-type: none;
+    overflow: auto;
+}
+
+
+/*Css-Style for Desk with Deskcards*/
+#desk {
+    width: 95%;
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    background-color: #ebebeb;
+    border: 3px solid #3498db;
+    overflow: hidden;
+}
+
+.deskCard {
+    margin: 1.5% 1.13%;
+    width: 90%;
+}
+
+.clickable:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.scoreboard.active, .players.active {
+    color: black;
+}
+
+.scoreboard, .players {
+    color: #CCCCCC;
+}
+
+.active:hover {
+    cursor: default;
+    text-decoration: none;
+}
+
+.toggle {
+    padding-right: 4px;
+}
+
+.toggle:hover {
+    cursor: pointer;
+}
+
+/*Css-Style for GameLog*/
+#pot {
+    display: none;
+    height: 10%;
+    width: 33%;
+    margin: 1.5% auto;
+
+    border: 3px solid #0C2D48;
+    text-align: center;
+    font-size: 50px;
+    color: white;
+}
