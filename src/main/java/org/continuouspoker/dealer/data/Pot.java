@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.calculation.hands.Score;
@@ -32,7 +35,7 @@ public class Pot implements Serializable {
 
     private void reset() {
         pots.clear();
-        final PotPart mainPot = new PotPart();
+        final PotPart mainPot = new PotPart("Main pot");
         pots.add(mainPot);
     }
 
@@ -44,37 +47,43 @@ public class Pot implements Serializable {
     }
 
     public void pay(final Map<Score, List<Player>> rankedPlayers) {
-        rankedPlayers.forEach((score, players) -> {
-            final Iterator<PotPart> iterator = pots.iterator();
-            final HashSet<Player> winners = new HashSet<>();
-            while (iterator.hasNext()) {
-                final PotPart pot = iterator.next();
-                final int potSize = pot.getSize();
-                final Collection<Player> payees = pot.getPayees();
-                winners.clear();
-                winners.addAll(players);
-                winners.retainAll(payees);
-                if (!winners.isEmpty()) {
-                    final int split = potSize / winners.size();
-                    winners.forEach(p -> p.addToStack(split));
-
-                    final String winnerString = winners.stream().map(Player::getName).collect(Collectors.joining(","));
-                    log.info("Winners: {} ({} each) with a {}", winnerString, split, score.name());
-
-                    if (moreThanOneWinner(winners)) {
-                        stepLogger.log(String.format("Pot of %s is split between %s (%s for each), for a '%s'",
-                                potSize, winnerString, split, score.name()));
-                    } else {
-                        stepLogger.log(String.format("Pot of %s goes to %s, for a '%s'", potSize, winnerString,
-                                score.name()));
-                    }
-
-                    iterator.remove();
-                }
-            }
-        });
-
+        rankedPlayers.forEach(this::payRankedPlayers);
         reset();
+    }
+
+    private void payRankedPlayers(final Score score, final List<Player> players) {
+        final Iterator<PotPart> iterator = pots.iterator();
+        final HashSet<Player> winners = new HashSet<>();
+        while (iterator.hasNext()) {
+            final PotPart pot = iterator.next();
+            final Collection<Player> payees = pot.getPayees();
+            winners.clear();
+            winners.addAll(players);
+            winners.retainAll(payees);
+            if (!winners.isEmpty()) {
+                payPotToWinners(score, winners, pot);
+                iterator.remove();
+            }
+        }
+    }
+
+    private void payPotToWinners(final Score score, final HashSet<Player> winners, final PotPart pot) {
+        final int potSize = pot.getSize();
+        final int split = potSize / winners.size();
+        winners.forEach(p -> p.addToStack(split));
+
+        final String winnerString = winners.stream().map(Player::getName).collect(Collectors.joining(","));
+        log.info("Winners: {} ({} each) with a {}", winnerString, split, score.name());
+
+        if (moreThanOneWinner(winners)) {
+            stepLogger.log(
+                    String.format("%s of %s is split between %s (%s for each), for a '%s'", pot.getName(), potSize,
+                            winnerString, split, score.name()));
+        } else {
+            stepLogger.log(String.format("%s of %s goes to %s, for a '%s'", pot.getName(), potSize, winnerString,
+                    score.name()));
+        }
+
     }
 
     private static boolean moreThanOneWinner(final Collection<Player> winners) {
@@ -94,23 +103,27 @@ public class Pot implements Serializable {
 
     private void collectFromPlayer(final PotPart startPot, final Player player) {
         int remainingBet = player.collectBet();
-
-        boolean skip = true;
-        for (final PotPart pot : pots) {
-            if (pot.equals(startPot)) {
-                skip = false;
-            }
-            if (skip) {
-                continue;
-            }
-
-            remainingBet = addToPot(player, remainingBet, pot);
-        }
         if (remainingBet > 0) {
-            final PotPart pot = new PotPart();
-            pot.addPayee(player);
-            pot.add(remainingBet);
-            pots.add(pot);
+            boolean skip = true;
+            for (final PotPart pot : pots) {
+                if (pot.equals(startPot)) {
+                    skip = false;
+                }
+                if (skip) {
+                    continue;
+                }
+
+                remainingBet = addToPot(player, remainingBet, pot);
+            }
+            if (remainingBet > 0) {
+                final PotPart pot = new PotPart("Side pot " + pots.size());
+                pot.addPayee(player);
+                pot.add(remainingBet);
+                if (player.isAllIn()) {
+                    pot.setBetLimit(remainingBet);
+                }
+                pots.add(pot);
+            }
         }
     }
 
@@ -140,20 +153,16 @@ public class Pot implements Serializable {
         return pots.stream().map(PotPart::toString).collect(Collectors.joining(","));
     }
 
+    @RequiredArgsConstructor
+    @Getter
     private static final class PotPart implements Serializable {
 
         private int size;
         private final Set<Player> payees = new HashSet<>();
+        private final String name;
 
+        @Setter
         private int betLimit;
-
-        public int getSize() {
-            return size;
-        }
-
-        public Set<Player> getPayees() {
-            return payees;
-        }
 
         public void add(final int chips) {
             size += chips;
@@ -167,17 +176,9 @@ public class Pot implements Serializable {
             betLimit = 0;
         }
 
-        public int getBetLimit() {
-            return betLimit;
-        }
-
-        public void setBetLimit(final int betLimit) {
-            this.betLimit = betLimit;
-        }
-
         @Override
         public String toString() {
-            return String.format("Pot of %s (%s)", size,
+            return String.format("%s of %s (%s)", name, size,
                     payees.stream().map(Player::getName).collect(Collectors.joining(",")));
         }
     }
