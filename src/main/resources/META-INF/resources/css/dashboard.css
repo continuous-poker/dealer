@@ -1,0 +1,148 @@
+h2 {
+    margin: 5px 0px;
+    border-bottom: 1px solid #3498db;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    padding: 0 10px;
+}
+
+.sidebar {
+    padding-right: 10px;
+}
+
+.headlines {
+    text-align: center;
+}
+
+#header {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+}
+
+.playerBarHeadLines {
+    display: inline;
+    margin: 5px;
+}
+
+.card {
+    font-size: 7rem;
+}
+
+.diamonds, .hearts {
+    color: red;
+}
+
+.singlePlayer {
+    margin: 5px;
+    padding: 5px;
+    background-color: #f7f7f7;
+    float: left;
+}
+
+
+.playerInfo {
+    text-align: center;
+}
+
+.playerCard {
+    width: 40%;
+    margin-right: 5%;
+}
+
+.logItem {
+    padding-left: 10px;
+    list-style-type: none;
+    overflow: auto;
+}
+
+.cleanList {
+    padding-left: 10px;
+    list-style-type: none;
+}
+
+#desk {
+    clear: left;
+}
+
+.clickable:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+.active:hover {
+    cursor: default;
+    text-decoration: none;
+}
+
+.toggle {
+    padding-right: 4px;
+}
+
+.toggle:hover {
+    cursor: pointer;
+}
+
+
+.round {
+    border: 1px white;
+}
+.back {
+    font-style: italic;
+}
+
+.tournament:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.round:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.active {
+    font-weight: bold;
+}
+.active:after {
+    content: " ➡"
+}
+
+.active:hover {
+    text-decoration: none;
+    font-weight: bold;
+    cursor: default;
+}
+
+.left-enter-active {
+  transition: all 0.25s linear ;
+}
+
+.right-enter-active {
+  transition: all 0.25s linear ;
+}
+
+.left-leave-active {
+  transition: all 0.10s linear ;
+}
+
+.right-leave-active {
+  transition: all 0.10s linear ;
+}
+
+.left-enter-from {
+  transform: translatex(-100%);
+}
+.right-enter-from {
+  transform: translatex(100%);
+}
+
+.left-leave-to {
+  transform: translatex(-100%);
+}
+.right-leave-to {
+  transform: translatex(100%);
+}

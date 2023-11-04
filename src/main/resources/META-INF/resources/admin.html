@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Settings | Continuous Poker</title>
+    <link rel="stylesheet" href="css/base-layout.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div class="grid-container" id="app">
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <a href="index.html">Dashboard</a>
+        <a href="admin.html">Settings</a>
+    </header>
+
+    <main class="main">
+        <!-- Central Section -->
+        <section class="sidebar">
+            <h1>Games</h1>
+            <ul>
+                <li @click="selectGame(game)" :class="{ active: selectedGame && game.gameId === selectedGame.gameId }" v-for="game in games" :key="game.gameId">{{ game.name }}</li>
+            </ul>
+            <button @click="showCreateGameDialog">Create Game</button>
+        </section>
+
+        <!-- Central Section for displaying game details -->
+        <section class="content">
+            <h1>Game details</h1>
+            <div v-if="selectedGame">
+                <h2>{{ selectedGame.name }} <button @click="removeGame(selectedGame.gameId)">Delete game</button></h2>
+                <p>Game ID: {{ selectedGame.gameId }}</p>
+                <p>Status: {{ selectedGame.status }} <button @click="triggerStatus(selectedGame.gameId)">Trigger</button></p>
+                <h3>Teams</h3>
+                <ul>
+                    <li v-for="team in selectedGame.teams" :key="team.name">
+                        <p>Team: {{ team.name }} <button @click="removeTeam(team.name)">Delete</button></p>
+                        <p>Provider URL: {{ team.provider.url }}</p>
+                        <p>Score: {{ team.score }}</p>
+                    </li>
+                </ul>
+                <!-- Form to add new team items -->
+                <form class="team-form" @submit.prevent="addNewTeam">
+                    <h3>Add new team</h3>
+                    <label for="newTeamName">Team Name:</label>
+                    <input type="text" id="newTeamName" v-model="newTeamName" required>
+                    <label for="newTeamURL">Provider URL:</label>
+                    <input type="text" id="newTeamURL" v-model="newTeamURL" required>
+                    <button type="submit">Add Team</button>
+                </form>
+            </div>
+            <div v-else>
+                Please select a game from the list on the left.
+            </div>
+        </section>
+        <!-- Create Game Modal Dialog -->
+        <div v-if="showDialog" class="modal">
+            <div class="modal-content">
+                <h2>Create Game</h2>
+                <form @submit.prevent="createGame">
+                    <label for="gameName">Game Name:</label>
+                    <input type="text" id="gameName" v-model="newGameName" required>
+                    <button type="submit">Create</button>
+                    <button @click="cancelCreateGame">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Continuous Poker | <a href="https://continuouspoker.org">continuouspoker.org</a></p>
+    </footer>
+</div>
+
+<script src="js/admin.js"></script>
+
+</body>
+</html>
