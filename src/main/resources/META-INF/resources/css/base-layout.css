@@ -3,7 +3,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
 }
 
 .grid-container {
@@ -17,6 +17,7 @@ html, body {
 .navbar {
     background-color: #3498db; /* Modern blue color */
     overflow: hidden;
+    padding-right: 7px;
 }
 
 .navbar a {
@@ -25,6 +26,13 @@ html, body {
     color: white;
     text-align: center;
     padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar select {
+    display: block;
+    float: right;
+    padding: 8px 16px;
+    margin: 7px 0px;
     text-decoration: none;
 }
 .navbar a:hover {

@@ -1,26 +1,16 @@
+h2 {
+    margin: 5px 0px;
+    border-bottom: 1px solid #3498db;
+}
+
 .main {
     display: grid;
-    grid-template-columns: 25% 75%;
+    grid-template-columns: 20% 80%;
+    padding: 0 10px;
 }
 
-.color1 {
-    color: #122933;
-}
-
-.color2 {
-    color: #124551;
-}
-
-.color3 {
-    color: #12707a;
-}
-
-.color4 {
-    color: #17a4ab;
-}
-
-.color5 {
-    color: #20dad9;
+.sidebar {
+    padding-right: 10px;
 }
 
 .headlines {
@@ -33,27 +23,26 @@
     text-align: center;
 }
 
-#playerBar {
-    text-align: center;
-}
-
 .playerBarHeadLines {
     display: inline;
     margin: 5px;
 }
 
-#singlePlayer {
-    width: 90%;
-    margin: 2.5% auto;
-    display: grid;
-    grid-template-columns: 50% 50%;
-    align-items: center;
-    background-color: #ebebeb;
-    border: 3px solid #3498db;
+.card {
+    font-size: 7rem;
 }
 
-#playerInfos {
+.diamonds, .hearts {
+    color: red;
 }
+
+.singlePlayer {
+    margin: 5px;
+    padding: 5px;
+    background-color: #f7f7f7;
+    float: left;
+}
+
 
 .playerInfo {
     text-align: center;
@@ -64,71 +53,19 @@
     margin-right: 5%;
 }
 
-#scoreBoard {
-    width: 90%;
-    height: auto;
-    margin: 2.5% auto;
-
-    background-color: #ebebeb;
-    border: 3px solid #3498db;
-}
-
-#scoreBoardInfo {
-    margin: 10% 0;
-    text-align: center;
-}
-#mainSection {
-    margin: 0.5%;
-}
-
-/*Css-Style for GameLog*/
-#LogBox {
-    max-height: 400px;
-    display: grid;
-    grid-template-columns: 65% 35%;
-    background-color: #ebebeb;
-    border: 3px solid #3498db;
-    overflow: auto;
-}
-
-#logHistoryEntry {
-    text-align: center;
-    margin-top: 2%;
-    margin-bottom: 2%;
-}
-
-#cross {
-    width: 10%;
-    float: right;
-    margin: 2% 5%;
-
-    text-align: center;
-    color: white;
-    background-color: darkred;
-    border: 3px solid white;
-}
-
 .logItem {
-    padding-left: 23px;
+    padding-left: 10px;
     list-style-type: none;
     overflow: auto;
 }
 
-
-/*Css-Style for Desk with Deskcards*/
-#desk {
-    width: 95%;
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: 20% 20% 20% 20% 20%;
-    background-color: #ebebeb;
-    border: 3px solid #3498db;
-    overflow: hidden;
+.cleanList {
+    padding-left: 10px;
+    list-style-type: none;
 }
 
-.deskCard {
-    margin: 1.5% 1.13%;
-    width: 90%;
+#desk {
+    clear: left;
 }
 
 .clickable:hover {
@@ -136,13 +73,6 @@
     text-decoration: underline;
 }
 
-.scoreboard.active, .players.active {
-    color: black;
-}
-
-.scoreboard, .players {
-    color: #CCCCCC;
-}
 
 .active:hover {
     cursor: default;
@@ -157,15 +87,62 @@
     cursor: pointer;
 }
 
-/*Css-Style for GameLog*/
-#pot {
-    display: none;
-    height: 10%;
-    width: 33%;
-    margin: 1.5% auto;
 
-    border: 3px solid #0C2D48;
-    text-align: center;
-    font-size: 50px;
-    color: white;
+.round {
+    border: 1px white;
+}
+.back {
+    font-style: italic;
+}
+
+.tournament:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.round:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.active {
+    font-weight: bold;
+}
+.active:after {
+    content: " ➡"
+}
+
+.active:hover {
+    text-decoration: none;
+    font-weight: bold;
+    cursor: default;
+}
+
+.left-enter-active {
+  transition: all 0.25s linear ;
+}
+
+.right-enter-active {
+  transition: all 0.25s linear ;
+}
+
+.left-leave-active {
+  transition: all 0.10s linear ;
+}
+
+.right-leave-active {
+  transition: all 0.10s linear ;
+}
+
+.left-enter-from {
+  transform: translatex(-100%);
+}
+.right-enter-from {
+  transform: translatex(100%);
+}
+
+.left-leave-to {
+  transform: translatex(-100%);
+}
+.right-leave-to {
+  transform: translatex(100%);
 }

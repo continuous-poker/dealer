@@ -101,8 +101,9 @@ public class GameRound {
         } finally {
             logStep("Ending round %s.", table.getRound());
 
-            checkPlayerState(playersInPlayOrder);
+            checkPlayerState(playersInPlayOrder, false);
             final var clonedTable = SerializationUtils.clone(table);
+            checkPlayerState(playersInPlayOrder, true);
 
             clearCards(players);
             table.resetForNextRound();
@@ -147,11 +148,11 @@ public class GameRound {
         logStep("River: %s", dealtCards);
     }
 
-    private void checkPlayerState(final List<Player> playersInPlayOrder) {
+    private void checkPlayerState(final List<Player> playersInPlayOrder, final boolean defaultToActive) {
         for (final Player player : playersInPlayOrder) {
             if (player.getStack() == 0) {
                 player.out();
-            } else {
+            } else if (defaultToActive) {
                 player.active();
             }
         }
