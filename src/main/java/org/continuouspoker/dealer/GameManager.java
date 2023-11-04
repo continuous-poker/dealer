@@ -3,7 +3,6 @@ package org.continuouspoker.dealer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -88,7 +87,7 @@ public class GameManager {
                                                                                                .toList()))
                                              .toList();
             final var serializedList = objectMapper.writeValueAsString(listToSerialize);
-            Files.writeString(path, serializedList, StandardOpenOption.CREATE);
+            Files.writeString(path, serializedList);
         } catch (IOException e) {
             log.error("Could not store game states, progress might get lost on restart.", e);
         }

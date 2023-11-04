@@ -5,10 +5,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.continuouspoker.dealer.data.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.continuouspoker.dealer.data.Table;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @Slf4j
@@ -19,8 +19,6 @@ public class RemotePlayer implements ActionProvider {
     private static final int MAX_STRIKES = 3;
     @JsonProperty
     private final String url;
-    private final RemotePlayerClient client;
-
     @JsonProperty
     private int strike;
 
@@ -28,11 +26,8 @@ public class RemotePlayer implements ActionProvider {
 
     public RemotePlayer(final String playerUrl) {
         this.url = toAbsolute(playerUrl);
-        client = RestClientBuilder.newBuilder()
-                                  .baseUri(URI.create(this.url))
-                                  .connectTimeout(CONNECT_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
-                                  .readTimeout(READ_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
-                                  .build(RemotePlayerClient.class);
+        // test player URL format
+        URI.create(this.url);
     }
 
     private String toAbsolute(final String playerUrl) {
@@ -55,7 +50,7 @@ public class RemotePlayer implements ActionProvider {
             return 0;
         }
 
-        try {
+        try (var client = createClient()) {
             final int response = client.getExtensionsById(table).bet();
             strike = 0;
             return response;
@@ -64,6 +59,14 @@ public class RemotePlayer implements ActionProvider {
             addStrike(table);
             return 0;
         }
+    }
+
+    private RemotePlayerClient createClient() {
+        return RestClientBuilder.newBuilder()
+                                .baseUri(URI.create(this.url))
+                                .connectTimeout(CONNECT_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
+                                .readTimeout(READ_TIMEOUT.getSeconds(), TimeUnit.SECONDS)
+                                .build(RemotePlayerClient.class);
     }
 
     private void addStrike(final Table table) {
