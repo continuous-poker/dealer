@@ -76,15 +76,16 @@ step:
     duration: PT1S
 
 "%dev":
-#  quarkus:
+  quarkus:
 #    hibernate-orm:
 #      database:
 #        generation: drop-and-create
-  datasource:
-    jdbc:
-      url: "jdbc:h2:./gamedb"
+    datasource:
+      jdbc:
+        url: "jdbc:h2:./gamedb"
 
 "%test":
-  datasource:
-    jdbc:
-      url: "jdbc:h2:mem:gamedb"
+  quarkus:
+    datasource:
+      jdbc:
+        url: "jdbc:h2:mem:gamedb"
