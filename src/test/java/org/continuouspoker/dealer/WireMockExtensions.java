@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
@@ -20,12 +21,13 @@ public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
-        wireMockServer = new WireMockServer();
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
         wireMockServer.start();
         final String json = readString();
         wireMockServer.stubFor(post(urlEqualTo("/")).withRequestBody(equalToJson(json))
-                                                    .willReturn(aResponse().withHeader("Content-Type", "application/json")
-                                                                           .withBody("{ \"bet\": 5 }")));
+                                                    .willReturn(
+                                                            aResponse().withHeader("Content-Type", "application/json")
+                                                                       .withBody("{ \"bet\": 5 }")));
 
         return Collections.singletonMap("quarkus.rest-client.\"org.continuouspoker.dealer.RemotePlayerClient\".url",
                 wireMockServer.baseUrl());

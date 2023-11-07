@@ -7,6 +7,8 @@ import lombok.Setter;
 @Data
 public class Team {
 
+    private final Long teamId;
+
     private final String name;
     private final ActionProvider provider;
 

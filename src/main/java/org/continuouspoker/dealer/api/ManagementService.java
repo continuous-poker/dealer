@@ -13,11 +13,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import lombok.RequiredArgsConstructor;
 import org.continuouspoker.dealer.GameManager;
 import org.continuouspoker.dealer.LogEntry;
-import org.continuouspoker.dealer.RemotePlayer;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.data.Table;
 import org.continuouspoker.dealer.exceptionhandling.exceptions.NoTableStateFoundException;
@@ -41,7 +39,7 @@ public class ManagementService {
                                             .orElseThrow(ObjectNotFoundException::new);
 
         if (teamListLength < MAX_NUMBER_OF_PLAYERS) {
-            game.ifPresent(g -> g.addPlayer(new Team(teamName, new RemotePlayer(playerUrl))));
+            game.ifPresent(g -> g.addPlayer(gameState.createNewPlayer(teamName, playerUrl)));
         } else {
             throw new IllegalArgumentException("Too many players, cant add player: " + teamName + "!");
         }
