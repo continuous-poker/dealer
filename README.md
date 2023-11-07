@@ -1,30 +1,26 @@
 # Continuous Poker Dealer
 
-The poker dealer is a part of the continuous poker workshop and contains the base logic for a poker game.
+The poker dealer is a part of the continuous poker workshop and contains the base logic to orchestrate poker games.
 If all players have successfully deployed their application and registered it with the game,
 the dealer service will start playing tournaments over and over.
-It takes the action of each player(bot) every round and determines the winner after all necessary cards / bets are placed.
+It requests bets from each player every round and determines the winner after a round is finished.
 
-The counterparts are the poker players (Quarkus & Spring Boot)
-where you are able to implement your player logic that plays for you.
-For further information visit
-[continuous-poker-player-quarkus](https://github.com/continuous-poker/player-quarkus) &
-[continuous-poker-player-spring-boot](https://github.com/continuous-poker/player-spring-boot).
+The counterparts are the poker player repositories where you are able to implement the logic that plays the game for you.
+For further information, see the [repository overview](https://github.com/orgs/continuous-poker/repositories).
+
+## Prerequisites
+
+- Java >= 17
 
 ## Usage
 
-1. Fork the repository.
-2. Install and run the application in your IDE.
-3. Open `http://localhost:8080/q/swagger-ui/` in your browser.
-4. Choose a name for your game and create it via the `POST /games`.
-   > **_Info:_** The `gameId` in the response body is important for configuration of the game.
-5. Add new players to the game via the `POST /games/{gameId}/players`. 
-   1. Fill in the *gameId*, *playerUrl* and the *playerName* (teamName).
-   2. The playerUrl is the complete url and needs to match with port of the application.yml of the poker player. Example: http://localhost:8081
-   > **_Info:_** You can check all players by GET / games / { `gameId` } / players.
-6. Start your player application.
-7. Now you can start the game via the `PUT /games/{gameId}` and you will see how the game progresses in the console of your IDE. 
-   > **_Info:_** For a better presentation open `http://localhost:8080/log.html?gameId = "insert your gameId"`
+1. Start the application using `./mvnw quarkus:dev`
+2. Open `http://localhost:8080/admin.html` in your browser.
+3. Create a new game. The default credentials are `admin:admin`.
+4. Add new players to the game. Enter the full URL of the player endpoints, e.g. `http://localhost:8081`
+5. Start your player application.
+6. Start the game on the admin page. 
+7. To analyze the game, open the dashboard at `http://localhost:8080/index.html`
 
 ## Contribution
 
