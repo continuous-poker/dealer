@@ -25,27 +25,27 @@ public class GameDAO {
         return gameBE;
     }
 
-    private static GameBE toGameBE(final Game g) {
-        final Optional<GameBE> game = GameBE.findByIdOptional(g.getGameId());
+    private static GameBE toGameBE(final Game source) {
+        final Optional<GameBE> game = GameBE.findByIdOptional(source.getGameId());
         if (game.isPresent()) {
             final GameBE gameBE = game.get();
-            gameBE.setName(g.getName());
-            gameBE.setTeams(g.getTeams().stream().map(GameDAO::toTeamBE).toList());
+            gameBE.setName(source.getName());
+            gameBE.setTeams(source.getTeams().stream().map(GameDAO::toTeamBE).toList());
             return gameBE;
         } else {
-            return new GameBE(g.getName(), g.getTeams().stream().map(GameDAO::toTeamBE).toList());
+            return new GameBE(source.getName(), source.getTeams().stream().map(GameDAO::toTeamBE).toList());
         }
     }
 
-    private static TeamBE toTeamBE(Team t) {
-        final Optional<TeamBE> team = TeamBE.findByIdOptional(t.getTeamId());
+    private static TeamBE toTeamBE(final Team source) {
+        final Optional<TeamBE> team = TeamBE.findByIdOptional(source.getTeamId());
         if (team.isPresent()) {
             final TeamBE teamBE = team.get();
-            teamBE.setScore(t.getScore());
-            teamBE.setProviderUrl(t.getProvider().getUrl());
+            teamBE.setScore(source.getScore());
+            teamBE.setProviderUrl(source.getProvider().getUrl());
             return teamBE;
         } else {
-            return new TeamBE(t.getName(), t.getScore(), t.getProvider().getUrl());
+            return new TeamBE(source.getName(), source.getScore(), source.getProvider().getUrl());
         }
     }
 

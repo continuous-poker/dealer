@@ -59,9 +59,9 @@ public class GameManager {
         return game.getGameId();
     }
 
-    private Game toGame(final GameBE g) {
-        final Game game = new Game(g.id, g.getName(), gameRoundSleepDuration, stepSleepDuration);
-        g.getTeams().forEach(t -> game.addPlayer(toTeam(t)));
+    private Game toGame(final GameBE source) {
+        final Game game = new Game(source.id, source.getName(), gameRoundSleepDuration, stepSleepDuration);
+        source.getTeams().forEach(t -> game.addPlayer(toTeam(t)));
         return game;
     }
 
@@ -110,9 +110,9 @@ public class GameManager {
         return toTeam(persistedTeam);
     }
 
-    private Team toTeam(final TeamBE t) {
-        Team team = new Team(t.id, t.getName(), new RemotePlayer(t.getProviderUrl()));
-        team.addToScore(t.getScore());
+    private Team toTeam(final TeamBE source) {
+        final Team team = new Team(source.id, source.getName(), new RemotePlayer(source.getProviderUrl()));
+        team.addToScore(source.getScore());
         return team;
     }
 }

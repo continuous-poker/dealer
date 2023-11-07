@@ -83,3 +83,8 @@ step:
   datasource:
     jdbc:
       url: "jdbc:h2:./gamedb"
+
+"%test":
+  datasource:
+    jdbc:
+      url: "jdbc:h2:mem:gamedb"
