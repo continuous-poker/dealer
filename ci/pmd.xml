@@ -35,8 +35,6 @@
     <rule ref="category/java/errorprone.xml">
         <!-- Classes should generally use generated SerialVersionUID unless there is a reason to implement compatibility. -->
         <exclude name="MissingSerialVersionUID"/>
-        <!-- Too many false positives, as the rules assumes every class is serializable. -->
-        <exclude name="BeanMembersShouldSerialize"/>
     </rule>
     <rule ref="category/java/multithreading.xml">
         <exclude name="DoNotUseThreads" />

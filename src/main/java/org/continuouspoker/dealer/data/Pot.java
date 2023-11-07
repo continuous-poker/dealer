@@ -67,7 +67,7 @@ public class Pot implements Serializable {
         }
     }
 
-    private void payPotToWinners(final Score score, final HashSet<Player> winners, final PotPart pot) {
+    private void payPotToWinners(final Score score, final Set<Player> winners, final PotPart pot) {
         final int potSize = pot.getSize();
         final int split = potSize / winners.size();
         winners.forEach(p -> p.addToStack(split));

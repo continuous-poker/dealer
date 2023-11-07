@@ -115,18 +115,18 @@
         <!-- add bouncy castle to class path, so that elliptic curve keys work -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.70</version>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.76</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.70</version>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.76</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-ext-jdk15on</artifactId>
-            <version>1.70</version>
+            <artifactId>bcprov-ext-jdk18on</artifactId>
+            <version>1.76</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -135,10 +135,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
             <scope>test</scope>
-            <version>2.35.1</version>
+            <version>3.3.1</version>
         </dependency>
 
     </dependencies>
@@ -267,6 +267,7 @@
                     <excludeRoots>
                         <excludeRoot>target/generated-sources</excludeRoot>
                     </excludeRoots>
+                    <linkXRef>false</linkXRef>
                 </configuration>
                 <executions>
                     <execution>
