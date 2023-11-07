@@ -20,7 +20,7 @@
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
         <checkstyle.version>10.12.4</checkstyle.version>
         <spotbugs-plugin.version>4.7.3.6</spotbugs-plugin.version>
-        <pmd-plugin.version>3.21.0</pmd-plugin.version>
+        <pmd-plugin.version>3.21.2</pmd-plugin.version>
         <jacoco.version>0.8.8</jacoco.version>
         <findsecbugs-plugin.version>1.12.0</findsecbugs-plugin.version>
     </properties>
