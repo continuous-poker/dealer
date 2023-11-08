@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Analyzer | Continuous Poker</title>
+    <title>Live | Continuous Poker</title>
     <link rel="stylesheet" href="css/base-layout.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/live.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
@@ -26,42 +26,17 @@
         <h1>Please select a game from the menu.</h1>
     </main>
     <main class="main" v-if="gameId > -1">
-        <aside class="sidebar">
-            <div>
-                <h2>Scoreboard</h2>
-                <ol id="scoreBoard">
-                    <li id="scoreBoardInfo" v-for="(name, score) in score">
-                        {{name[0]}} with {{name[1]}} points
-                    </li>
-                </ol>
-            </div>
-            <div>
-                <h2 v-if="gameId > -1 && tournamentId == null">Tournaments</h2>
-                <h2 v-if="tournamentId !== null">Tournament {{tournamentId}}</h2>
-                <Transition name="left">
-                    <div style="float:left;" v-if="tournamentId == null">
-                        <ol class="cleanList">
-                            <li class="tournament" :class="{active: value == tournamentId}"
-                                @click="selectTournament(value)"
-                                v-for="(key, value) in gameHistory">Tournament {{ value }}
-                            </li>
-                        </ol>
-                    </div>
-                </Transition>
-                <Transition name="right">
-                    <div style="float:left;" v-if="tournamentId !== null">
-                        <div class="round back" @click="selectTournament(null)">Back</div>
-                        <ol class="cleanList">
-                            <li v-if="tournamentId" class="round" :class="{active: roundNumber == roundId}"
-                                @click="selectRound(roundNumber)"
-                                v-for="(steps, roundNumber) in gameHistory[tournamentId]">Round {{ roundNumber }}
-                            </li>
-                        </ol>
-                    </div>
-                </Transition>
-            </div>
-        </aside>
-        <section id="mainSection" v-if="tournamentId && roundId">
+        <div>
+            <h2>Scoreboard</h2>
+            <ol id="scoreBoard">
+                <li id="scoreBoardInfo" v-for="(name, score) in score">
+                    {{name[0]}} with {{name[1]}} points
+                </li>
+            </ol>
+        </div>
+
+        <section id="mainSection">
+            <h2>Tournament {{tournamentId}} - Round {{roundId}}</h2>
             <section>
                 <h2>Players</h2>
                 <section class="singlePlayer" v-for="player in table.players">
@@ -97,7 +72,7 @@
     </footer>
 </div>
 
-<script src="js/dashboard.js"></script>
+<script src="js/live.js"></script>
 
 </body>
 </html>

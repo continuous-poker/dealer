@@ -39,7 +39,6 @@ Vue.createApp({
                 });
         },
 
-
         getImage(card) {
             if (card.suit && card.rank) {
                 return String.fromCodePoint(parseInt("1F0"+this.suitToLetter(card.suit)+this.rankToLetter(card.rank), 16));
@@ -104,7 +103,17 @@ Vue.createApp({
 
         update() {
             // Simple GET request using fetch
-            if (this.gameId != -1) {
+            if (this.gameId !== -1) {
+                axios
+                    .get("/games/" + this.gameId + "/log?order=desc&limit=50")
+                    .then(response => {
+                        const logs = response.data;
+                        if (logs.length > 0) {
+                            this.tournamentId = logs[logs.length - 1].tournamentId;
+                            this.roundId = logs[logs.length - 1].roundId;
+                        }
+                    });
+
                 axios
                     .get("/games/" + this.gameId + "/score")
                     .then(response => {
@@ -131,6 +140,8 @@ Vue.createApp({
                             this.roundId = null;
                         }
                     });
+
+                this.displayedHistory = this.gameHistory[this.tournamentId][this.roundId];
             }
         },
 
