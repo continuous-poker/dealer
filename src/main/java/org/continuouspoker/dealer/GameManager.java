@@ -37,9 +37,12 @@ public class GameManager {
     @ConfigProperty(name = "step.sleep.duration")
     /* package */ Duration stepSleepDuration;
 
+    @ConfigProperty(name = "game.executor.poolsize")
+    /* package */ int executorPoolsize;
+
     private final GameDAO dao;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(executorPoolsize);
     private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
 
     @PostConstruct

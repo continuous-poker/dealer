@@ -75,6 +75,10 @@ step:
   sleep:
     duration: PT1S
 
+game:
+  executor:
+    poolsize: 10
+
 "%dev":
   quarkus:
 #    hibernate-orm:
