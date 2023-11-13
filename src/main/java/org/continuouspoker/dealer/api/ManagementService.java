@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -172,7 +173,7 @@ public class ManagementService {
     }
 
     public Map<String, List<ScoreHistoryEntry>> getScoreHistory(final long gameId) {
-        final Map<String, List<ScoreHistoryEntry>> result = new HashMap<>();
+        final Map<String, List<ScoreHistoryEntry>> result = new TreeMap<>();
         for (final ScoreRecordBE rec : gameDAO.loadScores(gameId)) {
             final Set<TeamScoreRecordBE> teamScores = rec.getTeamScores();
             for (final TeamScoreRecordBE score : teamScores) {
