@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +23,9 @@ import org.continuouspoker.dealer.exceptionhandling.exceptions.NoTableStateFound
 import org.continuouspoker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
 import org.continuouspoker.dealer.game.Game;
 import org.continuouspoker.dealer.game.Tournament;
+import org.continuouspoker.dealer.persistence.GameDAO;
+import org.continuouspoker.dealer.persistence.ScoreRecordBE;
+import org.continuouspoker.dealer.persistence.TeamScoreRecordBE;
 
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class ManagementService {
 
     private static final int MAX_NUMBER_OF_PLAYERS = 10;
     private final GameManager gameState;
+    private final GameDAO gameDAO;
 
     public void registerPlayer(final long gameId, final String playerUrl, final String teamName)
             throws ObjectNotFoundException {
@@ -165,5 +170,24 @@ public class ManagementService {
                 Collectors.groupingBy(LogEntry::getRoundId,
                         Collectors.mapping(LogEntry::getMessage, Collectors.toList()))));
     }
+
+    public Map<String, List<ScoreHistoryEntry>> getScoreHistory(final long gameId) {
+        final Map<String, List<ScoreHistoryEntry>> result = new HashMap<>();
+        for (final ScoreRecordBE rec : gameDAO.loadScores(gameId)) {
+            final Set<TeamScoreRecordBE> teamScores = rec.getTeamScores();
+            for (final TeamScoreRecordBE score : teamScores) {
+                final List<ScoreHistoryEntry> teamList = getTeamList(score, result);
+                teamList.add(new ScoreHistoryEntry(rec.getCreationTimestamp(), score.getScore()));
+            }
+        }
+        return result;
+    }
+
+    private List<ScoreHistoryEntry> getTeamList(final TeamScoreRecordBE score,
+            final Map<String, List<ScoreHistoryEntry>> teamLists) {
+        return teamLists.computeIfAbsent(score.getTeam().getName(), teamName -> new ArrayList<>());
+    }
+
+
 
 }

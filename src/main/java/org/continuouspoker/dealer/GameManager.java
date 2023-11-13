@@ -3,10 +3,11 @@ package org.continuouspoker.dealer;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -43,7 +44,7 @@ public class GameManager {
     private final GameDAO dao;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(executorPoolsize);
-    private final Map<Game, ScheduledFuture<?>> games = new HashMap<>();
+    private final Map<Game, ScheduledFuture<?>> games = new TreeMap<>(Comparator.comparing(Game::getName));
 
     @PostConstruct
         /* package */ void initialize() {
@@ -57,13 +58,13 @@ public class GameManager {
     }
 
     public long createNewGame(final String name) {
-        final Game game = toGame(dao.createGame(new Game(0L, name, gameRoundSleepDuration, stepSleepDuration)));
+        final Game game = toGame(dao.createGame(new Game(0L, name, gameRoundSleepDuration, stepSleepDuration, dao)));
         games.put(game, null);
         return game.getGameId();
     }
 
     private Game toGame(final GameBE source) {
-        final Game game = new Game(source.id, source.getName(), gameRoundSleepDuration, stepSleepDuration);
+        final Game game = new Game(source.id, source.getName(), gameRoundSleepDuration, stepSleepDuration, dao);
         source.getTeams().forEach(t -> game.addPlayer(toTeam(t)));
         return game;
     }

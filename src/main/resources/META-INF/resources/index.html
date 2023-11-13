@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="grid-container" id="app">
@@ -25,7 +26,7 @@
     <main style="text-align: center;" v-if="gameId == -1">
         <h1>Please select a game from the menu.</h1>
     </main>
-    <main class="main" v-if="gameId > -1">
+    <main class="main" v-show="gameId > -1">
         <aside class="sidebar">
             <div>
                 <h2>Scoreboard</h2>
@@ -87,6 +88,9 @@
                     <li v-for="round in displayedHistory">{{round}}</li>
                 </ul>
             </section>
+        </section>
+        <section id="chartSection" :class="{hidden: tournamentId}">
+            <canvas id="scoreChart" width="400" height="200"></canvas>
         </section>
     </main>
 

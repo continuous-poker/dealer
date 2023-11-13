@@ -5,6 +5,7 @@ Vue.createApp({
             gameId: -1,
             score: null,
             tournamentId: null,
+            scoreHistory: [],
             roundId: null,
             table: {players: [], communityCards: []},
             gameHistory: null,      //Object for whole history
@@ -25,6 +26,21 @@ Vue.createApp({
     mounted() {
         // Fetch data from the /games endpoint using a GET request
         this.loadGames();
+
+        // Get the canvas element
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+
+        // Create a bar chart
+        this.scoreChart = new Chart(ctx, {
+            type: 'line',
+            data: [],
+            options: {
+                parsing: {
+                    xAxisKey: 'creationTimestamp',
+                    yAxisKey: 'score'
+                }
+            }
+        });
     },
 
     methods: {
@@ -42,7 +58,7 @@ Vue.createApp({
 
         getImage(card) {
             if (card.suit && card.rank) {
-                return String.fromCodePoint(parseInt("1F0"+this.suitToLetter(card.suit)+this.rankToLetter(card.rank), 16));
+                return String.fromCodePoint(parseInt("1F0" + this.suitToLetter(card.suit) + this.rankToLetter(card.rank), 16));
             }
         },
 
@@ -59,32 +75,32 @@ Vue.createApp({
 
 
         suitToLetter(suit) {
-           var pairs = {
-               "SPADES": "A",
-               "HEARTS": "B",
-               "DIAMONDS": "C",
-               "CLUBS": "D"
-           }
-           return pairs[suit];
+            var pairs = {
+                "SPADES": "A",
+                "HEARTS": "B",
+                "DIAMONDS": "C",
+                "CLUBS": "D"
+            }
+            return pairs[suit];
         },
 
         rankToLetter(suit) {
-           var pairs = {
-               "A": "1",
-               "2": "2",
-               "3": "3",
-               "4": "4",
-               "5": "5",
-               "6": "6",
-               "7": "7",
-               "8": "8",
-               "9": "9",
-               "10": "A",
-               "J": "B",
-               "Q": "D",
-               "K": "E"
-           }
-           return pairs[suit];
+            var pairs = {
+                "A": "1",
+                "2": "2",
+                "3": "3",
+                "4": "4",
+                "5": "5",
+                "6": "6",
+                "7": "7",
+                "8": "8",
+                "9": "9",
+                "10": "A",
+                "J": "B",
+                "Q": "D",
+                "K": "E"
+            }
+            return pairs[suit];
         },
 
         getCardValue(value) {
@@ -102,9 +118,25 @@ Vue.createApp({
             }
         },
 
-        update() {
+        update: function () {
             // Simple GET request using fetch
-            if (this.gameId != -1) {
+            if (this.gameId !== -1) {
+                if (this.tournament == null) {
+                    axios
+                        .get("/games/" + this.gameId + "/scoreHistory")
+                        .then(response => {
+                            this.scoreHistory = response.data;
+                            let chartData = [];
+                            for (const [key, value] of Object.entries(this.scoreHistory)) {
+                                chartData.push({data: value.reverse(), label: key})
+                            }
+                            if (this.scoreChart != null) {
+                                this.scoreChart.data.datasets = chartData;
+                                this.scoreChart.update('none');
+                            }
+                        });
+                }
+
                 axios
                     .get("/games/" + this.gameId + "/score")
                     .then(response => {

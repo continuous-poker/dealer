@@ -221,6 +221,7 @@
                                 <exclude>**/*Exception.class</exclude>
                                 <exclude>**/*ExceptionMapper.class</exclude>
                                 <exclude>**/ManagementController.class</exclude>
+                                <exclude>**/ScoreHistoryEntry.class</exclude>
                                 <exclude>**/ManagementService.class</exclude>
                                 <exclude>**/*BE.class</exclude>
                                 <exclude>**/GameDAO.class</exclude>

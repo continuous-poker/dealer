@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.Team;
+import org.continuouspoker.dealer.persistence.GameDAO;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +32,9 @@ public class Game implements Runnable {
     private final Duration timeBetweenGameRounds;
     private final Duration timeBetweenSteps;
 
+    @JsonIgnore
+    private final GameDAO gameDAO;
+
     @Getter
     @JsonIgnore
     private int tournamentId;
@@ -45,6 +49,8 @@ public class Game implements Runnable {
             tournaments.remove(0);
         }
         tournament.run();
+
+        gameDAO.storeScores(this);
     }
 
     @JsonIgnore

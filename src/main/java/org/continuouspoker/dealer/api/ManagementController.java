@@ -128,4 +128,10 @@ public class ManagementController {
         return service.getGameHistory(gameId);
     }
 
+    @GET
+    @Path("/{gameId}/scoreHistory")
+    public Map<String, List<ScoreHistoryEntry>> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId) {
+        return service.getScoreHistory(gameId);
+    }
+
 }

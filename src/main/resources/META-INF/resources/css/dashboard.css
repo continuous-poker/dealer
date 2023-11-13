@@ -1,5 +1,5 @@
 h2 {
-    margin: 5px 0px;
+    margin: 5px 0;
     border-bottom: 1px solid #3498db;
 }
 
@@ -145,4 +145,8 @@ h2 {
 }
 .right-leave-to {
   transform: translatex(100%);
+}
+
+.hidden {
+    display: none;
 }
