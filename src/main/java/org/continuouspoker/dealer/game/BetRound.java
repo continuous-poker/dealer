@@ -3,6 +3,7 @@ package org.continuouspoker.dealer.game;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Seats;
@@ -61,7 +62,7 @@ public class BetRound {
         final Player currentPlayer = seats.getCurrentPlayer();
 
         if (currentPlayer.isAllIn()) {
-            return currentPlayer.equals(seats.getLastBettingPlayer());
+            return currentPlayer.equals(seats.getLastBettingPlayer()) || allPlayersUntilLastBettingAreAllIn(seats);
         }
 
         if (currentPlayer.equals(seats.getLastBettingPlayer())) {
@@ -74,6 +75,20 @@ public class BetRound {
             }
         }
         return false;
+    }
+
+    private boolean allPlayersUntilLastBettingAreAllIn(final Seats seatsOriginal) {
+        final Seats seats = SerializationUtils.clone(seatsOriginal);
+        final Player currentPlayer = seats.getCurrentPlayer();
+        final Player lastBettingPlayer = seats.getLastBettingPlayer();
+        Player p = currentPlayer;
+        while (p != lastBettingPlayer) {
+            p = seats.getNextActivePlayer();
+            if (!p.isAllIn()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean handleLastBettingPlayer(final Seats seats, final Player currentPlayer) {

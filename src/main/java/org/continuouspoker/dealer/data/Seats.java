@@ -1,11 +1,12 @@
 package org.continuouspoker.dealer.data;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Getter;
 
-public class Seats {
+public class Seats implements Serializable {
 
     private final List<Player> players;
 
