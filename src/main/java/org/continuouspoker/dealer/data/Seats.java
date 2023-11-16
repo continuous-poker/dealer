@@ -32,6 +32,8 @@ public class Seats {
     }
 
     public Player getNextActivePlayer() {
+        final Player initialPlayer = getCurrentPlayer();
+
         if (allPlayersInactive()) {
             throw new IllegalStateException();
         }
@@ -40,7 +42,7 @@ public class Seats {
         while (!nextPlayer.getStatus().equals(Status.ACTIVE)) {
             nextPlayer = getNextPlayer();
         }
-        if (nextPlayer == getCurrentPlayer()) {
+        if (nextPlayer == initialPlayer) {
             return null;
         }
         return nextPlayer;
