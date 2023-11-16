@@ -83,4 +83,8 @@ class BetRoundTest {
     private Player createPlayer(final String name, final ActionProvider actionPlayer1) {
         return new Player(name, Status.ACTIVE, START_STACK, 0, actionPlayer1);
     }
+
+    private Player createPlayer(final String name, final ActionProvider actionPlayer1, final int startStack) {
+        return new Player(name, Status.ACTIVE, startStack, 0, actionPlayer1);
+    }
 }

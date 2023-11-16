@@ -92,7 +92,7 @@ public class BetRound {
     }
 
     private boolean handleLastBettingPlayer(final Seats seats, final Player currentPlayer) {
-        if (seats.getLastBet() == 0 || isPreFlop && seats.getLastBet() == table.getSmallBlind() * 2) {
+        if (seats.getLastBet() == 0 || isPreFlop && seats.getLastBet() == table.getSmallBlind() * 2 && seats.getLastBettingPlayer() != currentPlayer) {
             // nobody bet / raised, and we are at the starting player again
             // let him bet / raise or check
             final Action action = callPlayer(table, currentPlayer);
