@@ -14,8 +14,8 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 @Slf4j
 public class RemotePlayer implements ActionProvider {
 
-    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(1);
-    private static final Duration READ_TIMEOUT = Duration.ofSeconds(1);
+    private static final Duration CONNECT_TIMEOUT = Duration.ofMillis(500);
+    private static final Duration READ_TIMEOUT = Duration.ofMillis(500);
     private static final int MAX_STRIKES = 3;
     @JsonProperty
     private final String url;
