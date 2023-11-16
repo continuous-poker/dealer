@@ -40,6 +40,9 @@ public class Seats {
         while (!nextPlayer.getStatus().equals(Status.ACTIVE)) {
             nextPlayer = getNextPlayer();
         }
+        if (nextPlayer == getCurrentPlayer()) {
+            return null;
+        }
         return nextPlayer;
     }
 
