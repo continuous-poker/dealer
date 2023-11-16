@@ -22,8 +22,8 @@ class BetRoundTest {
 
     @Test
     void preFlop() {
-        final Player player1 = createPlayer("player1", table -> 0);
-        final Player player2 = createPlayer("player2", Table::getMinimumBet);
+        final Player player1 = createPlayer("player1", (table, logger) -> 0);
+        final Player player2 = createPlayer("player2", (table1, logger) -> table1.getMinimumBet());
         final List<Player> players = List.of(player1, player2);
         final Table table = new Table(GAME_ID, players, SMALL_BLIND);
         final BetRound betRound = new BetRound(table, players, true, logger);
@@ -37,8 +37,8 @@ class BetRoundTest {
 
     @Test
     void afterFlop_player1Folds() {
-        final Player player1 = createPlayer("player1", table -> 0);
-        final Player player2 = createPlayer("player2", Table::getMinimumBet);
+        final Player player1 = createPlayer("player1", (table, logger) -> 0);
+        final Player player2 = createPlayer("player2", (table1, logger) -> table1.getMinimumBet());
         final List<Player> players = List.of(player1, player2);
         final Table table = new Table(GAME_ID, players, SMALL_BLIND);
         final BetRound betRound = new BetRound(table, players, false, logger);
@@ -52,8 +52,8 @@ class BetRoundTest {
 
     @Test
     void afterFlop_betAndCall() {
-        final Player player1 = createPlayer("player1", Table::getMinimumBet);
-        final Player player2 = createPlayer("player2", Table::getMinimumBet);
+        final Player player1 = createPlayer("player1", (table1, logger) -> table1.getMinimumBet());
+        final Player player2 = createPlayer("player2", (table1, logger) -> table1.getMinimumBet());
         final List<Player> players = List.of(player1, player2);
         final Table table = new Table(GAME_ID, players, SMALL_BLIND);
         final BetRound betRound = new BetRound(table, players, false, logger);
@@ -67,8 +67,8 @@ class BetRoundTest {
 
     @Test
     void afterFlop_betRaiseAndCall() {
-        final Player player1 = createPlayer("player1", Table::getMinimumRaise);
-        final Player player2 = createPlayer("player2", Table::getMinimumBet);
+        final Player player1 = createPlayer("player1", (table1, logger) -> table1.getMinimumRaise());
+        final Player player2 = createPlayer("player2", (table1, logger) -> table1.getMinimumBet());
         final List<Player> players = List.of(player1, player2);
         final Table table = new Table(GAME_ID, players, SMALL_BLIND);
         final BetRound betRound = new BetRound(table, players, false, logger);

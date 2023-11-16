@@ -122,7 +122,7 @@ class PotTest {
     }
 
     private Player createPlayer(final String name, final int stack) {
-        return new Player(name, Status.ACTIVE, stack, 0, table -> 0);
+        return new Player(name, Status.ACTIVE, stack, 0, (table, logger) -> 0);
     }
 
 }

@@ -127,7 +127,7 @@ public class BetRound {
 
     private Action callPlayer(final Table table, final Player player) {
         log.debug("Calling player {} with table {}", player.getName(), table);
-        int result = player.getActionProvider().requestBet(table.copyForActivePlayer());
+        int result = player.getActionProvider().requestBet(table.copyForActivePlayer(), logger);
         log.debug("Player {} returned bet of {}", player.getName(), result);
 
         if (result < player.getCurrentBet() || result < table.getMinimumBet()) {

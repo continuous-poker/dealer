@@ -44,9 +44,10 @@ public class RemotePlayer implements ActionProvider {
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public int requestBet(final Table table) {
+    public int requestBet(final Table table, final StepLogger logger) {
         if (table.getTournamentId() == blockedTable) {
             log.info("Player is blocked from this table, will instantly return a bet of 0.");
+            logger.log("Player %s is blocked from this tournament and cannot bet.", getPlayerName(table));
             return 0;
         }
 
@@ -56,9 +57,14 @@ public class RemotePlayer implements ActionProvider {
             return response;
         } catch (final Exception e) {
             log.error("Error while requesting bet from player {}", url, e);
+            logger.log("Request to player %s failed or took too long - Strike %s", getPlayerName(table), strike + 1);
             addStrike(table);
             return 0;
         }
+    }
+
+    private static String getPlayerName(final Table table) {
+        return table.getPlayers().get(table.getActivePlayer()).getName();
     }
 
     private RemotePlayerClient createClient() {

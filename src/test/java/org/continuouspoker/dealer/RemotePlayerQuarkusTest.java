@@ -27,16 +27,16 @@ class RemotePlayerQuarkusTest {
     void requestBodyShouldMatchExpectedFormat() {
         final RemotePlayer remotePlayer = new RemotePlayer(wiremockUrl);
 
-        final int bet = remotePlayer.requestBet(createTable());
+        final int bet = remotePlayer.requestBet(createTable(), msg -> {});
 
         assertThat(bet).isEqualTo(5);
 
     }
 
     private static Table createTable() {
-        final Player bot1 = new Player("Bot1", Status.ACTIVE, 990, 10, a -> 1);
-        final Player bot2 = new Player("Bot2", Status.ACTIVE, 980, 20, a -> 1);
-        final Player bot3 = new Player("Bot3", Status.ACTIVE, 1000, 0, a -> 1);
+        final Player bot1 = new Player("Bot1", Status.ACTIVE, 990, 10, (table, logger) -> 1);
+        final Player bot2 = new Player("Bot2", Status.ACTIVE, 980, 20, (table, logger) -> 1);
+        final Player bot3 = new Player("Bot3", Status.ACTIVE, 1000, 0, (table, logger) -> 1);
         bot3.takeCard(new Card(Rank.TWO, Suit.HEARTS));
         bot3.takeCard(new Card(Rank.JACK, Suit.CLUBS));
         final Table table = new Table(1, List.of(bot1, bot2, bot3), 10);

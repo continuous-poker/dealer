@@ -17,8 +17,8 @@ class GameManagerTest {
     @Test
     void testGameRun() {
         final Collection<Team> players = new ArrayList<>();
-        players.add(new Team(0L,"team1", table -> 0));
-        players.add(new Team(1L, "team2", table -> Integer.MAX_VALUE));
+        players.add(new Team(0L,"team1", (table, logger) -> 0));
+        players.add(new Team(1L, "team2", (table, logger) -> Integer.MAX_VALUE));
 
         final GameDAO dao = Mockito.mock(GameDAO.class);
 

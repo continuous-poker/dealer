@@ -54,8 +54,8 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(100);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(100);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(100);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(100);
 
         testee.playWithDeck(deck);
 
@@ -75,8 +75,8 @@ class GameRoundTest {
         cards.set(3, new Card(Rank.ACE, Suit.SPADES));
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(20);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(20);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(20);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(20);
 
         testee.playWithDeck(deck);
 
@@ -95,8 +95,8 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(100);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(100);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(100);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(100);
 
         testee.playWithDeck(deck);
 
@@ -120,8 +120,8 @@ class GameRoundTest {
         cards.set(3, new Card(Rank.ACE, Suit.DIAMONDS));
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(50);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(50, 50);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(50);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
 
         testee.playWithDeck(deck);
 
@@ -146,9 +146,9 @@ class GameRoundTest {
 
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(50);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(50, 50);
-        when(player3.getActionProvider().requestBet(any())).thenReturn(50, 50);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(50);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
+        when(player3.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
 
         testee.playWithDeck(deck);
 
@@ -168,8 +168,8 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any())).thenReturn(25);
-        when(player2.getActionProvider().requestBet(any())).thenReturn(25);
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(25);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(25);
 
         testee.playWithDeck(deck);
 

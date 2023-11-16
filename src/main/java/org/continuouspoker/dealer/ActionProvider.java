@@ -8,6 +8,6 @@ public interface ActionProvider {
         return "";
     }
 
-    int requestBet(Table table);
+    int requestBet(Table table, StepLogger logger);
 
 }
