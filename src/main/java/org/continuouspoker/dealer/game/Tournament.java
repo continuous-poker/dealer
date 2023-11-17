@@ -60,13 +60,13 @@ public class Tournament {
     }
 
     public Stream<LogEntry> getHistory() {
-        final Stream<LogEntry> roundLogs = gameRounds.stream()
+        final Stream<LogEntry> roundLogs = List.copyOf(gameRounds).stream()
                                                      .flatMap(s -> s.getHistory()
                                                                     .map(e -> new LogEntry(e.timestamp(), gameId,
                                                                             tournamentId, e.roundNumber(),
                                                                             e.message())));
 
-        return Stream.concat(roundLogs, gameLog.stream());
+        return Stream.concat(roundLogs, List.copyOf(gameLog).stream());
     }
 
     private boolean isMoreThanOnePlayerLeft(final List<Player> players) {
