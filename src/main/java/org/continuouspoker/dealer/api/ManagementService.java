@@ -196,7 +196,7 @@ public class ManagementService {
                                    "tournamentId": %s,
                                    "roundId": %s
                                 }
-                                """.formatted(game.getTournamentId(),
+                                """.formatted(game.getTournamentId() - 1,
                                 game.getTournaments().get(game.getTournaments().size() - 1).getLatestRound()))
                         .orElseThrow(() -> new ObjectNotFoundException("GameHistory not found!"));
     }
