@@ -55,7 +55,7 @@ public class Game implements Runnable {
 
     @JsonIgnore
     public Stream<LogEntry> getFullHistory() {
-        return tournaments.stream().flatMap(Tournament::getHistory);
+        return List.copyOf(tournaments).stream().flatMap(Tournament::getHistory);
     }
 
     public void addPlayer(final Team team) {
