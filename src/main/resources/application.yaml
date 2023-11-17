@@ -49,10 +49,10 @@ quarkus:
     resources:
       requests:
         cpu: 2000m
-        memory: 2Gi
+        memory: 4Gi
       limits:
         cpu: 2000m
-        memory: 2Gi
+        memory: 4Gi
     env:
       mapping:
         "api_password":
