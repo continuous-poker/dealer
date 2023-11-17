@@ -132,7 +132,7 @@ public class ManagementController {
     @GET
     @Path("/{gameId}/scoreHistory")
     public Map<String, List<ScoreHistoryEntry>> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId) {
-        return Map.of();
+        return service.getScoreHistory(gameId);
     }
 
     @GET
