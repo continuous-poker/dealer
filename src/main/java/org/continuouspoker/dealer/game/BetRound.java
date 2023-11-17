@@ -3,12 +3,12 @@ package org.continuouspoker.dealer.game;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.SerializationUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.StepLogger;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Seats;
+import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BetRound {
@@ -35,16 +35,21 @@ public class BetRound {
         seats.setLastBetToCurrentPlayer();
         table.setMinimumBet(table.getSmallBlind() * 2);
 
-        while (seats.getNextActivePlayer() != null) {
-            table.setActivePlayer(seats.getCurrentPlayer());
-            // check for only one left -> he wins
-            if (onlyOneActivePlayerLeft(seats)) {
-                // we have a winner
-                logger.log("Ending bet round with winner: %s", seats.getCurrentPlayer().getName());
+        while (seats.getNextPlayer() != null) {
+            if (seats.getCurrentPlayer().getStatus().equals(Status.ACTIVE)) {
+                table.setActivePlayer(seats.getCurrentPlayer());
+                // check for only one left -> he wins
+                if (onlyOneActivePlayerLeft(seats)) {
+                    // we have a winner
+                    logger.log("Ending bet round with winner: %s", seats.getCurrentPlayer().getName());
 
-                return Optional.of(seats.getCurrentPlayer());
-            }
-            if (handleCurrentPlayer(seats)) {
+                    return Optional.of(seats.getCurrentPlayer());
+                }
+                if (handleCurrentPlayer(seats)) {
+                    break;
+                }
+            } else if (seats.getLastBettingPlayer() == seats.getCurrentPlayer()) {
+                // everybody checked, end the round
                 break;
             }
         }
@@ -62,7 +67,7 @@ public class BetRound {
         final Player currentPlayer = seats.getCurrentPlayer();
 
         if (currentPlayer.isAllIn()) {
-            return currentPlayer.equals(seats.getLastBettingPlayer()) || allPlayersUntilLastBettingAreAllIn(seats);
+            return currentPlayer.equals(seats.getLastBettingPlayer());
         }
 
         if (currentPlayer.equals(seats.getLastBettingPlayer())) {
@@ -77,22 +82,9 @@ public class BetRound {
         return false;
     }
 
-    private boolean allPlayersUntilLastBettingAreAllIn(final Seats seatsOriginal) {
-        final Seats seats = SerializationUtils.clone(seatsOriginal);
-        final Player currentPlayer = seats.getCurrentPlayer();
-        final Player lastBettingPlayer = seats.getLastBettingPlayer();
-        Player p = currentPlayer;
-        while (p != lastBettingPlayer) {
-            p = seats.getNextActivePlayer();
-            if (!p.isAllIn()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private boolean handleLastBettingPlayer(final Seats seats, final Player currentPlayer) {
-        if (seats.getLastBet() == 0 || isPreFlop && seats.getLastBet() == table.getSmallBlind() * 2 && seats.getLastBettingPlayer() != currentPlayer) {
+        if (seats.getLastBet() == 0 || isPreFlop && seats.getLastBet() == table.getSmallBlind() * 2
+                && seats.getLastBettingPlayer() != currentPlayer) {
             // nobody bet / raised, and we are at the starting player again
             // let him bet / raise or check
             final Action action = callPlayer(table, currentPlayer);
@@ -145,10 +137,14 @@ public class BetRound {
         int result = player.getActionProvider().requestBet(table.copyForActivePlayer(), logger);
         log.debug("Player {} returned bet of {}", player.getName(), result);
 
-        if (result < player.getCurrentBet() || result < table.getMinimumBet()) {
+        if (result < player.getCurrentBet()) {
             log.debug("Result {} is lower than current bet of {} for player {}, setting it to the current bet.", result,
                     player.getCurrentBet(), player.getName());
             result = player.getCurrentBet();
+        } else if (result < table.getMinimumBet()) {
+            log.debug(
+                    "Result {} is higher than current bet of {} for player {}, but lower than the minimum bet of {}, resetting it to the current bet.",
+                    result, player.getCurrentBet(), player.getName(), table.getMinimumBet());
         }
 
         return new BetDecision(logger).performAction(table, player, result);

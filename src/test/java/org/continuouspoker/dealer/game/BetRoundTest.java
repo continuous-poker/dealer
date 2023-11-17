@@ -66,6 +66,26 @@ class BetRoundTest {
     }
 
     @Test
+    void afterFlop_Checking() {
+        final Player player1 = createFoldedPlayer("player1", (table1, logger) -> 5);
+        final Player player2 = createPlayer("player2", (table1, logger) -> 0);
+        final Player player3 = createOutPlayer("player3", (table1, logger) -> 0);
+        final Player player4 = createOutPlayer("player4", (table1, logger) -> 0);
+        final Player player5 = createFoldedPlayer("player5", (table1, logger) -> 0);
+        final Player player6 = createOutPlayer("player6", (table1, logger) -> 0);
+        final Player player7 = createOutPlayer("player7", (table1, logger) -> 0);
+        final Player player8 = createPlayer("player8", (table1, logger) -> 0);
+        final Player player9 = createFoldedPlayer("player9", (table1, logger) -> 0);
+        final List<Player> players = List.of(player9, player1, player2, player3, player4, player5, player6, player7, player8);
+        final Table table = new Table(GAME_ID, players, SMALL_BLIND);
+        final BetRound betRound = new BetRound(table, players, false, logger);
+
+        final Optional<Player> winner = betRound.run();
+
+        assertThat(winner).isEmpty();
+    }
+
+    @Test
     void afterFlop_betRaiseAndCall() {
         final Player player1 = createPlayer("player1", (table1, logger) -> table1.getMinimumRaise());
         final Player player2 = createPlayer("player2", (table1, logger) -> table1.getMinimumBet());
@@ -83,8 +103,12 @@ class BetRoundTest {
     private Player createPlayer(final String name, final ActionProvider actionPlayer1) {
         return new Player(name, Status.ACTIVE, START_STACK, 0, actionPlayer1);
     }
-
-    private Player createPlayer(final String name, final ActionProvider actionPlayer1, final int startStack) {
-        return new Player(name, Status.ACTIVE, startStack, 0, actionPlayer1);
+    private Player createFoldedPlayer(final String name, final ActionProvider actionPlayer1) {
+        return new Player(name, Status.FOLDED, START_STACK, 0, actionPlayer1);
     }
+
+    private Player createOutPlayer(final String name, final ActionProvider actionPlayer1) {
+        return new Player(name, Status.OUT, START_STACK, 0, actionPlayer1);
+    }
+
 }
