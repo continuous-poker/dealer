@@ -210,6 +210,6 @@ public class GameRound {
     }
 
     public Stream<GameRoundLogEntry> getHistory() {
-        return this.gamelog.stream();
+        return List.copyOf(this.gamelog).stream();
     }
 }
