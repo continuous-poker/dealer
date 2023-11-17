@@ -134,4 +134,10 @@ public class ManagementController {
         return service.getScoreHistory(gameId);
     }
 
+    @GET
+    @Path("/{gameId}/latestIds")
+    public String getLatestTournamentAndRound(@PathParam(PARAM_GAME_ID) final long gameId) throws ObjectNotFoundException {
+        return service.getLatestTournamentAndRound(gameId);
+    }
+
 }

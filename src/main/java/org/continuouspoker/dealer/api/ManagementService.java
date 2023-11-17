@@ -189,6 +189,15 @@ public class ManagementService {
         return teamLists.computeIfAbsent(score.getTeam().getName(), teamName -> new ArrayList<>());
     }
 
-
-
+    public String getLatestTournamentAndRound(final long gameId) throws ObjectNotFoundException {
+        return gameState.getGame(gameId)
+                        .map(game -> """
+                                {
+                                   "tournamentId": %s,
+                                   "roundId": %s
+                                }
+                                """.formatted(game.getTournamentId(),
+                                game.getTournaments().get(game.getTournaments().size() - 1).getLatestRound()))
+                        .orElseThrow(() -> new ObjectNotFoundException("GameHistory not found!"));
+    }
 }

@@ -105,13 +105,11 @@ Vue.createApp({
             // Simple GET request using fetch
             if (this.gameId !== -1) {
                 axios
-                    .get("/games/" + this.gameId + "/log?order=desc&limit=50")
+                    .get("/games/" + this.gameId + "/latestIds")
                     .then(response => {
                         const logs = response.data;
-                        if (logs.length > 0) {
-                            this.tournamentId = logs[logs.length - 1].tournamentId;
-                            this.roundId = logs[logs.length - 1].roundId;
-                        }
+                        this.tournamentId = logs.tournamentId;
+                        this.roundId = logs.roundId;
                     });
 
                 axios

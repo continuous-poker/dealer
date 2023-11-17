@@ -18,7 +18,7 @@ import org.continuouspoker.dealer.persistence.GameDAO;
 @RequiredArgsConstructor
 public class Game implements Runnable {
 
-    private static final int TOURNAMENT_LIMIT = 20;
+    private static final int TOURNAMENT_LIMIT = 5;
     private final List<Team> teams = new ArrayList<>();
 
     @Getter

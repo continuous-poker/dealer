@@ -113,4 +113,11 @@ public class Tournament {
     public Optional<Table> getTableStateOfGameRound(final long roundId) {
         return gameRounds.stream().filter(r -> r.getRoundId() == roundId).map(GameRound::getTable).findFirst();
     }
+
+    public long getLatestRound() {
+        if (gameRounds.isEmpty()) {
+            return 0;
+        }
+        return gameRounds.get(gameRounds.size() - 1).getRoundId();
+    }
 }
