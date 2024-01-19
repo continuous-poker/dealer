@@ -49,6 +49,12 @@ page at http://checkstyle.sourceforge.net/config.html -->
                   value=".*(\{@codesnippet.*\}|&lt;a href)|^ *\* *[^ ]+$||http://|https://|^ *\* *[^ ]+$"/>
     </module>
 
+    <module name="Header">
+        <property name="headerFile" value="ci/ci-poker.header"/>
+<!--        <property name="ignoreLines" value="1"/>-->
+        <property name="fileExtensions" value="java"/>
+    </module>
+
     <!-- All Java AST specific tests live under TreeWalker module. -->
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
