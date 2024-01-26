@@ -24,9 +24,10 @@ import org.continuouspoker.dealer.exceptionhandling.exceptions.NoTableStateFound
 import org.continuouspoker.dealer.exceptionhandling.exceptions.ObjectNotFoundException;
 import org.continuouspoker.dealer.game.Game;
 import org.continuouspoker.dealer.game.Tournament;
-import org.continuouspoker.dealer.persistence.GameDAO;
-import org.continuouspoker.dealer.persistence.ScoreRecordBE;
-import org.continuouspoker.dealer.persistence.TeamScoreRecordBE;
+import org.continuouspoker.dealer.persistence.daos.GameDAO;
+import org.continuouspoker.dealer.persistence.entities.ScoreRecordBE;
+import org.continuouspoker.dealer.persistence.entities.TeamScoreRecordBE;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class ManagementService {
     private static final int MAX_NUMBER_OF_PLAYERS = 10;
     private final GameManager gameState;
     private final GameDAO gameDAO;
+    private final LogEntryDAO logEntryDAO;
 
     public void registerPlayer(final long gameId, final String playerUrl, final String teamName)
             throws ObjectNotFoundException {
@@ -103,11 +105,19 @@ public class ManagementService {
     }
 
     public List<LogEntry> getLogSince(final long gameId, final String timestamp) throws ObjectNotFoundException {
-        return gameState.getGame(gameId)
-                        .map(game -> game.getFullHistory()
-                                         .filter(entry -> entry.getTimestamp().isAfter(ZonedDateTime.parse(timestamp)))
-                                         .toList())
-                        .orElseThrow(ObjectNotFoundException::new);
+        return logEntryDAO.findLogsSince(gameId, timestamp);
+    }
+
+    public List<LogEntry> getLogByGameId(final long gameId) {
+        return logEntryDAO.findLogsByGameId(gameId);
+    }
+
+    public List<LogEntry> getLogByTournamentId(final long tournamentId) {
+        return logEntryDAO.findLogsByTournamentId(tournamentId);
+    }
+
+    public List<LogEntry> getLogByRoundId(final long roundId) {
+        return logEntryDAO.findLogsByRoundId(roundId);
     }
 
     public List<LogEntry> filterLog(final long gameId, final String limitFrom, final String limitTo, final Long tableId,
@@ -174,13 +184,14 @@ public class ManagementService {
 
     public Map<String, List<ScoreHistoryEntry>> getScoreHistory(final long gameId) {
         final Map<String, List<ScoreHistoryEntry>> result = new TreeMap<>();
-        for (final ScoreRecordBE rec : gameDAO.loadScores(gameId)) {
+        Optional<List<ScoreRecordBE>> scores = gameDAO.loadScores(gameId);
+        scores.ifPresent(sc -> sc.forEach(rec -> {
             final Set<TeamScoreRecordBE> teamScores = rec.getTeamScores();
             for (final TeamScoreRecordBE score : teamScores) {
                 final List<ScoreHistoryEntry> teamList = getTeamList(score, result);
                 teamList.add(new ScoreHistoryEntry(rec.getCreationTimestamp(), score.getScore()));
             }
-        }
+        }));
         return result;
     }
 

@@ -15,6 +15,7 @@ import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,8 +33,8 @@ public class Tournament {
     private final Duration timeBetweenGameRounds;
     private final Duration timeBetweenSteps;
     private final List<LogEntry> gameLog = new ArrayList<>();
-
     private final List<GameRound> gameRounds = new ArrayList<>();
+    private final LogEntryDAO logEntryDAO;
 
     @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
                         "PMD.AvoidCatchingGenericException"
@@ -65,7 +66,7 @@ public class Tournament {
                                                                     .map(e -> new LogEntry(e.timestamp(), gameId,
                                                                             tournamentId, e.roundNumber(),
                                                                             e.message())));
-
+        storeLogEntries(roundLogs.toList());
         return Stream.concat(roundLogs, List.copyOf(gameLog).stream());
     }
 
@@ -76,8 +77,8 @@ public class Tournament {
     private void addWinnerPoints(final List<Player> players, final long roundNumber) {
         players.stream().filter(s -> !s.getStatus().equals(Status.OUT)).map(this::getTeam).forEach(team -> {
             team.addToScore(POINTS);
-            gameLog.add(new LogEntry(ZonedDateTime.now(), gameId, tournamentId, roundNumber,
-                    String.format("Player %s won the tournament!", team.getName())));
+            storeLogEntries(List.of(new LogEntry(ZonedDateTime.now(), gameId, tournamentId, roundNumber,
+                    String.format("Player %s won the tournament!", team.getName()))));
         });
     }
 
@@ -119,5 +120,9 @@ public class Tournament {
             return 0;
         }
         return gameRounds.get(gameRounds.size() - 1).getRoundId();
+    }
+
+    public void storeLogEntries(final List<LogEntry> logEntries) {
+        logEntryDAO.storeLogEntries(logEntries);
     }
 }
