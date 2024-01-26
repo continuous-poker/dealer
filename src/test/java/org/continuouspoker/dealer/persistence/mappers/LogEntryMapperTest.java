@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 class LogEntryMapperTest {
 
-    private LogEntryMapper logEntryMapper = Mappers.getMapper(LogEntryMapper.class);
+    private final LogEntryMapper logEntryMapper = Mappers.getMapper(LogEntryMapper.class);
 
     @Test
     public void testEntityToDto() {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 class TeamMapperTest {
-    private TeamMapper teamMapper = Mappers.getMapper(TeamMapper.class);
+    private final TeamMapper teamMapper = Mappers.getMapper(TeamMapper.class);
     @Test
     public void testEntityToModel() {
         TeamBE teamBE = new TeamBE();

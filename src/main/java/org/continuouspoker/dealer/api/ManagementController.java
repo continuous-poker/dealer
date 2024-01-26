@@ -99,19 +99,19 @@ public class ManagementController {
 
     @GET
     @Path("/{gameId}/log")
-    public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId) throws ObjectNotFoundException {
+    public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId) {
         return service.getLogByGameId(gameId);
     }
 
     @GET
     @Path("/{tournamentId}/log")
-    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long tournamentId) throws ObjectNotFoundException {
+    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long tournamentId) {
         return service.getLogByTournamentId(tournamentId);
     }
 
     @GET
     @Path("/{roundId}/log")
-    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_GAME_ID) final long roundId) throws ObjectNotFoundException {
+    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_GAME_ID) final long roundId) {
         return service.getLogByRoundId(roundId);
     }
 

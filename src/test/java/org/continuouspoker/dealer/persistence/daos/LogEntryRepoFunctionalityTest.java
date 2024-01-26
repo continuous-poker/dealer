@@ -18,27 +18,21 @@ package org.continuouspoker.dealer.persistence.daos;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.panache.common.Sort;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.persistence.entities.LogEntryBE;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.quarkus.panache.mock.PanacheMock;
-import org.mockito.InjectMocks;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @QuarkusTest
@@ -57,40 +51,6 @@ class LogEntryRepoFunctionalityTest {
 
         assertNotNull(query);
         assertEquals(1, logs.size());
-    }
-
-    @Disabled
-    @Test
-    void givenAGameIdAndTimeStamp_whenFindLogsSinceMethodIsCalled_thenReturnLogEntries() {
-//        LogEntry log1 = mock(LogEntry.class);
-        ZonedDateTime currentTimestamp = ZonedDateTime.now();
-//        when(log1.getTimestamp()).thenReturn(currentTimestamp);
-//        when(log1.getGameId()).thenReturn(1L);
-//
-//        testee.storeLogEntries(List.of(log1));
-
-//        ZonedDateTime date = (ZonedDateTime.of(
-//                LocalDateTime.of(2024, 01, 01, 00,00,00),
-//                ZoneId.systemDefault())); // 2024-01-01T00:00:00
-//        List<LogEntry> result = testee.findLogsSince(1L, currentTimestamp.toString());
-//
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//        assertEquals(1L, result.get(0).getGameId());
-//        assertEquals(currentTimestamp, result.get(0).getTimestamp());
-
-        // Arrange
-        LogEntry log = new LogEntry(ZonedDateTime.now(), 1L, 2L, 3L, "");
-
-        testee.storeLogEntries(List.of(log));
-
-        ZonedDateTime date = (ZonedDateTime.of(
-                                LocalDateTime.of(2024, 01, 01, 00,00,00),
-                                ZoneId.systemDefault())); // 2024-01-01T00:00:00
-        List<LogEntry> result = testee.findLogsSince(1L, date.toString());
-
-        assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getGameId());
     }
 
     @Test

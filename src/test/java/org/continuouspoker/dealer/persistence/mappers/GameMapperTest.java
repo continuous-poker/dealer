@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 import java.util.List;
 
-import org.continuouspoker.dealer.DummyPlayer;
 import org.continuouspoker.dealer.RemotePlayer;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.game.Game;
@@ -22,7 +21,7 @@ import org.mapstruct.factory.Mappers;
 
 class GameMapperTest {
 
-    private GameMapper testee = Mappers.getMapper(GameMapper.class);
+    private final GameMapper testee = Mappers.getMapper(GameMapper.class);
 
     @Test
     void testEntityToModel() {

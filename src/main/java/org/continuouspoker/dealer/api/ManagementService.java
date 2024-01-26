@@ -104,7 +104,7 @@ public class ManagementService {
         }
     }
 
-    public List<LogEntry> getLogSince(final long gameId, final String timestamp) throws ObjectNotFoundException {
+    public List<LogEntry> getLogSince(final long gameId, final String timestamp) {
         return logEntryDAO.findLogsSince(gameId, timestamp);
     }
 
