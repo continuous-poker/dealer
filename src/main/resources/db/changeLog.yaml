@@ -1,0 +1,245 @@
+databaseChangeLog:
+    - changeSet:
+        id: create_games_table
+        author: apena
+        createTable:
+          tableName: games
+          ifNotExists: true
+          columns:
+            - column:
+                name: id
+                type: long
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(50)
+            - column:
+                name: teams
+                type: long
+    - changeSet:
+        id: create_logs_table
+        author: apena
+        createTable:
+          tableName: logs
+          ifNotExists: true
+          columns:
+            - column:
+                name: id
+                type: long
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: gameId
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: tournamentId
+                type: long
+                constraints:
+                  nullable: false
+            - column:
+                name: roundId
+                type: long
+                constraints:
+                  nullable: false
+            - column:
+                name: message
+                type: varchar(255)
+    - changeSet:
+        id: create_scores_table
+        author: apena
+        createTable:
+          tableName: scores
+          ifNotExists: true
+          columns:
+            - column:
+                name: id
+                type: long
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: creationTimeStamp
+                type: timestamp
+            - column:
+                name: gameId
+                type: long
+                constraints:
+                  nullable: false
+            - column:
+                name: teamScores
+                type: long
+    - changeSet:
+        id: create_teams_table
+        author: apena
+        createTable:
+          tableName: teams
+          ifNotExists: true
+          columns:
+            - column:
+                name: id
+                type: long
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(255)
+            - column:
+                name: score
+                type: long
+                constraints:
+                  nullable: false
+            - column:
+                name: providerUrl
+                type: varchar(255)
+    - changeSet:
+        id: create_teamscores_table
+        author: apena
+        createTable:
+          tableName: teamscores
+          ifNotExists: true
+          columns:
+            - column:
+                name: id
+                type: long
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: team_id
+                type: bigint
+            - column:
+                name: score
+                type: long
+    - changeSet:
+        id: create_games_teams_table
+        author: apena
+        createTable:
+          tableName: games_teams
+          ifNotExists: true
+          columns:
+            - column:
+                name: games_id
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: teams_id
+                type: bigint
+                constraints:
+                  nullable: false
+    - changeSet:
+        id: create_scores_teamscores_table
+        author: apena
+        createTable:
+          tableName: scores_teamscores
+          ifNotExists: true
+          columns:
+            - column:
+                name: scores_id
+                type: bigint
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: teamScores_id
+                type: bigint
+                constraints:
+                  primaryKey: true
+                  nullable: false
+    - changeSet:
+        id: create_db_sequence
+        author: apena
+        changes:
+          - createSequence:
+              incrementBy: 50
+              minValue: 1
+              sequenceName: games_SEQ
+          - createSequence:
+              incrementBy: 50
+              minValue: 1
+              sequenceName: logs_SEQ
+          - createSequence:
+              incrementBy: 50
+              minValue: 1
+              sequenceName: scores_SEQ
+          - createSequence:
+              incrementBy: 50
+              minValue: 1
+              sequenceName: teams_SEQ
+          - createSequence:
+              incrementBy: 50
+              minValue: 1
+              sequenceName: teamscores_SEQ
+    - changeSet:
+        id: add_foreign_key_constraints_games_teams
+        author: apena
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: teams_id
+              baseTableName: games_teams
+              constraintName: fk_teams
+              referencedColumnNames: id
+              referencedTableName: teams
+              validate: true
+          - addForeignKeyConstraint:
+              baseColumnNames: games_id
+              baseTableName: games_teams
+              constraintName: fk_games
+              referencedColumnNames: id
+              referencedTableName: games
+              validate: true
+    - changeSet:
+        id: add_foreign_key_constraints_scores_teamscores
+        author: apena
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: teamscores_id
+              baseTableName: scores_teamscores
+              constraintName: fk_teamscores
+              referencedColumnNames: id
+              referencedTableName: teamscores
+              validate: true
+          - addForeignKeyConstraint:
+              baseColumnNames: scores_id
+              baseTableName: scores_teamscores
+              constraintName: fk_scores
+              referencedColumnNames: id
+              referencedTableName: scores
+              validate: true
+    - changeSet:
+        id: add_foreign_key_constraints_teamscores
+        author: apena
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: team_id
+              baseTableName: teamscores
+              constraintName: fk_team
+              referencedColumnNames: id
+              referencedTableName: teams
+              validate: true
+    - changeSet:
+        id: add_unique_constraints_scores_teamscores
+        author: apena
+        changes:
+          - addUniqueConstraint:
+              columnNames: teamScores_id
+              constraintName: teamScore_constraint
+              tableName: scores_teamscores
+              validate: true
+    - changeSet:
+        id: add_unique_constraints_scores_games_teams
+        author: apena
+        changes:
+          - addUniqueConstraint:
+              columnNames: teams_id
+              constraintName: teams_constraint
+              tableName: games_teams
+              validate: true
+
+
