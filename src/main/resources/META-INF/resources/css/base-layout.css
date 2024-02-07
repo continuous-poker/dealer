@@ -65,10 +65,6 @@ html, body {
     height: 0;
 }
 
-.sunSvg {
-    height: 18px;
-}
-
 /* The slider */
 .slider {
     position: absolute;
