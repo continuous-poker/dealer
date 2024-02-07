@@ -24,7 +24,7 @@ For further information, see the [repository overview](https://github.com/orgs/c
 
 ## Contribution
 
-If you want to participate in development, look up the open [issues](https://github.com/continuous-poker/dealer/issues).
+Please refer to our [contribution guidelines](CONTRIBUTING.md) if you wish to contribute to our open source project.
 				
 ## License
 
