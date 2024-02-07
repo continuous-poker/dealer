@@ -23,6 +23,7 @@
 
 /* Modal Styles */
 .modal {
+    color: #000;
     position: fixed;
     top: 0;
     left: 0;
@@ -35,6 +36,7 @@
 }
 
 .modal-content {
+    color: #000;
     background-color: white;
     padding: 20px;
     border-radius: 5px;
@@ -87,7 +89,7 @@
     transition-duration: .2s;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.116);
     padding-left: 20px;
-    margin-left: 15px;
+    margin-left: 20px;
 }
 
 .svgIcon {
