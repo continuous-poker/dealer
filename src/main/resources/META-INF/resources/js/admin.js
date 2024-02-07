@@ -5,11 +5,24 @@ Vue.createApp({
             showDialog: false,   // Flag to show/hide the create game dialog
             newGameName: '',     // Store the new game name
             selectedGame: null,  // Store the selected game details
+            isDarkMode: false
         };
+    },
+    created() {
+        const themePreference = localStorage.getItem('darkMode')
+
+        if(themePreference) {
+            this.isDarkMode = JSON.parse(themePreference);
+            this.applyTheme();
+        }
     },
     mounted() {
         // Fetch data from the /games endpoint using a GET request
         this.loadGames();
+
+        if (this.isDarkMode) {
+            document.getElementById("switch").checked = true;
+        }
     },
     methods: {
         loadGames() {
@@ -157,6 +170,19 @@ Vue.createApp({
                 .catch(error => {
                     console.error('Error removing game:', error);
                 });
+            },
+            toggleDarkMode() {
+                this.isDarkMode = !this.isDarkMode;
+
+                this.applyTheme();
+                localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
+            },
+            applyTheme() {
+                if(this.isDarkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
             }
     },
-}).mount('#app');
+}).mount('#app')
