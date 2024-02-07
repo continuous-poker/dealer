@@ -12,12 +12,17 @@
 <body>
 <div class="grid-container" id="app">
     <!-- Top Navigation Bar -->
-    <header class="navbar">
+    <header class="navbar" :style=" { background: isDarkMode ? '#3f3f3f' : '' }">
         <a href="live.html">Live</a>
         <a href="index.html">Analyzer</a>
         <a href="admin.html">Settings</a>
-
-        <select v-model="gameId">
+        <label class="switch">
+            <img class="sunSvg" src="img/sun-new.svg" alt="">
+            <input id="switch" type="checkbox" @click="toggleDarkMode">
+            <span class="slider round"></span>
+        </label>
+        <select v-model="gameId" :style=" { backgroundColor : (isDarkMode ? '#908d96' : ''),
+                                            color: (isDarkMode) ? '#FFF' : ''}">
             <option value="-1" disabled hidden>Select a game</option>
             <option v-for="game in games" :value="game.gameId">{{ game.name }}</option>
         </select>
