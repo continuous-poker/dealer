@@ -39,7 +39,7 @@ html, body {
     display: block;
     float: right;
     padding: 3px 16px;
-    margin: 10px 0px;
+    margin: 10px 0;
     text-decoration: none;
     border-radius: 8px;
 }
