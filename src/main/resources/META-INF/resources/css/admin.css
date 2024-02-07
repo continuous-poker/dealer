@@ -1,5 +1,3 @@
-
-
 /***********/
 /* Content */
 /***********/
@@ -45,6 +43,12 @@
 
 .sidebar {
     padding: 20px;
+    background: #E2E4E8;
+}
+
+.sidebar h1 {
+    margin-top: 0px;
+    color: #3498db;
 }
 
 .sidebar ul {
@@ -65,6 +69,48 @@
     font-weight: bold;
 }
 
+.sidebar button {
+    width: 190px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    background-color: #3498db;
+    border-radius: 30px;
+    color: #FFF;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    position: relative;
+    cursor: pointer;
+    transition-duration: .2s;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.116);
+    padding-left: 20px;
+    transition-duration: .5s;
+    margin-left: 15px;
+}
+
+.svgIcon {
+    height: 22px;
+    transition-duration: 1.5s;
+    margin-right: 7px;
+}
+
+.sidebar button:hover {
+    background-color: rgb(81, 152, 219);
+    transition-duration: .5s;
+}
+
+.sidebar button:active {
+    transform: scale(0.97);
+    transition-duration: 2s;
+}
+
+.sidebar button:hover .svgIcon {
+    transform: rotate(270deg);
+    transition-duration: 1.5s;
+}
 
 .team-form {
     margin-top: 20px;
