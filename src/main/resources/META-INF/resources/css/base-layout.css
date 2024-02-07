@@ -73,7 +73,7 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #E2E4E8;
     transition: .4s;
 }
 
@@ -83,11 +83,11 @@ html, body {
     width: 22px;
     right: 4px;
     bottom: 4px;
-    background-color: white;
     transition: .4s;
     content: "";
-    background-image: url('../img/light-mode.svg');
-    background-size: 18px 18px;
+    background-size: 20px;
+    background-image: url('../img/sun_half.png');
+    background-color: #fff;
     background-position: center;
 }
 
@@ -111,7 +111,7 @@ input:focus + .slider {
 input:checked + .slider:before {
     transform: translateX(-21px);
     content: "";
-    background: #2b2b2b url('../img/dark-mode.svg') center;
+    background: #fff url('../img/moon_half.png') center;
     background-size: 20px 20px;
 }
 

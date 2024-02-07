@@ -14,11 +14,12 @@
 
 /* Modern color for the central section */
 .content h1 {
+    margin: 5px 0 25px 0;
     color: #3498db; /* Blue color for headings */
 }
 
 .content p {
-    color: #555; /* Dark gray color for text */
+    color: inherit; /* Dark gray color for text */
 }
 
 /* Modal Styles */
@@ -44,7 +45,7 @@
 }
 
 .sidebar {
-    padding: 10px 10px 0 20px;
+    padding: 0;
     background: #E2E4E8;
 }
 
@@ -56,15 +57,18 @@
 .sidebar ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 .sidebar li {
     cursor: pointer;
-    padding: 10px;
+    padding: 10px 20px;
 }
 
 .sidebar li.active, .sidebar li:hover {
+    width: inherit;
     background-color: #eeeeee;
+    color: #000;
 }
 
 .sidebar li.active {
@@ -82,7 +86,7 @@
     border-radius: 30px;
     color: #FFF;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 18px;
     border: none;
     position: relative;
     cursor: pointer;
@@ -94,7 +98,7 @@
     transform: translate(-50%, -50%);
 }
 
-.svgIcon {
+.icon {
     height: 22px;
     transition-duration: 1.5s;
     margin-right: 7px;
@@ -110,7 +114,7 @@
     transition-duration: 2s;
 }
 
-.sidebar button:hover .svgIcon {
+.sidebar button:hover .icon {
     transform: rotate(270deg);
     transition-duration: 1.5s;
 }

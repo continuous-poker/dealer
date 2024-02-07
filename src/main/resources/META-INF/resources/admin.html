@@ -23,12 +23,11 @@
     <main class="main">
         <!-- Central Section -->
         <section class="sidebar" :style=" { backgroundColor : isDarkMode ? '#45494d' : '' }">
-<!--            <h1>Games</h1>-->
             <ul>
                 <li @click="selectGame(game)" :class="{ active: selectedGame && game.gameId === selectedGame.gameId }" v-for="game in games" :key="game.gameId">{{ game.name }}</li>
             </ul>
             <button @click="showCreateGameDialog">
-                <img class="svgIcon" src="img/plus.svg">Create Game
+                <img class="icon" src="img/add.png">Create Game
             </button>
         </section>
 

@@ -43,7 +43,7 @@
             <h2>Tournament {{tournamentId}} - Round {{roundId}}</h2>
             <section>
                 <h2>Players</h2>
-                <section class="singlePlayer" v-for="player in table.players">
+                <section class="singlePlayer" v-for="player in table.players" :style="{ backgroundColor: isDarkMode ? '#000' : '#ccc'}">
                     <section class="playerInfos">
                         <span class="playerInfo">{{player.name}} ({{player.status.toLowerCase()}})</span><br/><span>{{player.stack}} Chips</span>
                     </section>
