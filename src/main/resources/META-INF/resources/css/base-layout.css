@@ -90,7 +90,7 @@ html, body {
     background-color: white;
     transition: .4s;
     content: "";
-    background-image: url('../img/sun-new.svg');
+    background-image: url('../img/light-mode.svg');
     background-size: 18px 18px;
     background-position: center;
 }
