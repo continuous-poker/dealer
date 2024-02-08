@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;

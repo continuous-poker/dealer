@@ -100,7 +100,7 @@ public class ManagementController {
     @Path("/{gameId}/log/{timestamp}/limit={logLimit}")
     public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
             @PathParam("timestamp") final String timestamp,
-            @PathParam("logLimit") final int logLimit) throws ObjectNotFoundException {
+            @PathParam("logLimit") final int logLimit) {
         return service.getLogSince(gameId, timestamp, logLimit);
     }
 

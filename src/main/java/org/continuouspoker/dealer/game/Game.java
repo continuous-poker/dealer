@@ -38,10 +38,6 @@ public class Game implements Runnable {
     @JsonIgnore
     GameDAO gameDAO;
 
-    @Inject
-    @JsonIgnore
-    LogEntryDAO logEntryDAO;
-
     @Getter
     @JsonIgnore
     private int tournamentId;
