@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,8 @@ public class Tournament {
     private final Duration timeBetweenSteps;
     private final List<LogEntry> gameLog = new ArrayList<>();
     private final List<GameRound> gameRounds = new ArrayList<>();
-    private final LogEntryDAO logEntryDAO;
+    @Inject
+    LogEntryDAO logEntryDAO;
 
     @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
                         "PMD.AvoidCatchingGenericException"
@@ -77,8 +79,8 @@ public class Tournament {
     private void addWinnerPoints(final List<Player> players, final long roundNumber) {
         players.stream().filter(s -> !s.getStatus().equals(Status.OUT)).map(this::getTeam).forEach(team -> {
             team.addToScore(POINTS);
-            storeLogEntries(List.of(new LogEntry(ZonedDateTime.now(), gameId, tournamentId, roundNumber,
-                    String.format("Player %s won the tournament!", team.getName()))));
+            storeLogEntry(new LogEntry(ZonedDateTime.now(), gameId, tournamentId, roundNumber,
+                    String.format("Player %s won the tournament!", team.getName())));
         });
     }
 
@@ -120,6 +122,10 @@ public class Tournament {
             return 0;
         }
         return gameRounds.get(gameRounds.size() - 1).getRoundId();
+    }
+
+    public void storeLogEntry(LogEntry logEntry) {
+        logEntryDAO.storeLogEntry(logEntry);
     }
 
     public void storeLogEntries(final List<LogEntry> logEntries) {
