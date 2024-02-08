@@ -9,6 +9,7 @@ quarkus:
         admin-permission:
           policy: admin-policy
           paths: /games/manage/*
+    port: 8081
   security:
     users:
       embedded:
@@ -27,7 +28,7 @@ quarkus:
     jdbc:
       url: "jdbc:h2:/home/jboss/persistence/gamedb"
   liquibase:
-    change-log: db/changeLog.yaml
+    change-log: db/change-log.yaml
     migrate-at-start: true
   hibernate-orm:
     database:
