@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.persistence.daos.GameDAO;
-import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 
 @Slf4j
 @RequiredArgsConstructor
