@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 DoubleSlash Net-Business GmbH
+ * Copyright © 2020-2024 doubleSlash Net-Business GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.continuouspoker.dealer.RemotePlayer;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.game.Game;
@@ -46,15 +47,17 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(H2DatabaseTestResource.class)
 @TestTransaction
 class GameRepoFunctionalityTest {
-    GameDAO testee = new GameDAO();
-    LogEntryDAO logDao = new LogEntryDAO();
+
+    @Inject
+    GameDAO testee;
+
     Game game1;
     Game game2;
 
     @BeforeEach
     void setup() {
-        game1 = new Game(0L, "game_test_1", Duration.parse("PT1S"), Duration.parse("PT1S"), testee, logDao);
-        game2 = new Game(0L, "game_test_2", Duration.parse("PT1S"), Duration.parse("PT1S"), testee, logDao);
+        game1 = new Game(0L, "game_test_1", Duration.parse("PT1S"), Duration.parse("PT1S"));
+        game2 = new Game(0L, "game_test_2", Duration.parse("PT1S"), Duration.parse("PT1S"));
     }
 
     @Test
@@ -90,12 +93,11 @@ class GameRepoFunctionalityTest {
         // Arrange
         testee.createGame(game1);
 
-        Optional<List<Game>> result = testee.loadGames();
+        List<Game> result = testee.loadGames();
 
         assertNotNull(result);
-        assertTrue(result.isPresent());
 
-        Game g = result.get().get(0);
+        Game g = result.get(0);
         assertEquals("game_test_1", g.getName());
     }
 
@@ -131,8 +133,7 @@ class GameRepoFunctionalityTest {
         Game game = mockGameClass();
         testee.storeScores(game);
 
-        Optional<List<ScoreRecordBE>> opt = testee.loadScores(game.getGameId());
-        List<ScoreRecordBE> scores = opt.orElse(null);
+        List<ScoreRecordBE> scores = testee.loadScores(game.getGameId());
         assertNotNull(scores);
 
         ScoreRecordBE score = scores.get(0);

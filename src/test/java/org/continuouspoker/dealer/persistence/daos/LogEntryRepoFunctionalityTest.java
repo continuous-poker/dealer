@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 DoubleSlash Net-Business GmbH
+ * Copyright © 2020-2024 doubleSlash Net-Business GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,14 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.persistence.entities.LogEntryBE;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @QuarkusTest
@@ -40,7 +37,8 @@ import java.util.List;
 @TestTransaction
 class LogEntryRepoFunctionalityTest {
 
-    LogEntryDAO testee = new LogEntryDAO();
+    @Inject
+    LogEntryDAO testee;
 
     @Test
     void givenAListOfLogEntries_whenStoreLogEntriesIsCalled_thenPersist() {
@@ -62,7 +60,7 @@ class LogEntryRepoFunctionalityTest {
 
         testee.storeLogEntries(List.of(log, falseLog));
 
-        List<LogEntry> result = testee.findLogsByGameId(10L);
+        List<LogEntry> result = testee.findLogsByGameId(10L, 25);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -73,7 +71,7 @@ class LogEntryRepoFunctionalityTest {
     void shouldReturnEmptyList_whenFindLogsByGameIdMethodIsCalled() {
         testee.storeLogEntries(mockLogEntries());
 
-        List<LogEntry> result = testee.findLogsByGameId(0L);
+        List<LogEntry> result = testee.findLogsByGameId(0L, 25);
 
         assertNotNull(result);
         assertEquals(0, result.size());
@@ -83,7 +81,7 @@ class LogEntryRepoFunctionalityTest {
     void givenATournamentId_whenFindLogsByTournamentId_thenReturnLogEntries() {
         testee.storeLogEntries(mockLogEntries());
 
-        List<LogEntry> result = testee.findLogsByTournamentId(2L);
+        List<LogEntry> result = testee.findLogsByTournamentId(2L, 25);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -96,7 +94,7 @@ class LogEntryRepoFunctionalityTest {
 
         testee.storeLogEntries(List.of(log));
 
-        List<LogEntry> result = testee.findLogsByTournamentId(6L);
+        List<LogEntry> result = testee.findLogsByTournamentId(6L, 25);
 
         assertNotNull(result);
         assertEquals(0, result.size());
@@ -106,10 +104,29 @@ class LogEntryRepoFunctionalityTest {
     void givenARoundId_whenFindLogsByRoundId_thenReturnLogEntries() {
         testee.storeLogEntries(mockLogEntries());
 
-        List<LogEntry> result = testee.findLogsByRoundId(3L);
+        List<LogEntry> result = testee.findLogsByRoundId(3L, 25);
 
         assertNotNull(result);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void shouldReturnOneLogEntry_gameIdAndTournamentIdAreIdentical() {
+        LogEntry mockLog1 = mock(LogEntry.class);
+        when(mockLog1.getGameId()).thenReturn(1L);
+        when(mockLog1.getTournamentId()).thenReturn(1L);
+
+        LogEntry mockLog2 = mock(LogEntry.class);
+        when(mockLog2.getGameId()).thenReturn(2L);
+        when(mockLog2.getTournamentId()).thenReturn(1L);
+
+        testee.storeLogEntries(List.of(mockLog1, mockLog2));
+
+        List<LogEntry> result = testee.findLogsByGameId(1L, 50);
+
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getTournamentId());
     }
 
     private List<LogEntry> mockLogEntries() {
