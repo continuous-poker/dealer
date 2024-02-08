@@ -16,11 +16,11 @@ import java.util.concurrent.TimeUnit;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.game.Game;
 import org.continuouspoker.dealer.persistence.daos.GameDAO;
-import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -40,25 +40,26 @@ public class GameManager {
     @ConfigProperty(name = "game.executor.poolsize")
     /* package */ int executorPoolsize;
 
-    private final GameDAO dao;
-    private final LogEntryDAO logEntryDAO;
+    @Inject
+    GameDAO gameDao;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(executorPoolsize);
     private final Map<Game, ScheduledFuture<?>> games = new TreeMap<>(Comparator.comparing(Game::getName));
 
     @PostConstruct
         /* package */ void initialize() {
-        final Optional<List<Game>> gameList = dao.loadGames();
-        gameList.ifPresent(l -> l.forEach(g -> games.put(g, null)));
+        final List<Game> gameList = gameDao.loadGames();
+        gameList.forEach(g -> games.put(g, null));
     }
 
     @Scheduled(delayed = "10s", every = "10s")
         /* package */ void store() {
-        dao.storeGames(games.keySet());
+        gameDao.storeGames(games.keySet());
     }
 
     public long createNewGame(final String name) {
-        Game game = new Game(0L, name, gameRoundSleepDuration, stepSleepDuration, dao, logEntryDAO);
-        dao.createGame(game);
+        Game game = new Game(0L, name, gameRoundSleepDuration, stepSleepDuration);
+        gameDao.createGame(game);
         games.put(game, null);
         return game.getGameId();
     }
@@ -104,7 +105,7 @@ public class GameManager {
     }
 
     public Team createNewPlayer(final String teamName, final String playerUrl) {
-        return dao.createTeam(teamName, playerUrl);
+        return gameDao.createTeam(teamName, playerUrl);
     }
 
 }

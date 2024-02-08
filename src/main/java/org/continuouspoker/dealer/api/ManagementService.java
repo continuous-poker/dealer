@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import org.continuouspoker.dealer.GameManager;
 import org.continuouspoker.dealer.LogEntry;
@@ -32,11 +33,15 @@ import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ManagementService {
-
     private static final int MAX_NUMBER_OF_PLAYERS = 10;
+
+    @Inject
+    GameDAO gameDAO;
+
+    @Inject
+    LogEntryDAO logEntryDAO;
+
     private final GameManager gameState;
-    private final GameDAO gameDAO;
-    private final LogEntryDAO logEntryDAO;
 
     public void registerPlayer(final long gameId, final String playerUrl, final String teamName)
             throws ObjectNotFoundException {
@@ -104,20 +109,20 @@ public class ManagementService {
         }
     }
 
-    public List<LogEntry> getLogSince(final long gameId, final String timestamp) {
-        return logEntryDAO.findLogsSince(gameId, timestamp);
+    public List<LogEntry> getLogSince(final long gameId, final String timestamp, int logLimit) {
+        return logEntryDAO.findLogsSince(gameId, timestamp, logLimit);
     }
 
-    public List<LogEntry> getLogByGameId(final long gameId) {
-        return logEntryDAO.findLogsByGameId(gameId);
+    public List<LogEntry> getLogByGameId(final long gameId, int logLimit) {
+        return logEntryDAO.findLogsByGameId(gameId, logLimit);
     }
 
-    public List<LogEntry> getLogByTournamentId(final long tournamentId) {
-        return logEntryDAO.findLogsByTournamentId(tournamentId);
+    public List<LogEntry> getLogByTournamentId(final long tournamentId, int logLimit) {
+        return logEntryDAO.findLogsByTournamentId(tournamentId, logLimit);
     }
 
-    public List<LogEntry> getLogByRoundId(final long roundId) {
-        return logEntryDAO.findLogsByRoundId(roundId);
+    public List<LogEntry> getLogByRoundId(final long roundId, int logLimit) {
+        return logEntryDAO.findLogsByRoundId(roundId, logLimit);
     }
 
     public List<LogEntry> filterLog(final long gameId, final String limitFrom, final String limitTo, final Long tableId,
@@ -184,14 +189,14 @@ public class ManagementService {
 
     public Map<String, List<ScoreHistoryEntry>> getScoreHistory(final long gameId) {
         final Map<String, List<ScoreHistoryEntry>> result = new TreeMap<>();
-        Optional<List<ScoreRecordBE>> scores = gameDAO.loadScores(gameId);
-        scores.ifPresent(sc -> sc.forEach(rec -> {
+        List<ScoreRecordBE> scores = gameDAO.loadScores(gameId);
+        scores.forEach(rec -> {
             final Set<TeamScoreRecordBE> teamScores = rec.getTeamScores();
             for (final TeamScoreRecordBE score : teamScores) {
                 final List<ScoreHistoryEntry> teamList = getTeamList(score, result);
                 teamList.add(new ScoreHistoryEntry(rec.getCreationTimestamp(), score.getScore()));
             }
-        }));
+        });
         return result;
     }
 

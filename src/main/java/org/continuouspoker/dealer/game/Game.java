@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +34,13 @@ public class Game implements Runnable {
     private final Duration timeBetweenGameRounds;
     private final Duration timeBetweenSteps;
 
+    @Inject
     @JsonIgnore
-    private final GameDAO gameDAO;
+    GameDAO gameDAO;
 
+    @Inject
     @JsonIgnore
-    private final LogEntryDAO logEntryDAO;
+    LogEntryDAO logEntryDAO;
 
     @Getter
     @JsonIgnore
@@ -47,7 +50,7 @@ public class Game implements Runnable {
     public void run() {
 
         final Tournament tournament = new Tournament(gameId, tournamentId++, teams, timeBetweenGameRounds,
-                timeBetweenSteps, logEntryDAO);
+                timeBetweenSteps);
         tournaments.add(tournament);
         while (tournaments.size() > TOURNAMENT_LIMIT) {
             tournaments.remove(0);
