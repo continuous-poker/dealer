@@ -28,7 +28,13 @@ import org.continuouspoker.dealer.game.Game;
 public class ManagementController {
 
     public static final String PARAM_GAME_ID = "gameId";
+
+    public static final String PARAM_TOURNAMENT_ID = "tournamentId";
+
+    public static final String PARAM_ROUND_ID = "roundId";
+
     private final ManagementService service;
+
 
     @POST
     @Path("/manage/{gameId}/players")
@@ -91,28 +97,32 @@ public class ManagementController {
     }
 
     @GET
-    @Path("/{gameId}/log/{timestamp}")
+    @Path("/{gameId}/log/{timestamp}/limit={logLimit}")
     public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
-            @PathParam("timestamp") final String timestamp) throws ObjectNotFoundException {
-        return service.getLogSince(gameId, timestamp);
+            @PathParam("timestamp") final String timestamp,
+            @PathParam("logLimit") final int logLimit) throws ObjectNotFoundException {
+        return service.getLogSince(gameId, timestamp, logLimit);
     }
 
     @GET
-    @Path("/{gameId}/log")
-    public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId) {
-        return service.getLogByGameId(gameId);
+    @Path("/{gameId}/log/limit={logLimit}")
+    public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam("logLimit") final int logLimit) {
+        return service.getLogByGameId(gameId, logLimit);
     }
 
     @GET
-    @Path("/{tournamentId}/log")
-    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long tournamentId) {
-        return service.getLogByTournamentId(tournamentId);
+    @Path("/{tournamentId}/log/limit={logLimit}")
+    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
+            @PathParam("logLimit") final int logLimit) {
+        return service.getLogByTournamentId(tournamentId, logLimit);
     }
 
     @GET
-    @Path("/{roundId}/log")
-    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_GAME_ID) final long roundId) {
-        return service.getLogByRoundId(roundId);
+    @Path("/{roundId}/log/limit={logLimit}")
+    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_ROUND_ID) final long roundId,
+            @PathParam("logLimit") final int logLimit) {
+        return service.getLogByRoundId(roundId, logLimit);
     }
 
     @GET
