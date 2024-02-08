@@ -38,5 +38,4 @@ public class GameBE extends PanacheEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<TeamBE> teams;
-
 }
