@@ -33,6 +33,7 @@ import org.continuouspoker.dealer.data.Player;
 import org.continuouspoker.dealer.data.Status;
 import org.continuouspoker.dealer.data.Table;
 import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
+import org.continuouspoker.dealer.persistence.mappers.LogEntryMapper;
 
 @Slf4j
 @RequiredArgsConstructor

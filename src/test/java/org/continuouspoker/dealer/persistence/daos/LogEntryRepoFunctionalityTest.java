@@ -81,7 +81,7 @@ class LogEntryRepoFunctionalityTest {
     void givenATournamentId_whenFindLogsByTournamentId_thenReturnLogEntries() {
         testee.storeLogEntries(mockLogEntries());
 
-        List<LogEntry> result = testee.findLogsByTournamentId(2L, 25);
+        List<LogEntry> result = testee.findLogsByTournamentId(1L, 2L, 25);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -94,7 +94,7 @@ class LogEntryRepoFunctionalityTest {
 
         testee.storeLogEntries(List.of(log));
 
-        List<LogEntry> result = testee.findLogsByTournamentId(6L, 25);
+        List<LogEntry> result = testee.findLogsByTournamentId(1L, 6L, 25);
 
         assertNotNull(result);
         assertEquals(0, result.size());
@@ -104,7 +104,7 @@ class LogEntryRepoFunctionalityTest {
     void givenARoundId_whenFindLogsByRoundId_thenReturnLogEntries() {
         testee.storeLogEntries(mockLogEntries());
 
-        List<LogEntry> result = testee.findLogsByRoundId(3L, 25);
+        List<LogEntry> result = testee.findLogsByRoundId(1L, 2L, 3L, 25);
 
         assertNotNull(result);
         assertEquals(1, result.size());

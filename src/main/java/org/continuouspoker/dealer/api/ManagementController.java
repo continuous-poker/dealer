@@ -112,32 +112,35 @@ public class ManagementController {
     }
 
     @GET
-    @Path("/{gameId}/log/{timestamp}/limit={logLimit}")
+    @Path("/{gameId}/log/{timestamp}")
     public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
             @PathParam("timestamp") final String timestamp,
-            @PathParam("logLimit") final int logLimit) {
-        return service.getLogSince(gameId, timestamp, logLimit);
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogSince(gameId, timestamp, limit);
     }
 
     @GET
-    @Path("/{gameId}/log/limit={logLimit}")
+    @Path("/logs/{gameId}")
     public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId,
-            @PathParam("logLimit") final int logLimit) {
-        return service.getLogByGameId(gameId, logLimit);
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogByGameId(gameId, limit);
     }
 
     @GET
-    @Path("/{tournamentId}/log/limit={logLimit}")
-    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
-            @PathParam("logLimit") final int logLimit) {
-        return service.getLogByTournamentId(tournamentId, logLimit);
+    @Path("/logs/{gameId}/tournament{tournamentId}")
+    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogByTournamentId(gameId, tournamentId, limit);
     }
 
     @GET
-    @Path("/{roundId}/log/limit={logLimit}")
-    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_ROUND_ID) final long roundId,
-            @PathParam("logLimit") final int logLimit) {
-        return service.getLogByRoundId(roundId, logLimit);
+    @Path("/logs/{gameId}/tournament/{tournamentId}/round/{roundId}/log")
+    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_GAME_ID) final long gameId,
+        @PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
+        @PathParam(PARAM_ROUND_ID) final long roundId,
+        @QueryParam("limit") final Integer limit) {
+        return service.getLogByRoundId(gameId, tournamentId, roundId, limit);
     }
 
     @GET

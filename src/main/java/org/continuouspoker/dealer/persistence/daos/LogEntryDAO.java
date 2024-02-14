@@ -18,6 +18,7 @@ package org.continuouspoker.dealer.persistence.daos;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -45,34 +46,28 @@ public class LogEntryDAO {
         logEntries.stream().map(entry -> logEntryMapper.toEntity(entry)).forEach(log -> log.persist());
     }
 
-    public List<LogEntry> findLogsSince(final long gameId, final String timestamp, int logLimit) {
-        return findLogsByGameId(gameId, logLimit).stream()
+    public List<LogEntry> findLogsSince(final long gameId, final String timestamp, int limit) {
+        return findLogsByGameId(gameId, limit).stream()
                                        .filter(entry -> entry.getTimestamp()
                                                              .isAfter(ZonedDateTime.parse(timestamp)))
                                        .toList();
     }
 
-    public List<LogEntry> findLogsByGameId(final long gameId, int logLimit) {
+    public List<LogEntry> findLogsByGameId(final long gameId, int limit) {
         final PanacheQuery<PanacheEntityBase> query = LogEntryBE.find("gameId",
                 Sort.by("gameId", Sort.Direction.Descending), gameId);
-        query.range(0, logLimit);
+        query.range(0, limit);
         List<LogEntryBE> logs = query.list();
         return logs.stream().map(logEntryMapper::toDto).toList();
     }
 
-    public List<LogEntry> findLogsByTournamentId(final long tournamentId, int logLimit) {
-        final PanacheQuery<PanacheEntityBase> query = LogEntryBE.find("tournamentId",
-                Sort.by("tournamentId", Sort.Direction.Descending), tournamentId);
-        query.range(0, logLimit);
-        List<LogEntryBE> logs = query.list();
-        return logs.stream().map(logEntryMapper::toDto).toList();
+    public List<LogEntry> findLogsByTournamentId(final long gameId, final long tournamentId, int limit) {
+        return findLogsByGameId(gameId, limit).stream().filter(log -> log.getTournamentId() == tournamentId).collect(
+                Collectors.toList());
     }
 
-    public List<LogEntry> findLogsByRoundId(final long roundId, int logLimit) {
-        final PanacheQuery<PanacheEntityBase> query = LogEntryBE.find("roundId",
-                Sort.by("roundId", Sort.Direction.Descending), roundId);
-        query.range(0, logLimit);
-        List<LogEntryBE> logs = query.list();
-        return logs.stream().map(logEntryMapper::toDto).toList();
+    public List<LogEntry> findLogsByRoundId(final long gameId, final long tournamentId, final long roundId, int limit) {
+        return findLogsByTournamentId(gameId, tournamentId, limit).stream().filter(log -> log.getRoundId() == roundId).collect(
+                Collectors.toList());
     }
 }

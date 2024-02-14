@@ -124,20 +124,20 @@ public class ManagementService {
         }
     }
 
-    public List<LogEntry> getLogSince(final long gameId, final String timestamp, int logLimit) {
-        return logEntryDAO.findLogsSince(gameId, timestamp, logLimit);
+    public List<LogEntry> getLogSince(final long gameId, final String timestamp, int limit) {
+        return logEntryDAO.findLogsSince(gameId, timestamp, limit);
     }
 
-    public List<LogEntry> getLogByGameId(final long gameId, int logLimit) {
-        return logEntryDAO.findLogsByGameId(gameId, logLimit);
+    public List<LogEntry> getLogByGameId(final long gameId, int limit) {
+        return logEntryDAO.findLogsByGameId(gameId, limit);
     }
 
-    public List<LogEntry> getLogByTournamentId(final long tournamentId, int logLimit) {
-        return logEntryDAO.findLogsByTournamentId(tournamentId, logLimit);
+    public List<LogEntry> getLogByTournamentId(final long gameId, final long tournamentId, int limit) {
+        return logEntryDAO.findLogsByTournamentId(gameId, tournamentId, limit);
     }
 
-    public List<LogEntry> getLogByRoundId(final long roundId, int logLimit) {
-        return logEntryDAO.findLogsByRoundId(roundId, logLimit);
+    public List<LogEntry> getLogByRoundId(final long gameId, final long tournamentId, final long roundId, int limit) {
+        return logEntryDAO.findLogsByRoundId(gameId, tournamentId, roundId, limit);
     }
 
     public List<LogEntry> filterLog(final long gameId, final String limitFrom, final String limitTo, final Long tableId,
