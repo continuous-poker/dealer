@@ -25,11 +25,19 @@ Vue.createApp({
             table: {players: [], communityCards: []},
             gameHistory: null,      //Object for whole history
             displayedHistory: null, //Object for currently displayed history
+            isDarkMode: false
         }
     },
 
-
     created() {
+        // Update theme (light / dark)
+        const themePreference = localStorage.getItem('darkMode')
+
+        if(themePreference) {
+            this.isDarkMode = JSON.parse(themePreference);
+            this.applyTheme();
+        }
+
         this.update();
         this.timer = setInterval(this.update, 1000);
     },
@@ -39,6 +47,10 @@ Vue.createApp({
     },
 
     mounted() {
+        if (this.isDarkMode) {
+            document.getElementById("switch").checked = true;
+        }
+
         // Fetch data from the /games endpoint using a GET request
         this.loadGames();
 
@@ -191,6 +203,19 @@ Vue.createApp({
 
         cancelAutoUpdate() {
             clearInterval(this.timer);
+        },
+        toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
+
+            this.applyTheme();
+            localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
+        },
+        applyTheme() {
+            if(this.isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
         }
     }
 }).mount('#app')

@@ -11,12 +11,16 @@
 <body>
 <div class="grid-container" id="app">
     <!-- Top Navigation Bar -->
-    <header class="navbar">
+    <header class="navbar" :style=" { background: isDarkMode ? '#3f3f3f' : ''}">
         <a href="live.html">Live</a>
         <a href="index.html">Analyzer</a>
         <a href="admin.html">Settings</a>
-
-        <select v-model="gameId">
+        <label class="switch">
+            <input id="switch" type="checkbox" @click="toggleDarkMode">
+            <span class="slider round"></span>
+        </label>
+        <select v-model="gameId" :style=" { backgroundColor : (isDarkMode ? '#908d96' : ''),
+                                            color: (isDarkMode) ? '#FFF' : ''}">
             <option value="-1" disabled hidden>Select a game</option>
             <option v-for="game in games" :value="game.gameId">{{ game.name }}</option>
         </select>
@@ -39,7 +43,7 @@
             <h2>Tournament {{tournamentId}} - Round {{roundId}}</h2>
             <section>
                 <h2>Players</h2>
-                <section class="singlePlayer" v-for="player in table.players">
+                <section class="singlePlayer" v-for="player in table.players" :style="{ backgroundColor: isDarkMode ? '#000' : '#ccc'}">
                     <section class="playerInfos">
                         <span class="playerInfo">{{player.name}} ({{player.status.toLowerCase()}})</span><br/><span>{{player.stack}} Chips</span>
                     </section>
@@ -56,13 +60,13 @@
                 <span class="card" :class="card.suit.toLowerCase()" v-for="card in table.communityCards">{{ getImage(card) }}</span>
             </section>
 
-            <section>
-                <h2>History</h2>
-                Currently disabled due to memory issues :D
-                <ul class="logItem" v-if="gameHistory !== null">
-                    <li v-for="round in displayedHistory">{{round}}</li>
-                </ul>
-            </section>
+<!--            <section>-->
+<!--                <h2>History</h2>-->
+<!--                Currently disabled due to memory issues :D-->
+<!--                <ul class="logItem" v-if="gameHistory !== null">-->
+<!--                    <li v-for="round in displayedHistory">{{round}}</li>-->
+<!--                </ul>-->
+<!--            </section>-->
         </section>
     </main>
 
