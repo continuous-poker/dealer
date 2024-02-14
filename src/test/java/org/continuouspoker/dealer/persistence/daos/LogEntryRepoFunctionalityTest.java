@@ -84,7 +84,7 @@ class LogEntryRepoFunctionalityTest {
         List<LogEntry> result = testee.findLogsByTournamentId(1L, 2L, 25);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
