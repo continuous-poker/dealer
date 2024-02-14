@@ -181,6 +181,7 @@ Vue.createApp({
                 if (this.tournamentId != null) {
                     this.updateTable(this.gameId, this.tournamentId, this.roundId);
                 }
+
                 axios
                     .get("/games/" + this.gameId + "/history")
                     .then(response => {
