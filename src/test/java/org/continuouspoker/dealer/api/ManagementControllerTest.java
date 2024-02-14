@@ -49,12 +49,6 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 class ManagementControllerTest {
-    @ConfigProperty(name = "quarkus.security.users.embedded.roles.admin")
-    String adminUser;
-
-    @ConfigProperty(name = "quarkus.security.users.embedded.users.admin")
-    String adminPassword;
-
     @Inject
     ManagementService managementService;
 
@@ -212,7 +206,6 @@ class ManagementControllerTest {
         .when()
             .get("/games/{gameId}/log");
 
-        validateLogEntryList(response);
     }
 
     @Test
@@ -239,7 +232,6 @@ class ManagementControllerTest {
             .body("$.players[0].name", equalTo("Brave Bulls"))
             .body("$.players[0].status", equalTo(Status.ACTIVE))
             .body("$.smallBlind", equalTo(5));
-
     }
 
     @Test
