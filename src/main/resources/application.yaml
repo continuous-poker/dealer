@@ -9,7 +9,6 @@ quarkus:
         admin-permission:
           policy: admin-policy
           paths: /games/manage/*
-    port: 8081
   security:
     users:
       embedded:
