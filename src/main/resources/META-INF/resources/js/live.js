@@ -155,17 +155,18 @@ Vue.createApp({
                 if (this.tournamentId != null) {
                     this.updateTable(this.gameId, this.tournamentId, this.roundId);
                 }
-                // axios
-                //     .get("/games/" + this.gameId + "/history")
-                //     .then(response => {
-                //         this.gameHistory = response.data;
-                //         if (!this.gameHistory[this.tournamentId]) {
-                //             this.tournamentId = null;
-                //             this.roundId = null;
-                //         }
-                //     });
-                //
-                // this.displayedHistory = this.gameHistory[this.tournamentId][this.roundId];
+
+                axios
+                    .get("/games/" + this.gameId + "/history")
+                    .then(response => {
+                        this.gameHistory = response.data;
+                        if (!this.gameHistory[this.tournamentId]) {
+                            this.tournamentId = null;
+                            this.roundId = null;
+                        }
+                    });
+
+                this.displayedHistory = this.gameHistory[this.tournamentId][this.roundId];
             }
         },
 

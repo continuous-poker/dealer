@@ -140,8 +140,7 @@ public class ManagementController {
     @Path("/{gameId}/history")
     public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam(PARAM_GAME_ID) final long gameId)
             throws ObjectNotFoundException {
-        // empty for now, takes up too much resources
-        return Map.of();
+        return service.getGameHistory(gameId);
     }
 
     @GET
