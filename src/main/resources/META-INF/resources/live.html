@@ -60,13 +60,12 @@
                 <span class="card" :class="card.suit.toLowerCase()" v-for="card in table.communityCards">{{ getImage(card) }}</span>
             </section>
 
-<!--            <section>-->
-<!--                <h2>History</h2>-->
-<!--                Currently disabled due to memory issues :D-->
-<!--                <ul class="logItem" v-if="gameHistory !== null">-->
-<!--                    <li v-for="round in displayedHistory">{{round}}</li>-->
-<!--                </ul>-->
-<!--            </section>-->
+            <section>
+                <h2>History</h2>
+                <ul class="logItem" v-if="gameHistory !== null">
+                    <li v-for="round in displayedHistory">{{round}}</li>
+                </ul>
+            </section>
         </section>
     </main>
 
