@@ -49,14 +49,14 @@ class GameRepoFunctionalityTest {
 
     @Inject
     GameDAO testee;
-
     Game game1;
     Game game2;
 
     @BeforeEach
     void setup() {
-        game1 = new Game(0L, "game_test_1", Duration.parse("PT1S"), Duration.parse("PT1S"));
-        game2 = new Game(0L, "game_test_2", Duration.parse("PT1S"), Duration.parse("PT1S"));
+        LogEntryDAO logEntryDAO = mock(LogEntryDAO.class);
+        game1 = new Game(0L, "game_test_1", Duration.parse("PT1S"), Duration.parse("PT1S"), testee, logEntryDAO);
+        game2 = new Game(0L, "game_test_2", Duration.parse("PT1S"), Duration.parse("PT1S"), testee, logEntryDAO);
     }
 
     @Test

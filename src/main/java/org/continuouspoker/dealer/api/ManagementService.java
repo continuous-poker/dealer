@@ -49,10 +49,8 @@ import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 @RequiredArgsConstructor
 public class ManagementService {
     private static final int MAX_NUMBER_OF_PLAYERS = 10;
-
     @Inject
     GameDAO gameDAO;
-
     @Inject
     LogEntryDAO logEntryDAO;
 

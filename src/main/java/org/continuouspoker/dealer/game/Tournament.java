@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +50,7 @@ public class Tournament {
     private final Duration timeBetweenSteps;
     private final List<LogEntry> gameLog = new ArrayList<>();
     private final List<GameRound> gameRounds = new ArrayList<>();
-    @Inject
-    LogEntryDAO logEntryDAO;
+    private final LogEntryDAO logEntryDAO;
 
     @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
                         "PMD.AvoidCatchingGenericException"

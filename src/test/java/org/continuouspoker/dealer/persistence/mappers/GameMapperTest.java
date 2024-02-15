@@ -28,6 +28,8 @@ import java.util.List;
 import org.continuouspoker.dealer.RemotePlayer;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.game.Game;
+import org.continuouspoker.dealer.persistence.daos.GameDAO;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 import org.continuouspoker.dealer.persistence.entities.GameBE;
 import org.continuouspoker.dealer.persistence.entities.TeamBE;
 import org.junit.jupiter.api.Test;
@@ -57,13 +59,15 @@ class GameMapperTest {
         // Mocks
         Team team = mock(Team.class);
         RemotePlayer player = mock(RemotePlayer.class);
+        GameDAO gameDAO = mock(GameDAO.class);
+        LogEntryDAO logEntryDAO = mock(LogEntryDAO.class);
 
         // Method stubbing
         when(team.getName()).thenReturn("teamX");
         when(team.getProvider()).thenReturn(player);
         when(team.getProvider().getUrl()).thenReturn("http://remotePlayer");
 
-        Game game = new Game(0L, "gameName", Duration.parse("PT1S"), Duration.parse("PT1S"));
+        Game game = new Game(0L, "gameName", Duration.parse("PT1S"), Duration.parse("PT1S"), gameDAO, logEntryDAO);
         game.addPlayer(team);
 
         GameBE gameBE = testee.toEntity(game);

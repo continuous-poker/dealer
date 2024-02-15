@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.game.Game;
 import org.continuouspoker.dealer.persistence.daos.GameDAO;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -58,6 +59,9 @@ public class GameManager {
     @Inject
     GameDAO gameDao;
 
+    @Inject
+    LogEntryDAO logEntryDAO;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(executorPoolsize);
     private final Map<Game, ScheduledFuture<?>> games = new TreeMap<>(Comparator.comparing(Game::getName));
 
@@ -73,7 +77,7 @@ public class GameManager {
     }
 
     public long createNewGame(final String name) {
-        Game game = new Game(0L, name, gameRoundSleepDuration, stepSleepDuration);
+        Game game = new Game(0L, name, gameRoundSleepDuration, stepSleepDuration, gameDao, logEntryDAO);
         gameDao.createGame(game);
         games.put(game, null);
         return game.getGameId();

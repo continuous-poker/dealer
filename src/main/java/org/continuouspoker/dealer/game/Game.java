@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.LogEntry;
 import org.continuouspoker.dealer.Team;
 import org.continuouspoker.dealer.persistence.daos.GameDAO;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,11 +48,9 @@ public class Game implements Runnable {
     private final String name;
     private final Duration timeBetweenGameRounds;
     private final Duration timeBetweenSteps;
-
-    @Inject
     @JsonIgnore
-    GameDAO gameDAO;
-
+    private final GameDAO gameDAO;
+    private final LogEntryDAO logEntryDAO;
     @Getter
     @JsonIgnore
     private int tournamentId;
@@ -61,7 +59,7 @@ public class Game implements Runnable {
     public void run() {
 
         final Tournament tournament = new Tournament(gameId, tournamentId++, teams, timeBetweenGameRounds,
-                timeBetweenSteps);
+                timeBetweenSteps, logEntryDAO);
         tournaments.add(tournament);
         while (tournaments.size() > TOURNAMENT_LIMIT) {
             tournaments.remove(0);
