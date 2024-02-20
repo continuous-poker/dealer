@@ -194,7 +194,7 @@ paths:
           example: 1
       responses:
         '200':
-          $ref: '#/components/responses/OK'
+          $ref: '#/components/responses/OKShowGameHistory'
 
   /{gameId}/latestIds:
     get:
@@ -516,12 +516,14 @@ components:
                           description: Creation timestamp
                           type: string
                           format: date-time
-                          example: 2024-02-08T10:00:00
                         score:
                           description: Points achieved
                           type: integer
                           format: int64
-                          example: 50
+          example:
+            Red Bulls:
+              - creationTimeStamp: 2024-02-08T10:00:00
+                score: 50
 
     OKGamesFound:
       description: Successful HTTP request
@@ -531,6 +533,39 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Game'
+
+    OKShowGameHistory:
+      description: HTTP Request was successful and returned the current game state
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tournamentId:
+                description: Tournament ID
+                type: object
+                properties:
+                  roundId:
+                    description: Round ID
+                    type: array
+                    items:
+                      type: string
+#                      example: 09:16:15.422065+01:00 Starting round 10.
+          example:
+            0:
+              3:
+                - 09:16:15.422065+01:00 Starting round 10.
 
     OKGameStatus:
       description: HTTP Request was successful and returned the current game state
