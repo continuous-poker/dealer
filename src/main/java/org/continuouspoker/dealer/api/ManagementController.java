@@ -162,8 +162,7 @@ public class ManagementController {
     @Operation(hidden = true)
     public Map<Long, Map<Long, List<String>>> getGameHistory(@PathParam(PARAM_GAME_ID) final long gameId)
         throws ObjectNotFoundException {
-        // empty for now, takes up too many resources
-        return Map.of();
+        return service.getGameHistory(gameId);
     }
 
     @GET
