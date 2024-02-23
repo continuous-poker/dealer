@@ -127,7 +127,7 @@ public class ManagementController {
     }
 
     @GET
-    @Path("/logs/{gameId}/tournament{tournamentId}")
+    @Path("/logs/{gameId}/tournament/{tournamentId}")
     public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long gameId,
             @PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
             @QueryParam("limit") final Integer limit) {
