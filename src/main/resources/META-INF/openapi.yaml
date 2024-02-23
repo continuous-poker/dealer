@@ -1,0 +1,966 @@
+openapi: 3.0.3
+info:
+  title: Continuous Integration Poker
+  description: Continuous Integration Poker
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080/games'
+paths:
+  # Game and user management #
+  /manage/{gameId}/players:
+    post:
+      summary: Register a new player
+      description: Create a new player instance and saves it in the application database
+      tags:
+        - Game management
+      security:
+        - basicAuth: []
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: query
+          name: playerUrl
+          description: Remote player URL
+          schema:
+            type: string
+          example: http://remotePlayer
+        - in: query
+          name: teamName
+          description: Team name
+          schema:
+            type: string
+          example: Remote team
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete player
+      description: Delete a player from their team
+      tags:
+        - Game management
+      security:
+        - basicAuth: []
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: query
+          name: teamName
+          description: Team's name
+          schema:
+            type: string
+          example: Team1
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        # Following cases are not handled properly: Invalid gameId and invalid teamId. Both return a 204 response
+
+  /manage/:
+    post:
+      summary: Create game
+      description: Create a new game in the database
+      tags:
+        - Game management
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the game to create
+                  example: game1
+      responses:
+        '200':
+          $ref: '#/components/responses/OKGameCreated'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        # An empty name produces an internal error (500 internal server error), corrupting the application's database #
+
+  /manage/{gameId}:
+    delete:
+      summary: Delete game
+      description: Delete a game instance
+      tags:
+        - Game management
+      security:
+        - basicAuth: [ ]
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      summary: Start/stop game
+      description: Start/Stop a game depending on the current state
+      tags:
+        - Game management
+      security:
+        - basicAuth: [ ]
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        # Toggles game state even if there's no game associated with the passed id #
+
+  # Games #
+  /:
+    get:
+      summary: List games
+      description: Lists all existing games
+      tags:
+        - Game
+      responses:
+        '200':
+          $ref: '#/components/responses/OKGamesFound'
+
+  /{gameId}:
+    get:
+      summary: Get game status
+      description: Retrieves the current game status
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/OKGameStatus'
+        # Non-existent game is show as stopped (200 OK)
+
+  # Deactivated due to memory issues
+  /{gameId}/history:
+    get:
+      summary: Get game history
+      description: Return an overview of the game history
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/OKShowGameHistory'
+
+  /{gameId}/latestIds:
+    get:
+      summary: Get latest tournament and round
+      description: Get game's latest tournament and round
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/OKLatestTournamentAndRoundFound'
+
+# Game logs #
+  /{gameId}/log:
+    # HTTP requests using a non-existent tableId return an empty list
+    # Request with an invalid date format still returns a list of gameLogs
+    get:
+      summary: Filter logs
+      description: Filter tournament logs that were produced within a specific time period using the same gameId
+      tags:
+        - Logs
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: query
+          name: limitFrom
+          description: Start date
+          required: true
+          schema:
+            type: string
+          example: 2024-01-01T00:00:00
+        - in: query
+          name: limitTo
+          description: End date
+          required: true
+          schema:
+            type: string
+          example: 2024-01-31T23:59:59
+        - in: query
+          name: tableId
+          description: Tournament ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 2
+        - in: query
+          name: limit
+          description: Output limit
+          required: true
+          schema:
+            type: integer
+          example: 50
+        - in: query
+          name: order
+          description: Sort in ascending/descending order
+          required: true
+          schema:
+            type: string
+          example: desc
+      responses:
+        '200':
+          $ref: '#/components/responses/OKLogEntryListReturned'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /{gameId}/log/{timestamp}:
+    get:
+      summary: Get game logs starting from a specific time point
+      description: Get game logs starting from a specific time point up until the interaction with the HTTP endpoint
+      tags:
+        - Logs
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: path
+          name: timestamp
+          description: Timestamp
+          required: true
+          schema:
+            type: string # or format: date (check if format is compatible)
+          example: 2024-02-13T09:01:37.462115+01:00
+      responses:
+        '200':
+          $ref: '#/components/responses/OKLogEntryListReturned'
+        '404':
+          $ref: '#/components/responses/InvalidInput'
+
+# Players
+  /{gameId}/players:
+    get:
+      summary: Get players
+      description: Get a list of active players for a given game
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          $ref: '#/components/responses/OKShowPlayerList'
+
+# Scores
+  /{gameId}/score:
+    get:
+      summary: Get score board
+      description: Get the score board for a given game id
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/OKShowScoreBoard'
+
+  # Returns an empty list for non-existent games
+  /{gameId}/scoreHistory:
+    get:
+      summary: Get score history
+      description: Get score history for the passed gameId
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          $ref: '#/components/responses/OKScoreHistoryFound'
+
+# Tournaments #
+  /{gameId}/tournament/{tournamentId}:
+    get:
+      summary: Get tournament state
+      description: Return the current tournament state
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: path
+          name: tournamentId
+          description: Tournament ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 0
+      responses:
+        '200':
+          $ref: '#/components/responses/OKTableFound'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# Rounds #
+  /{gameId}/tournament/{tournamentId}/round/{roundId}:
+    get:
+      summary: Get round state
+      description: Return the current round state
+      tags:
+        - Game
+      parameters:
+        - in: path
+          name: gameId
+          description: Game ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - in: path
+          name: tournamentId
+          description: Tournament ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 0
+        - in: path
+          name: roundId
+          description: Round ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 5
+      responses:
+        '200':
+          $ref: '#/components/responses/OKTableFound'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  responses:
+    OK:
+      description: HTTP Request was successful and returned an application/json response
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+
+    OKGameCreated:
+      description: HTTP Request was successful and returned an application/json response
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          example: 101
+
+    OKTableFound:
+      description: OK
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: The MIME type of the response content
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response content
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Table"
+
+    OKScoreHistoryFound:
+      description: OK. Score record found
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: The MIME type of the response content
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response content.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              team:
+                type: array
+                items:
+                  properties:
+                    ScoreHistoryEntry:
+                      description: Score history entry
+                      type: object
+                      properties:
+                        creationTimestamp:
+                          description: Creation timestamp
+                          type: string
+                          format: date-time
+                        score:
+                          description: Points achieved
+                          type: integer
+                          format: int64
+          example:
+            Red Bulls:
+              - creationTimeStamp: 2024-02-08T10:00:00
+                score: 50
+
+    OKGamesFound:
+      description: Successful HTTP request
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Game'
+
+    OKShowGameHistory:
+      description: HTTP Request was successful and returned the current game state
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tournamentId:
+                description: Tournament ID
+                type: object
+                properties:
+                  roundId:
+                    description: Round ID
+                    type: array
+                    items:
+                      type: string
+#                      example: 09:16:15.422065+01:00 Starting round 10.
+          example:
+            0:
+              3:
+                - 09:16:15.422065+01:00 Starting round 10.
+
+    OKGameStatus:
+      description: HTTP Request was successful and returned the current game state
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          examples:
+            Running:
+              value:
+                state: running
+            Stopped:
+              value:
+                state: stopped
+
+    OKLatestTournamentAndRoundFound:
+      description: HTTP Request was successful and returned an application/json response
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tournamentId:
+                type: integer
+                format: int64
+                example: 2
+              roundId:
+                type: integer
+                format: int64
+                example: 5
+
+    OKShowPlayerList:
+      description: HTTP Request was successful and returned an overview of the registered players
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+              example: teamName
+
+    OKShowScoreBoard:
+      description: HTTP Request was successful and returned the current score board
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              team:
+                type: integer
+            example:
+              team: 30
+
+    OKLogEntryListReturned:
+      description: HTTP Request was successful and returned a log entry list
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        Content-Length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/LogEntry'
+
+    NoContent:
+      description: HTTP Request was successful
+
+    InvalidInput:
+      description: Invalid input. Double-check gameId and timestamp format  # double-check #
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            example: application/json
+          description: Response's representation format
+        content-length:
+          schema:
+            type: integer
+            example: 10
+          description: The length of the response body
+
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+
+    NotFound:
+      description: No information found for the passed input
+      headers:
+        Content-Length:
+          schema:
+            type: integer
+          example: 0
+
+  schemas:
+    Game:
+      description: A game representation
+      type: object
+      required:
+        - teams
+        - gameId
+        - name
+      properties:
+        teams:
+          description: Teams registered with the current game id
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+        gameId:
+          description: Game ID
+          type: integer
+          format: int64
+          example: 1
+        name:
+          description: Game's name
+          type: string
+          example: GameName
+    Team:
+      description: A team representation
+      type: object
+      required:
+        - teamId
+        - name
+        - provider
+      properties:
+        teamId:
+          description: Team ID
+          type: integer
+          format: int64
+          example: 101
+        name:
+          description: Team's name
+          type: string
+          example: TeamName
+        provider:
+          description: The action Provider
+          type: object
+          properties:
+            url:
+              description: URL linked to the team instance
+              type: string
+              example: http://remotePlayer
+            strike:
+              description: Placeholder
+              type: integer
+              example: 0
+        score:
+          description: Points obtained by the team instance.
+          type: integer
+          format: int64
+          example: 10
+    LogEntry:
+      description: Game log entry
+      type: object
+      required:
+        - timestamp
+        - gameId
+        - tournamentId
+        - roundId
+        - message
+      properties:
+        timestamp:
+          description: Log timestamp
+          type: string
+          format: date-time
+          example: 2024-02-13T09:01:37.462115+01:00
+        gameId:
+          description: Game ID
+          type: number
+          format: int64
+          example: 1
+        tournamentId:
+          description: Tournament ID
+          type: number
+          format: int64
+          example: 0
+        roundId:
+          description: Round ID
+          type: number
+          format: int64
+          example: 5
+        message:
+          description: Log message
+          type: string
+          format: date-time
+          example: 09:01:37.462115+01:00 Ending round 15.
+    Bet:
+      description: The player's bet
+      type: object
+      properties:
+        bet:
+          type: integer
+          format: int32
+          example: 15
+    Rank:
+      description: The rank of a card
+      type: string
+      enum:
+        - A
+        - K
+        - Q
+        - J
+        - 10
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+      example: A
+    Suit:
+      description: The suit of a card.
+      type: string
+      enum:
+        - HEARTS
+        - SPADES
+        - CLUBS
+        - DIAMONDS
+      example: DIAMONDS
+    Card:
+      description: A playing card.
+      type: object
+      required:
+        - rank
+        - suit
+      properties:
+        rank:
+          $ref: "#/components/schemas/Rank"
+        suit:
+          $ref: "#/components/schemas/Suit"
+    Table:
+      description: The poker table, representing the current game state.
+      type: object
+      required:
+        - communityCards
+        - players
+        - round
+        - smallBlind
+        - minimumBet
+        - minimumRaise
+        - pot
+        - activePlayer
+        - currentDealer
+      properties:
+        activePlayer:
+          description: The index of the player whose turn it is. It's you!
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 9
+          example: 1
+        communityCards:
+          description: The list of community cards on the table, visible to everyone.
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          minItems: 0
+          maxItems: 5
+        currentDealer:
+          description: The index of the player who is the dealer of this round.
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 9
+          example: 2
+        minimumBet:
+          description: The minimum amount of chips you have to bet if you want to keep playing.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 300
+        minimumRaise:
+          description: The minimum amount of chips you have to bet if you want to raise.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 640
+        players:
+          description: The list of players at the table, including you.
+          type: array
+          items:
+            $ref: "#/components/schemas/Player"
+          minItems: 2
+          maxItems: 10
+        pot:
+          description: The current size of the pot of this round.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 25
+        round:
+          description: The number of the current round.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 10
+        smallBlind:
+          description: The current small blind of this round.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 15
+
+    Player:
+      description: A player at the poker table.
+      type: object
+      required:
+        - name
+        - status
+        - stack
+        - bet
+      properties:
+        name:
+          description: The player name.
+          type: string
+          example: Remote player
+        status:
+          description: The player's status. Indicates whether they are still in the game (ACTIVE), they have folded their current cards (FOLDED) or they are out of chips (OUT).
+          type: string
+          enum:
+            - ACTIVE
+            - FOLDED
+            - OUT
+          example: ACTIVE
+        stack:
+          description: The player's chip stack.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 40
+        cards:
+          description: The player's cards. Will only be provided for the active player, i.e. you!
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+        bet:
+          description: The player's current bet.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 10
+
+
