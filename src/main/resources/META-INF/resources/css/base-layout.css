@@ -6,6 +6,11 @@ html, body {
     font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
 }
 
+.dark-mode {
+    background: #16171d;
+    color: #fff;
+}
+
 .grid-container {
     min-height: 100%;
     display: grid;
@@ -16,6 +21,7 @@ html, body {
 /* Style for the top navigation bar */
 .navbar {
     background-color: #3498db; /* Modern blue color */
+    height: 45px;
     overflow: hidden;
     padding-right: 7px;
 }
@@ -28,15 +34,85 @@ html, body {
     padding: 14px 16px;
     text-decoration: none;
 }
+
 .navbar select {
     display: block;
     float: right;
-    padding: 8px 16px;
-    margin: 7px 0px;
+    padding: 3px 16px;
+    margin: 10px 0;
     text-decoration: none;
+    border-radius: 8px;
 }
+
 .navbar a:hover {
     background-color: #46a3e1;
+    height: 100%;
+}
+/* The switch - the box around the slider */
+.switch {
+    float: right;
+    position: relative;
+    display: inline-block;
+    margin: 8px 6px 12px 18px;
+    width: 50px;
+    height: 30px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #E2E4E8;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    right: 4px;
+    bottom: 4px;
+    transition: .4s;
+    content: "";
+    background-size: 20px;
+    background-image: url('../img/sun_half.png');
+    background-color: #fff;
+    background-position: center;
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2b2b2b;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2b2b2b;
+}
+
+input:checked + .slider:before {
+    transform: translateX(-21px);
+    content: "";
+    background: #fff url('../img/moon_half.png') center;
+    background-size: 20px 20px;
 }
 
 /* Style for the footer */

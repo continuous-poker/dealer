@@ -10,20 +10,25 @@
 <body>
 <div class="grid-container" id="app">
     <!-- Top Navigation Bar -->
-    <header class="navbar">
+    <header class="navbar" :style=" { background: isDarkMode ? '#3f3f3f' : ''}">
         <a href="live.html">Live</a>
         <a href="index.html">Analyzer</a>
         <a href="admin.html">Settings</a>
+        <label class="switch">
+            <input id="switch" type="checkbox" @click="toggleDarkMode">
+            <span class="slider round"></span>
+        </label>
     </header>
 
     <main class="main">
         <!-- Central Section -->
-        <section class="sidebar">
-            <h1>Games</h1>
+        <section class="sidebar" :style=" { backgroundColor : isDarkMode ? '#45494d' : '' }">
             <ul>
                 <li @click="selectGame(game)" :class="{ active: selectedGame && game.gameId === selectedGame.gameId }" v-for="game in games" :key="game.gameId">{{ game.name }}</li>
             </ul>
-            <button @click="showCreateGameDialog">Create Game</button>
+            <button @click="showCreateGameDialog">
+                <img class="icon" src="img/add.png">Create Game
+            </button>
         </section>
 
         <!-- Central Section for displaying game details -->

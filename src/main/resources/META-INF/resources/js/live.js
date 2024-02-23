@@ -24,11 +24,18 @@ Vue.createApp({
             table: {players: [], communityCards: []},
             gameHistory: null,      //Object for whole history
             displayedHistory: null, //Object for currently displayed history
+            isDarkMode: false
         }
     },
 
-
     created() {
+        const themePreference = localStorage.getItem('darkMode')
+
+        if(themePreference) {
+            this.isDarkMode = JSON.parse(themePreference);
+            this.applyTheme();
+        }
+
         this.update();
         this.timer = setInterval(this.update, 1000);
     },
@@ -40,6 +47,10 @@ Vue.createApp({
     mounted() {
         // Fetch data from the /games endpoint using a GET request
         this.loadGames();
+
+        if (this.isDarkMode) {
+            document.getElementById("switch").checked = true;
+        }
     },
 
     methods: {
@@ -144,17 +155,18 @@ Vue.createApp({
                 if (this.tournamentId != null) {
                     this.updateTable(this.gameId, this.tournamentId, this.roundId);
                 }
-                // axios
-                //     .get("/games/" + this.gameId + "/history")
-                //     .then(response => {
-                //         this.gameHistory = response.data;
-                //         if (!this.gameHistory[this.tournamentId]) {
-                //             this.tournamentId = null;
-                //             this.roundId = null;
-                //         }
-                //     });
-                //
-                // this.displayedHistory = this.gameHistory[this.tournamentId][this.roundId];
+
+                axios
+                    .get("/games/" + this.gameId + "/history")
+                    .then(response => {
+                        this.gameHistory = response.data;
+                        if (!this.gameHistory[this.tournamentId]) {
+                            this.tournamentId = null;
+                            this.roundId = null;
+                        }
+                    });
+
+                this.displayedHistory = this.gameHistory[this.tournamentId][this.roundId];
             }
         },
 
@@ -168,6 +180,19 @@ Vue.createApp({
 
         cancelAutoUpdate() {
             clearInterval(this.timer);
+        },
+        toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
+
+            this.applyTheme();
+            localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
+        },
+        applyTheme() {
+            if(this.isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode')
+            }
         }
     }
 }).mount('#app')
