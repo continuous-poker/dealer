@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.continuouspoker.dealer.persistence;
 
-import java.time.Instant;
-import java.util.Set;
+package org.continuouspoker.dealer.persistence.entities;
+
+import java.util.List;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -26,15 +27,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "scores")
+@Entity(name = "games")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ScoreRecordBE extends PanacheEntity {
-    private Instant creationTimestamp;
-    private long gameId;
+public class GameBE extends PanacheEntity {
 
-    @OneToMany
-    private Set<TeamScoreRecordBE> teamScores;
+    private String name;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<TeamBE> teams;
 }

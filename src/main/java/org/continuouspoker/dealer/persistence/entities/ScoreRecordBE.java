@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 - 2024 Jan Kreutzfeld
+ * Copyright © 2020-2024 doubleSlash Net-Business GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.continuouspoker.dealer.persistence;
+
+package org.continuouspoker.dealer.persistence.entities;
+
+import java.time.Instant;
+import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "teams")
+@Entity(name = "scores")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class TeamBE extends PanacheEntity {
-    private String name;
-    private long score;
-    private String providerUrl;
-}
+public class ScoreRecordBE extends PanacheEntity {
+    private Instant creationTimestamp;
+    private long gameId;
 
+    @OneToMany
+    private Set<TeamScoreRecordBE> teamScores;
+}

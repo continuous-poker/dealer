@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 - 2024 Jan Kreutzfeld
+ * Copyright © 2020-2024 doubleSlash Net-Business GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.continuouspoker.dealer.persistence;
+
+package org.continuouspoker.dealer.persistence.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ import lombok.Setter;
 @Setter
 public class TeamScoreRecordBE extends PanacheEntity {
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private TeamBE team;
 
     private long score;

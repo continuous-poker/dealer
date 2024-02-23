@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 - 2024 Jan Kreutzfeld
+ * Copyright © 2020-2024 Jan Kreutzfeld
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package org.continuouspoker.dealer.persistence;
-
-import java.util.List;
+package org.continuouspoker.dealer.persistence.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "games")
+@Entity(name = "teams")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class GameBE extends PanacheEntity {
-
+public class TeamBE extends PanacheEntity {
     private String name;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<TeamBE> teams;
-
+    private long score;
+    private String providerUrl;
 }
-

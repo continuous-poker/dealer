@@ -43,7 +43,13 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 @RequiredArgsConstructor
 public class ManagementController {
     public static final String PARAM_GAME_ID = "gameId";
+
+    public static final String PARAM_TOURNAMENT_ID = "tournamentId";
+
+    public static final String PARAM_ROUND_ID = "roundId";
+
     private final ManagementService service;
+
 
     @POST
     @Path("/manage/{gameId}/players")
@@ -119,22 +125,46 @@ public class ManagementController {
     @GET
     @Path("/{gameId}/log/{timestamp}")
     @Operation(hidden = true)
-    public List<LogEntry> getLogSince(
-        @PathParam(PARAM_GAME_ID) final long gameId,
-        @PathParam("timestamp") final String timestamp) throws ObjectNotFoundException {
-        return service.getLogSince(gameId, timestamp);
+    public List<LogEntry> getLogSince(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam("timestamp") final String timestamp,
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogSince(gameId, timestamp, limit);
     }
 
     @GET
-    @Path("/{gameId}/log")
+    @Path("/logs/{gameId}")
     @Operation(hidden = true)
-    public List<LogEntry> filterLog(
-        @PathParam(PARAM_GAME_ID) final long gameId,
-        @QueryParam("from") final String limitFrom,
-        @QueryParam("to") final String limitTo,
-        @QueryParam("tableId") final Long tableId,
-        @QueryParam("limit") final Integer limit,
-        @QueryParam("order") final String order) throws ObjectNotFoundException {
+    public List<LogEntry> getLogByGameId(@PathParam(PARAM_GAME_ID) final long gameId,
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogByGameId(gameId, limit);
+    }
+
+    @GET
+    @Path("/logs/{gameId}/tournament/{tournamentId}")
+    @Operation(hidden = true)
+    public List<LogEntry> getLogByTournamentId(@PathParam(PARAM_GAME_ID) final long gameId,
+            @PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
+            @QueryParam("limit") final Integer limit) {
+        return service.getLogByTournamentId(gameId, tournamentId, limit);
+    }
+
+    @GET
+    @Path("/logs/{gameId}/tournament/{tournamentId}/round/{roundId}/log")
+    @Operation(hidden = true)
+    public List<LogEntry> getLogByRoundId(@PathParam(PARAM_GAME_ID) final long gameId,
+        @PathParam(PARAM_TOURNAMENT_ID) final long tournamentId,
+        @PathParam(PARAM_ROUND_ID) final long roundId,
+        @QueryParam("limit") final Integer limit) {
+        return service.getLogByRoundId(gameId, tournamentId, roundId, limit);
+    }
+
+    @GET
+    @Path("/{gameId}/log/filter")
+    @Operation(hidden = true)
+    public List<LogEntry> filterLog(@PathParam(PARAM_GAME_ID) final long gameId,
+            @QueryParam("from") final String limitFrom, @QueryParam("to") final String limitTo,
+            @QueryParam("tableId") final Long tableId, @QueryParam("limit") final Integer limit,
+            @QueryParam("order") final String order) throws ObjectNotFoundException {
         return service.filterLog(gameId, limitFrom, limitTo, tableId, limit, order);
     }
 

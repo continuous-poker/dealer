@@ -31,12 +31,12 @@ import java.util.concurrent.TimeUnit;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.continuouspoker.dealer.game.Game;
-import org.continuouspoker.dealer.persistence.GameBE;
-import org.continuouspoker.dealer.persistence.GameDAO;
-import org.continuouspoker.dealer.persistence.TeamBE;
+import org.continuouspoker.dealer.persistence.daos.GameDAO;
+import org.continuouspoker.dealer.persistence.daos.LogEntryDAO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -56,32 +56,31 @@ public class GameManager {
     @ConfigProperty(name = "game.executor.poolsize")
     /* package */ int executorPoolsize;
 
-    private final GameDAO dao;
+    @Inject
+    GameDAO gameDao;
+
+    @Inject
+    LogEntryDAO logEntryDAO;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(executorPoolsize);
     private final Map<Game, ScheduledFuture<?>> games = new TreeMap<>(Comparator.comparing(Game::getName));
 
     @PostConstruct
         /* package */ void initialize() {
-        final List<GameBE> gameList = dao.loadGames();
-        gameList.forEach(g -> games.put(toGame(g), null));
+        final List<Game> gameList = gameDao.loadGames();
+        gameList.forEach(g -> games.put(g, null));
     }
 
     @Scheduled(delayed = "10s", every = "10s")
         /* package */ void store() {
-        dao.storeGames(games.keySet());
+        gameDao.storeGames(games.keySet());
     }
 
     public long createNewGame(final String name) {
-        final Game game = toGame(dao.createGame(new Game(0L, name, gameRoundSleepDuration, stepSleepDuration, dao)));
+        Game game = new Game(0L, name, gameRoundSleepDuration, stepSleepDuration, gameDao, logEntryDAO);
+        gameDao.createGame(game);
         games.put(game, null);
         return game.getGameId();
-    }
-
-    private Game toGame(final GameBE source) {
-        final Game game = new Game(source.id, source.getName(), gameRoundSleepDuration, stepSleepDuration, dao);
-        source.getTeams().forEach(t -> game.addPlayer(toTeam(t)));
-        return game;
     }
 
     public void resume(final long gameId) {
@@ -125,13 +124,7 @@ public class GameManager {
     }
 
     public Team createNewPlayer(final String teamName, final String playerUrl) {
-        final TeamBE persistedTeam = dao.createTeam(teamName, playerUrl);
-        return toTeam(persistedTeam);
+        return gameDao.createTeam(teamName, playerUrl);
     }
 
-    private Team toTeam(final TeamBE source) {
-        final Team team = new Team(source.id, source.getName(), new RemotePlayer(source.getProviderUrl()));
-        team.addToScore(source.getScore());
-        return team;
-    }
 }
