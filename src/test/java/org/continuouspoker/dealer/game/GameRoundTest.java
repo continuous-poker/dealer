@@ -69,8 +69,7 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(100);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(100);
+        setupActionProviderRequestBetStubs(100);
 
         testee.playWithDeck(deck);
 
@@ -90,8 +89,7 @@ class GameRoundTest {
         cards.set(3, new Card(Rank.ACE, Suit.SPADES));
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(20);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(20);
+        setupActionProviderRequestBetStubs(20);
 
         testee.playWithDeck(deck);
 
@@ -110,8 +108,7 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(100);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(100);
+        setupActionProviderRequestBetStubs(100);
 
         testee.playWithDeck(deck);
 
@@ -135,8 +132,7 @@ class GameRoundTest {
         cards.set(3, new Card(Rank.ACE, Suit.DIAMONDS));
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(50);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
+        setupActionProviderRequestBetStubs2();
 
         testee.playWithDeck(deck);
 
@@ -161,8 +157,7 @@ class GameRoundTest {
 
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(50);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
+        setupActionProviderRequestBetStubs2();
         when(player3.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
 
         testee.playWithDeck(deck);
@@ -183,8 +178,7 @@ class GameRoundTest {
         fillCards(cards, 2);
         final Deck deck = new Deck(cards);
 
-        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(25);
-        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(25);
+        setupActionProviderRequestBetStubs(25);
 
         testee.playWithDeck(deck);
 
@@ -238,5 +232,15 @@ class GameRoundTest {
         cards.add(new Card(Rank.FOUR, Suit.DIAMONDS));
 
         cards.add(new Card(Rank.FOUR, Suit.HEARTS));
+    }
+
+    private void setupActionProviderRequestBetStubs(int requestBetReturnValue) throws Exception {
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(requestBetReturnValue);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(requestBetReturnValue);
+    }
+
+    private void setupActionProviderRequestBetStubs2() throws Exception {
+        when(player1.getActionProvider().requestBet(any(), any())).thenReturn(50);
+        when(player2.getActionProvider().requestBet(any(), any())).thenReturn(50, 50);
     }
 }
